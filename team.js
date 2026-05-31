@@ -81,21 +81,38 @@
         team.forEach(s => s.calc = false);
         let bestTeam = [];
         
-        const getRole = (slot) => {
-            let hp = Number(slot.ev.HP)||0, def = Number(slot.ev.DEF)||0, spd = Number(slot.ev.SPDEF)||0;
-            let atk = Number(slot.ev.ATK)||0, spa = Number(slot.ev.SPATK)||0;
-            if (hp + def + spd >= 250) return 'tank';
-            if (atk > spa) return 'physical';
-            if (spa > atk) return 'special';
-            return 'mixed';
-        };
+     const getRole = (slot, p) => {
+    // 1. Προτεραιότητα στα EVs αν υπάρχουν
+    let hp = Number(slot.ev.HP)||0, def = Number(slot.ev.DEF)||0, spd = Number(slot.ev.SPDEF)||0;
+    let atk = Number(slot.ev.ATK)||0, spa = Number(slot.ev.SPATK)||0;
+    
+    if (hp + def + spd >= 250) return 'tank';
+    if (atk > spa && atk > 100) return 'physical';
+    if (spa > atk && spa > 100) return 'special';
+
+    // 2. Αν δεν υπάρχουν EVs, χρησιμοποίησε τα Base Stats από το data.js
+    const stats = BASE_STATS[p.id];
+    if (stats) {
+        if (stats.def > 100 || stats.spd > 100) return 'tank';
+        if (stats.atk > stats.spa + 20) return 'physical';
+        if (stats.spa > stats.atk + 20) return 'special';
+    }
+    return 'mixed';
+}; 
 
         while (bestTeam.length < 6 && bestTeam.length < pool.length) {
             let bestScore = -Infinity, bestCandidate = null;
             pool.filter(x => !bestTeam.includes(x)).forEach(candidate => {
                 let score = 0;
                 let cTypes = candidate.p.types;
-                let cRole = getRole(candidate.slot);
+                let cRole = getRole(candidate.slot, candidate.p); // Χρησιμοποιεί τη νέα getRole
+
+                // --- ΝΕΟ: Bonus βάσει Base Stats (BST) ---
+                const stats = BASE_STATS[candidate.p.id];
+                if (stats) {
+                    let bst = stats.hp + stats.atk + stats.def + stats.spa + stats.spd + stats.spe;
+                    score += (bst - 300) / 10; // Τα δυνατά Pokémon παίρνουν αυτόματα μεγαλύτερο score
+                }
 
                 if (bestTeam.length === 0) {
                     score += candidate.slot.moves.filter(m => m).length * 10;
@@ -103,6 +120,7 @@
                     return;
                 }
 
+                // ... (Ο υπόλοιπος κώδικας για weaknesses και moves παραμένει ίδιος) ...
                 let teamWeaknesses = {};
                 AT.forEach(t => teamWeaknesses[t] = 0);
                 bestTeam.forEach(member => {
@@ -127,7 +145,7 @@
                     if (!teamMoveTypes.has(mt)) score += 15; 
                 });
 
-                let teamRoles = bestTeam.map(m => getRole(m.slot));
+                let teamRoles = bestTeam.map(m => getRole(m.slot, m.p));
                 let tanks = teamRoles.filter(r => r === 'tank').length;
                 let phys = teamRoles.filter(r => r === 'physical').length;
                 let spec = teamRoles.filter(r => r === 'special').length;
