@@ -50,14 +50,27 @@
   </section>
 </div>
 
-<script src="data.js"></script>
-    <script src="utils.js"></script>
+<!-- 1. Data Layer (Πρώτα φορτώνουμε τις σταθερές) -->
+<script src="data/TC.js" defer></script>
 
-    <script src="dex.js"></script>
 
-    <script src="team-core.js"></script>
-    <script src="team-ai.js"></script>
-    <script src="team-io.js"></script>
-    <script src="team-ui.js"></script>
+<!-- 2. Μετά τα μεγάλα Data αντικείμενα -->
+<script src="data/pokemon-core.js" defer></script>
+<script src="data/abilities.js" defer></script>
+<script src="data/sprites.js" defer></script>
+<script src="data/moves.js" defer></script>
+
+<!-- 3. Εργαλεία που χρησιμοποιούνται παντού -->
+<script src="utils.js" defer></script>
+
+<!-- 4. Το Core Logic της ομάδας (πρέπει να τρέξει ΠΡΙΝ το UI!) -->
+<script src="team-core.js" defer></script>
+
+<!-- 5. Τελευταία τα αρχεία που "πειράζουν" το HTML (UI, Events, AI) -->
+<script src="team-io.js" defer></script>
+<script src="team-ai.js" defer></script>
+<script src="team-ui.js" defer></script>
+<script src="dex.js" defer></script>
+
 </body>
 </html>
