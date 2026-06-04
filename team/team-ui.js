@@ -1,4 +1,3 @@
-
 // --- team-ui.js : Team Builder UI & Events ---
 
 function updateTeamDropdown() {
@@ -27,7 +26,15 @@ function setStat(slot, kind, stat, value, el) {
 
 function setMoveType(slot, move, value) { team[slot].moves[move] = value; saveTeam(); if (team[slot].calc) renderTeamSlots() } 
 function setMoveCat(slot, move, value) { team[slot].moveCats[move] = value; saveTeam(); if (team[slot].calc) renderTeamSlots() } 
-function setMoveName(slot, move, value) { const info = MOVE_INFO[value] || {}; team[slot].moveNames[move] = value; team[slot].moves[move] = info.type || ''; team[slot].moveCats[move] = info.cat || ''; saveTeam(); renderTeamSlots() }
+function setMoveName(slot, move, value) { 
+    // SAFE CHECK: Μην κρασάρεις αν το MOVE_INFO λείπει
+    const info = (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[value]) ? MOVE_INFO[value] : {}; 
+    team[slot].moveNames[move] = value; 
+    team[slot].moves[move] = info.type || ''; 
+    team[slot].moveCats[move] = info.cat || ''; 
+    saveTeam(); 
+    renderTeamSlots() 
+}
 function setMeta(slot, field, value) { team[slot][field] = value; saveTeam(); if (field === 'nature') renderTeamSlots() }
 function natureClass(nature, stat) { const e = TEAM_NATURE_EFFECTS[nature]; if (!e) return ''; return e[0] === stat ? 'boost' : e[1] === stat ? 'drop' : '' }
 function clearSlot(i) { team[i] = EMPTY_SLOT(); saveTeam(); renderTeamSlots() }
@@ -36,7 +43,20 @@ function toggleCalc(i) { if (!team[i].pokemonId) return; if (!team[i].calc && ca
 
 function calcPanel() { 
     const selected = calcTeam(); 
-    if (!selected.length) return `<div class="calcPanel"><div class="calcHead"><strong>Battle Calculate</strong><span>0/6 selected</span></div><div class="calcEmpty">Use Add to calculate on up to 6 Pokémon.</div></div>`; 
+    
+    // Ασφαλής κλήση των UI Αντιπάλου
+    const oppUI = window.getOpponentUI ? window.getOpponentUI() : '';
+    const matchupsUI = window.getMatchupsUI ? window.getMatchupsUI(selected) : '';
+
+    // --- EMPTY STATE (Όταν δεν έχεις διαλέξει κανένα Pokemon για Calculate) ---
+    if (!selected.length) { 
+        return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
+            <div class="calcHead"><strong>Battle Calculate</strong><span>0/6 selected</span></div>
+            <div class="calcEmpty" style="margin-bottom: 15px;">Use "Add to calculate" on up to 6 Pokémon from your slots.</div>
+            <!-- Το Κόκκινο Κουμπί στο ΚΑΤΩ μέρος -->
+            ${oppUI}
+        </div>`; 
+    } 
     
     const moveEntries = selected.flatMap(x => x.slot.moves.map((type, i) => ({ type, cat: x.slot.moveCats[i] || '', name: x.p.name })).filter(m => m.type)); 
     const damaging = moveEntries.filter(m => m.cat !== 'status'); 
@@ -54,6 +74,7 @@ function calcPanel() {
     
     const defenseSafe = AT.filter(t => selected.some(x => multAtkVsTypes(t, x.p.types) < 1)); 
     const offenseScore = strong.length, defenseScore = defenseSafe.length; 
+    
     const missingCoverage = struggle.map(x => x.t); 
     const sharedWeak = threats.filter(x => x.count >= Math.max(2, Math.ceil(selected.length / 2))).map(x => x.t); 
     const x4Threats = threats.filter(x => x.max >= 4).map(x => x.t); 
@@ -75,8 +96,37 @@ function calcPanel() {
     const chips = list => list.length ? list.map(x => tb(x.t || x, 'calcBadge')).join('') : '<span class="calcNone">none</span>'; 
     const threatHtml = threats.length ? threats.slice(0, 10).map(x => `<span class="calcThreat" style="border-color:${TC[x.t] || '#888'}"><span style="background:${TC[x.t] || '#888'}">${x.t}</span>${x.count} weak${x.max >= 4 ? ` · x${x.max}` : ''}</span>`).join('') : '<span class="calcNone">No obvious type weaknesses.</span>'; 
     
-    return `<div class="calcPanel"><div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div><div class="calcScores"><div><span>Offense</span><strong>${offenseScore}/18</strong></div><div><span>Defense</span><strong>${defenseScore}/18</strong></div><div><span>Physical</span><strong>${physicalCount}</strong></div><div><span>Special</span><strong>${specialCount}</strong></div></div><div class="calcNotes">${notes.length ? notes.map(n => `<p>${n}</p>`).join('') : '<p>Choose move types first to score offense.</p>'}</div><div class="calcSelected">${selected.map(x => `<span>#${String(x.p.id).padStart(4, '0')} ${x.p.name.replace(/-/g, ' ')}</span>`).join('')}</div><div class="calcRows"><div><b>Attack advantage</b><div class="calcBadges">${moveTypes.length ? chips(strong) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div><div><b>Attack struggles</b><div class="calcBadges">${moveTypes.length ? chips(struggle) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div><div><b>Defensive threats</b><div class="calcBadges">${threatHtml}</div></div></div></div>`;
-} 
+    const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin: 15px 0;">
+        ${selected.map(x => `
+            <div style="display:flex; flex-direction:column; align-items:center; background:var(--bg); border:1px solid var(--brd); border-radius:8px; padding:8px; min-width:70px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${spriteImg(x.p)}
+                <span style="font-size:11px; font-weight:bold; margin-top:6px; color:var(--txt); text-align:center;">${x.p.name.replace(/-/g, ' ')}</span>
+            </div>
+        `).join('')}
+    </div>`;
+
+    // --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
+    return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
+        <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
+        <div class="calcScores">
+            <div><span>Offense</span><strong>${offenseScore}/18</strong></div>
+            <div><span>Defense</span><strong>${defenseScore}/18</strong></div>
+            <div><span>Physical</span><strong>${physicalCount}</strong></div>
+            <div><span>Special</span><strong>${specialCount}</strong></div>
+        </div>
+        <div class="calcNotes">${notes.length ? notes.map(n => `<p>${n}</p>`).join('') : '<p>Choose move types first to score offense.</p>'}</div>
+        ${selectedHtml}
+        <div class="calcRows">
+            <div><b>Attack advantage</b><div class="calcBadges">${moveTypes.length ? chips(strong) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div>
+            <div><b>Attack struggles</b><div class="calcBadges">${moveTypes.length ? chips(struggle) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div>
+            <div><b>Defensive threats</b><div class="calcBadges">${threatHtml}</div></div>
+        </div>
+        
+        <!-- Το Κόκκινο Κουμπί και τα Counters επέστρεψαν στο ΚΑΤΩ μέρος -->
+        ${oppUI}
+        ${matchupsUI}
+    </div>`;
+}
 
 function renderTeamList() { 
     const el = document.getElementById('teamList'), q = teamQuery.toLowerCase().trim(); 
@@ -100,21 +150,22 @@ function renderTeamSlots() {
     el.innerHTML = calcPanel() + filled.map(({ slot, i }, displayIndex) => { 
         const p = POKE.find(x => x.id === slot.pokemonId); 
         if (!p) return ''; 
-        const head = `<div class="slotImg">${spriteImg(p)}</div><div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div>`; 
+        const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
         
-        const meta = `<div class="metaGrid">
+        const meta = `<div class="metaGrid" style="margin-bottom: 12px;">
             <label>Level
-                <input type="number" min="1" max="100" value="${slot.level}" data-slot="${i}" data-field="level" style="width:100%; min-width:0; background:var(--bg); border:1px solid var(--brd); border-radius:7px; color:var(--txt); font:800 12px 'Nunito',sans-serif; padding:6px; outline:none; text-align:center;">
+                <input type="number" min="1" max="100" value="${slot.level}" data-slot="${i}" data-field="level" style="width:100%; box-sizing:border-box; background:var(--bg); border:1px solid var(--brd); border-radius:7px; color:var(--txt); font:800 12px 'Nunito',sans-serif; padding:6px; outline:none; text-align:center;">
             </label>
             <label>Nature<select data-slot="${i}" data-field="nature"><option value="">Select nature</option>${TEAM_NATURES.map(n => `<option value="${n}" ${slot.nature === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
             <label>Ability<select data-slot="${i}" data-field="ability"><option value="">Select ability</option>${(ABILITIES[String(p.id)] || []).map(a => `<option value="${a}" ${slot.ability === a ? 'selected' : ''}>${a.replace(/-/g, ' ')}</option>`).join('')}</select></label>
-            <label>Held Item<select data-slot="${i}" data-field="item"><option value="">No item</option>${HELD_ITEMS.map(item => `<option value="${item}" ${slot.item === item ? 'selected' : ''}>${item}</option>`).join('')}</select></label>
+            <label>Item<select data-slot="${i}" data-field="item"><option value="">No item</option>${HELD_ITEMS.map(item => `<option value="${item}" ${slot.item === item ? 'selected' : ''}>${item}</option>`).join('')}</select></label>
         </div>`; 
         
-        const stats = TEAM_STATS.map(st => { const nc = natureClass(slot.nature, st), ivClass = nc ? `iv${nc[0].toUpperCase() + nc.slice(1)}` : ""; return `<div class="statBox ${nc}"><label>${st}</label><div class="statInputs"><span>IV</span><span>EV</span><input class="${ivClass}" type="number" min="0" max="31" value="${slot.iv[st]}" data-slot="${i}" data-kind="iv" data-stat="${st}" placeholder="0"><input type="number" min="0" max="252" value="${slot.ev[st]}" data-slot="${i}" data-kind="ev" data-stat="${st}" placeholder="0"></div></div>` }).join(''); 
+        const stats = `<div class="statGrid" style="margin-bottom: 15px;">` + TEAM_STATS.map(st => { const nc = natureClass(slot.nature, st), ivClass = nc ? `iv${nc[0].toUpperCase() + nc.slice(1)}` : ""; return `<div class="statBox ${nc}"><label>${st}</label><div class="statInputs"><span>IV</span><span>EV</span><input class="${ivClass}" type="number" min="0" max="31" value="${slot.iv[st]}" data-slot="${i}" data-kind="iv" data-stat="${st}" placeholder="0"><input type="number" min="0" max="252" value="${slot.ev[st]}" data-slot="${i}" data-kind="ev" data-stat="${st}" placeholder="0"></div></div>` }).join('') + `</div>`; 
+        
         const moveList = MOVES_BY_POKEMON[String(p.id)] || [];
         
-        const moves = `<div class="movesGrid">${[0, 1, 2, 3].map(m => {
+        const moves = `<div class="movesGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">${[0, 1, 2, 3].map(m => {
             const moveName = slot.moveNames[m] || '';
             const moveType = slot.moves[m] || '';
             const moveCat = slot.moveCats[m] || '';
@@ -122,21 +173,37 @@ function renderTeamSlots() {
             const typeHtml = moveType ? tb(moveType) : '<span class="cat-badge cat-empty">Type</span>';
             const catHtml = moveCat && moveCategories[moveCat] ? moveCategories[moveCat] : '<span class="cat-badge cat-empty">Cat</span>';
 
-            return `<div class="movePair">
-                <label>Move ${m + 1}
-                    <select data-slot="${i}" data-move-name="${m}">
+            let statsHtml = '';
+            if (moveName && typeof MOVE_INFO !== 'undefined' && MOVE_INFO[moveName]) {
+                const power = MOVE_INFO[moveName].power;
+                const acc = MOVE_INFO[moveName].acc;
+                
+                const displayPwr = power === undefined ? '??' : (power === 0 ? '-' : power);
+                const displayAcc = acc === undefined ? '??' : ((acc === 0 || acc === null) ? '-' : acc);
+                
+                statsHtml = `<span style="margin-left:auto; font-size:11px; opacity:0.8; font-family:monospace; color:var(--txt);">Pwr: <b>${displayPwr}</b> | Acc: <b>${displayAcc}</b></span>`;
+            }
+
+            return `<div class="movePair" style="display:flex; flex-direction:column; min-width:0;">
+                <label style="display:flex; flex-direction:column; width:100%;">Move ${m + 1}
+                    <select data-slot="${i}" data-move-name="${m}" title="${moveName ? moveName.replace(/-/g, ' ') : ''}" style="width:100%; box-sizing:border-box; text-overflow:ellipsis; margin-top:4px; padding:4px;">
                         <option value="">Select move...</option>
-                        ${moveList.map(name => `<option value="${name}" ${moveName === name ? 'selected' : ''}>${name.replace(/-/g, ' ')}</option>`).join('')}
+                        ${moveList.map(name => {
+                            if(!name) return '';
+                            return `<option value="${name}" ${moveName === name ? 'selected' : ''}>${name.replace(/-/g, ' ')}</option>`;
+                        }).join('')}
                     </select>
                 </label>
-                <div class="moveInfo">
+                <div class="moveInfo" style="display:flex; align-items:center; gap:6px; margin-top:6px;">
                     ${typeHtml}
                     ${catHtml}
+                    ${statsHtml}
                 </div>
             </div>`;
         }).join('')}</div>`; 
         
-        return `<article class="slot"><div class="slotHead">${head}<div class="slotActions"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calculate'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>${meta}<div class="statGrid">${stats}</div>${moves}</article>` 
+        // Το μυστικό είναι το `style="height: auto; min-height: max-content; padding-bottom: 20px;"` στην κάρτα!
+        return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${stats}${moves}</article>` 
     }).join('');
 }
 
@@ -249,3 +316,14 @@ document.getElementById('autoTeamBtn')?.addEventListener('click', autoRecommendT
 
 // Start initialization
 openTeam();
+
+// ΤΟ ΑΠΟΛΥΤΟ FIX ΓΙΑ ΤΟ SHIFT+F5:
+// Αναγκάζει τον browser να ξαναζωγραφίσει το UI ΜΟΝΟ ΑΦΟΥ έχουν φορτώσει 100% ΟΛΑ τα αρχεία.
+window.addEventListener('load', () => {
+    if (typeof renderTeamSlots === 'function') {
+        renderTeamSlots();
+    }
+});
+
+
+
