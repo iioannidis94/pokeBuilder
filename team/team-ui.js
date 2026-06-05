@@ -38,7 +38,14 @@ function setMoveName(slot, move, value) {
 function setMeta(slot, field, value) { team[slot][field] = value; saveTeam(); if (field === 'nature') renderTeamSlots() }
 function natureClass(nature, stat) { const e = TEAM_NATURE_EFFECTS[nature]; if (!e) return ''; return e[0] === stat ? 'boost' : e[1] === stat ? 'drop' : '' }
 function clearSlot(i) { team[i] = EMPTY_SLOT(); saveTeam(); renderTeamSlots() }
-function calcTeam() { return team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) })).filter(x => x.slot.pokemonId && x.slot.calc && x.p).slice(0, 6) }
+function calcTeam() { 
+    return team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) }))
+        .filter(x => x.slot.pokemonId && x.slot.calc && x.p)
+        // ΝΕΟ: Ταξινομεί τους επιλεγμένους με βάση το AI Score (Φθίνουσα σειρά)
+        .sort((a, b) => (b.slot.aiScore || 0) - (a.slot.aiScore || 0))
+        .slice(0, 6); 
+}
+
 function toggleCalc(i) { if (!team[i].pokemonId) return; if (!team[i].calc && calcTeam().length >= 6) { alert('You can calculate up to 6 Pokémon at a time.'); return } team[i].calc = !team[i].calc; saveTeam(); renderTeamSlots() }
 
 function calcPanel() { 
@@ -68,11 +75,11 @@ function calcPanel() {
     const struggle = moveTypes.length ? typeCoverage.filter(x => x.best <= 1) : []; 
     
     const threats = AT.map(t => { 
-        const hits = selected.map(x => ({ name: x.p.name, m: multAtkVsTypes(t, x.p.types) })).filter(x => x.m > 1); 
+        const hits = selected.map(x => ({ name: x.p.name, m: getDynamicMult(t, x.p.types, x.slot.ability) })).filter(x => x.m > 1); 
         return { t, hits, count: hits.length, max: hits.reduce((a, x) => Math.max(a, x.m), 1) } 
     }).filter(x => x.count).sort((a, b) => b.count - a.count || b.max - a.max || a.t.localeCompare(b.t)); 
     
-    const defenseSafe = AT.filter(t => selected.some(x => multAtkVsTypes(t, x.p.types) < 1)); 
+    const defenseSafe = AT.filter(t => selected.some(x => getDynamicMult(t, x.p.types, x.slot.ability) < 1));
     const offenseScore = strong.length, defenseScore = defenseSafe.length; 
     
     const missingCoverage = struggle.map(x => x.t); 
@@ -96,18 +103,25 @@ function calcPanel() {
     const chips = list => list.length ? list.map(x => tb(x.t || x, 'calcBadge')).join('') : '<span class="calcNone">none</span>'; 
     const threatHtml = threats.length ? threats.slice(0, 10).map(x => `<span class="calcThreat" style="border-color:${TC[x.t] || '#888'}"><span style="background:${TC[x.t] || '#888'}">${x.t}</span>${x.count} weak${x.max >= 4 ? ` · x${x.max}` : ''}</span>`).join('') : '<span class="calcNone">No obvious type weaknesses.</span>'; 
     
-    const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin: 15px 0;">
+const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin: 15px 0;">
         ${selected.map(x => `
             <div style="display:flex; flex-direction:column; align-items:center; background:var(--bg); border:1px solid var(--brd); border-radius:8px; padding:8px; min-width:70px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 ${spriteImg(x.p)}
                 <span style="font-size:11px; font-weight:bold; margin-top:6px; color:var(--txt); text-align:center;">${x.p.name.replace(/-/g, ' ')}</span>
+                ${x.slot.aiScore ? `<span style="font-size:10px; color:#ffc107; background:rgba(255,193,7,0.1); padding:3px 6px; border-radius:8px; margin-top:5px; border:1px solid rgba(255,193,7,0.3); font-weight:bold;" title="AI Draft Score">🏆 ${x.slot.aiScore}</span>` : ''}
             </div>
         `).join('')}
     </div>`;
 
-    // --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
+// --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
+        
+        <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΓΙΑ ΤΙΣ ΕΠΙΘΕΣΕΙΣ (Move Optimizer) -->
+        <button onclick="showMoveRecommendations()" style="width:100%; padding:10px; margin-top:10px; margin-bottom:15px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
+            💡 Έξυπνες Προτάσεις Επιθέσεων (Optimizer)
+        </button>
+
         <div class="calcScores">
             <div><span>Offense</span><strong>${offenseScore}/18</strong></div>
             <div><span>Defense</span><strong>${defenseScore}/18</strong></div>
@@ -122,7 +136,7 @@ function calcPanel() {
             <div><b>Defensive threats</b><div class="calcBadges">${threatHtml}</div></div>
         </div>
         
-        <!-- Το Κόκκινο Κουμπί και τα Counters επέστρεψαν στο ΚΑΤΩ μέρος -->
+        <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
         ${oppUI}
         ${matchupsUI}
     </div>`;
