@@ -83,7 +83,7 @@ function getSpeedControlAnalysis(selected) {
 }
 
 // ==========================================
-// 3. META THREAT INTEGRATION (VGC 2024 Reg G / OU Top 10)
+// 3. META THREAT INTEGRATION (VGC 2024 Reg G / PRO PvP Top 10)
 // ==========================================
 
 const META_THREATS = [
@@ -99,10 +99,34 @@ const META_THREATS = [
     { id: 279,  name: 'Pelipper',        types: ['water',    'flying']   },
 ];
 
-function getMetaThreatAnalysis(selected) {
-    if (!selected || !selected.length) return null;
+// Top 10 threats in Pokemon Revolution Online (PRO) PvP — Gen 7 (USUM) mechanics
+const META_THREATS_PRO = [
+    { id: 645,  name: 'Landorus-T',   types: ['ground',   'flying']   },
+    { id: 445,  name: 'Garchomp',     types: ['dragon',   'ground']   },
+    { id: 598,  name: 'Ferrothorn',   types: ['grass',    'steel']    },
+    { id: 748,  name: 'Toxapex',      types: ['poison',   'water']    },
+    { id: 801,  name: 'Magearna',     types: ['steel',    'fairy']    },
+    { id: 36,   name: 'Clefable',     types: ['fairy']               },
+    { id: 376,  name: 'Metagross',    types: ['steel',    'psychic']  },
+    { id: 785,  name: 'Tapu Koko',    types: ['electric', 'fairy']   },
+    { id: 130,  name: 'Gyarados',     types: ['water',    'flying']  },
+    { id: 248,  name: 'Tyranitar',    types: ['rock',     'dark']    },
+];
 
-    const results = META_THREATS.map(threat => {
+// Persist chosen format across page reloads
+window.metaThreatFormat = localStorage.getItem('tb_metaFormat') || 'vgc';
+
+window.setMetaFormat = function(fmt) {
+    window.metaThreatFormat = fmt;
+    localStorage.setItem('tb_metaFormat', fmt);
+    if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
+function getMetaThreatAnalysis(selected, threats) {
+    if (!selected || !selected.length) return null;
+    threats = threats || META_THREATS;
+
+    const results = threats.map(threat => {
         let bestMult   = 0;
         let bestSource = null;
 
@@ -125,9 +149,9 @@ function getMetaThreatAnalysis(selected) {
     });
 
     const covered = results.filter(r => r.coverage >= 2).length;
-    const score   = Math.round((covered / META_THREATS.length) * 100);
+    const score   = Math.round((covered / threats.length) * 100);
 
-    return { results, covered, total: META_THREATS.length, score };
+    return { results, covered, total: threats.length, score };
 }
 
 // ==========================================
@@ -242,11 +266,21 @@ function getSpeedWarningHTML(selected) {
 }
 
 function getMetaThreatHTML(selected) {
-    const analysis = getMetaThreatAnalysis(selected);
+    const fmt     = (typeof window !== 'undefined' && window.metaThreatFormat) || 'vgc';
+    const isPro   = fmt === 'pro';
+    const threats = isPro ? META_THREATS_PRO : META_THREATS;
+    const analysis = getMetaThreatAnalysis(selected, threats);
     if (!analysis) return '';
 
-    const scoreColor = analysis.score >= 70 ? '#63d471' : analysis.score >= 50 ? '#ffc107' : '#ff6b6b';
-    const uncovered = analysis.results.filter(r => r.coverage < 2);
+    const fmtLabel   = isPro ? 'PRO PvP Top 10' : 'VGC 2024 Top 10';
+    const accentColor = isPro ? '#f5a623' : '#4dabf7';
+    const scoreColor  = analysis.score >= 70 ? '#63d471' : analysis.score >= 50 ? '#ffc107' : '#ff6b6b';
+    const uncovered   = analysis.results.filter(r => r.coverage < 2);
+
+    const tabs = `<div style="display:flex; gap:4px; margin-bottom:10px;">
+        <button onclick="window.setMetaFormat('vgc')" style="padding:4px 12px; border-radius:20px; border:1px solid ${!isPro ? '#4dabf7' : '#555'}; background:${!isPro ? 'rgba(77,171,247,0.18)' : 'transparent'}; color:${!isPro ? '#4dabf7' : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">VGC 2024</button>
+        <button onclick="window.setMetaFormat('pro')" style="padding:4px 12px; border-radius:20px; border:1px solid ${isPro ? '#f5a623' : '#555'}; background:${isPro ? 'rgba(245,166,35,0.18)' : 'transparent'}; color:${isPro ? '#f5a623' : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">PRO PvP</button>
+    </div>`;
 
     const threatBadges = analysis.results.map(r => {
         const p = (typeof POKE !== 'undefined') ? POKE.find(x => x.id === r.id) : null;
@@ -261,11 +295,12 @@ function getMetaThreatHTML(selected) {
         </div>`;
     }).join('');
 
-    return `<div style="margin:10px 0; padding:12px 14px; background:rgba(77,171,247,0.05); border:1px solid #4dabf7; border-radius:8px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
-            <strong style="color:#4dabf7; font-size:13px;">🏆 Meta Threat Check (VGC 2024 Top 10)</strong>
+    return `<div style="margin:10px 0; padding:12px 14px; background:${accentColor}0d; border:1px solid ${accentColor}; border-radius:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <strong style="color:${accentColor}; font-size:13px;">🏆 Meta Threat Check (${fmtLabel})</strong>
             <span style="font-size:13px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; padding:4px 10px; border-radius:20px; border:1px solid ${scoreColor};">${analysis.score}% Win Rate</span>
         </div>
+        ${tabs}
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:${uncovered.length ? '10px' : '0'};">
             ${threatBadges}
         </div>
