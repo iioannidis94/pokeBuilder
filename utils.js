@@ -39,9 +39,12 @@ function spriteImg(p, cls = '') {
     if (b64) return `<img class="${cls}" src="data:image/png;base64,${b64}" alt="${p.name}">`;
     // Alolan form IDs (10091–10108) have incorrect/duplicate sprites in the main PokeAPI path;
     // use the generation-vii sprites which are correct for all Alolan forms.
+    // In the gen-vii/usum directory, IDs 10093–10099 are duplicates or placeholders,
+    // so the real sprites for IDs 10093–10108 are stored at offset +7 (i.e. 10100–10115).
     const isAlolan = p.id >= 10091 && p.id <= 10108;
+    const alolanUrlId = (isAlolan && p.id >= 10093) ? p.id + 7 : p.id;
     const spriteUrl = isAlolan
-        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/ultra-sun-ultra-moon/${p.id}.png`
+        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-vii/ultra-sun-ultra-moon/${alolanUrlId}.png`
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`;
     return `<img class="${cls}" src="${spriteUrl}" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
 }
