@@ -228,6 +228,19 @@ window.getMatchupsUI = function(selected) {
             : '';
 
         if(bestCounter) {
+            // Damage estimate (best move vs opponent)
+            let dmgHTML = '';
+            if (typeof getBestDamageEstimate === 'function') {
+                const est = getBestDamageEstimate(bestCounter, op);
+                if (est) {
+                    const dmgColor = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#63d471';
+                    const moveName = est.moveName ? est.moveName.replace(/-/g, ' ') : '';
+                    dmgHTML = `<div style="margin-top:6px; font-size:11px; font-weight:bold; color:${dmgColor}; background:${dmgColor}18; padding:3px 8px; border-radius:4px; display:inline-block;">
+                        ${est.label} · ${est.minPct}%–${est.maxPct}% via <i>${moveName}</i>
+                    </div>`;
+                }
+            }
+
             html += `<div style="display:flex; flex-direction:column; background:var(--bg); padding:10px 12px; border-radius:6px; border-left:4px solid #ff4d4f; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:8px; width:45%;">
@@ -238,6 +251,7 @@ window.getMatchupsUI = function(selected) {
                         <span style="font-size:12px; color:#4dabf7; font-weight:bold; text-align:right;">${bestCounter.p.name}</span> ${spriteImg(bestCounter.p)}
                     </div>
                 </div>
+                ${dmgHTML}
                 ${movesHtml}
             </div>`;
         }
