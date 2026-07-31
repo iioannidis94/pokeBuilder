@@ -114,9 +114,18 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     </div>`;
 
 // --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
+    // Analytics (Archetype, Speed Control, Meta Threats)
+    const archetypeHTML  = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
+    const speedWarnHTML  = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
+    const metaThreatHTML = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
+
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
         
+        <!-- Archetype & Speed Control -->
+        ${archetypeHTML}
+        ${speedWarnHTML}
+
         <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΓΙΑ ΤΙΣ ΕΠΙΘΕΣΕΙΣ (Move Optimizer) -->
         <button onclick="showMoveRecommendations()" style="width:100%; padding:10px; margin-top:10px; margin-bottom:15px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
             💡 Έξυπνες Προτάσεις Επιθέσεων (Optimizer)
@@ -135,6 +144,9 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
             <div><b>Attack struggles</b><div class="calcBadges">${moveTypes.length ? chips(struggle) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div>
             <div><b>Defensive threats</b><div class="calcBadges">${threatHtml}</div></div>
         </div>
+
+        <!-- Meta Threat Check -->
+        ${metaThreatHTML}
         
         <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
         ${oppUI}
