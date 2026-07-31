@@ -4,9 +4,10 @@
 // Backwards compatibility: migrate old format (array of IDs) to new format (array of objects)
 (function() {
     const raw = JSON.parse(localStorage.getItem('tb_oppTeam')) || [];
-    window.oppTeam = raw.map(entry =>
-        typeof entry === 'number' ? { id: entry, moveNames: [], moves: [], moveCats: [] } : entry
-    );
+    window.oppTeam = raw.map(entry => {
+        if (typeof entry === 'number') return { id: entry, ability: '', item: '', moveNames: [], moves: [], moveCats: [] };
+        return Object.assign({ ability: '', item: '' }, entry);
+    });
 })();
 window.showOppPanel = JSON.parse(localStorage.getItem('tb_showOppPanel')) || false;
 
@@ -37,7 +38,7 @@ window.searchAndAddOpponent = function() {
     if(!p) return alert('Το Pokémon δεν βρέθηκε! Δοκίμασε στα Αγγλικά (π.χ. charizard) ή το ID του.');
     if(window.oppTeam.length >= 6) return alert('Η αντίπαλη ομάδα είναι γεμάτη (Max 6)!');
 
-    window.oppTeam.push({ id: p.id, moveNames: [], moves: [], moveCats: [] });
+    window.oppTeam.push({ id: p.id, ability: '', item: '', moveNames: [], moves: [], moveCats: [] });
     window.saveOpponents();
 
     if(document.getElementById('oppSearchInput')) document.getElementById('oppSearchInput').value = '';
@@ -56,6 +57,33 @@ window.clearOpponents = function() {
     if(typeof renderTeamSlots === 'function') renderTeamSlots();
 };
 
+window.setOppMove = function(idx, moveSlot, moveName) {
+    const opp = window.oppTeam[idx];
+    if (!opp) return;
+    opp.moveNames[moveSlot] = moveName;
+    const info = (typeof MOVE_INFO !== 'undefined' && moveName) ? (MOVE_INFO[moveName] || {}) : {};
+    opp.moves[moveSlot]    = info.type || '';
+    opp.moveCats[moveSlot] = info.cat  || '';
+    window.saveOpponents();
+    if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
+window.setOppAbility = function(idx, ability) {
+    const opp = window.oppTeam[idx];
+    if (!opp) return;
+    opp.ability = ability;
+    window.saveOpponents();
+    if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
+window.setOppItem = function(idx, item) {
+    const opp = window.oppTeam[idx];
+    if (!opp) return;
+    opp.item = item;
+    window.saveOpponents();
+    if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
 // Import opponents from Showdown paste (reuses the existing parser from team-io.js)
 window.importOpponentsFromShowdown = function(text) {
     if (!text || !text.trim()) return 0;
@@ -67,6 +95,8 @@ window.importOpponentsFromShowdown = function(text) {
         if (window.oppTeam.length >= 6) break;
         window.oppTeam.push({
             id: slot.pokemonId,
+            ability: slot.ability || '',
+            item: slot.item || '',
             moveNames: slot.moveNames || [],
             moves: slot.moves || [],
             moveCats: slot.moveCats || []
@@ -158,20 +188,45 @@ window.getOpponentUI = function() {
         : window.oppTeam.map((opp, idx) => {
             const opId = typeof opp === 'number' ? opp : opp.id;
             const oppMoveNames = (typeof opp === 'object' && opp.moveNames) ? opp.moveNames : [];
-            const oppMoveTypes = (typeof opp === 'object' && opp.moves) ? opp.moves : [];
+            const oppAbility   = (typeof opp === 'object' && opp.ability)   ? opp.ability   : '';
+            const oppItem      = (typeof opp === 'object' && opp.item)      ? opp.item      : '';
             const op = POKE.find(p => p.id === opId);
             if (!op) return '';
-            const moveBadges = oppMoveNames.map((mn, i) => {
-                if (!mn) return '';
-                const mType = oppMoveTypes[i] || '';
-                const color = (typeof TC !== 'undefined' && TC[mType]) ? TC[mType] : '#555';
-                return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold; white-space:nowrap;" title="${mType || 'unknown'}">${mn.replace(/-/g, ' ')}</span>`;
+
+            const moveList     = (typeof MOVES_BY_POKEMON !== 'undefined' && MOVES_BY_POKEMON[String(op.id)]) || [];
+            const abilityList  = (typeof ABILITIES        !== 'undefined' && ABILITIES[String(op.id)])        || [];
+
+            const moveSelects = [0, 1, 2, 3].map(mi => {
+                const cur = oppMoveNames[mi] || '';
+                return `<select onchange="setOppMove(${idx},${mi},this.value)" title="Move ${mi+1}" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
+                    <option value="">Move ${mi+1}…</option>
+                    ${moveList.map(mn => `<option value="${mn}" ${cur===mn?'selected':''}>${mn.replace(/-/g,' ')}</option>`).join('')}
+                </select>`;
             }).join('');
-            return `<div style="display:flex; flex-direction:column; align-items:center; background:var(--bg); border:1px solid #ff4d4f; border-radius:8px; padding:8px; position:relative; min-width:70px; max-width:95px; box-shadow: 0 2px 4px rgba(255,0,0,0.1);">
+
+            const abilitySelect = `<select onchange="setOppAbility(${idx},this.value)" title="Ability" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
+                <option value="">Ability…</option>
+                ${abilityList.map(a => `<option value="${a}" ${oppAbility===a?'selected':''}>${a.replace(/-/g,' ')}</option>`).join('')}
+            </select>`;
+
+            const itemSelect = `<select onchange="setOppItem(${idx},this.value)" title="Item" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
+                <option value="">Item…</option>
+                ${(typeof HELD_ITEMS !== 'undefined' ? HELD_ITEMS : []).map(it => `<option value="${it}" ${oppItem===it?'selected':''}>${it}</option>`).join('')}
+            </select>`;
+
+            return `<div style="display:flex; flex-direction:column; background:var(--bg); border:1px solid #ff4d4f; border-radius:8px; padding:8px; position:relative; min-width:160px; max-width:200px; box-shadow:0 2px 4px rgba(255,0,0,0.1); gap:5px;">
                 <button onclick="removeOpponent(${idx})" style="position:absolute; top:-6px; right:-6px; background:#ff4d4f; color:white; border-radius:50%; border:none; width:20px; height:20px; font-size:11px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center;">X</button>
-                ${spriteImg(op)}
-                <span style="font-size:11px; font-weight:bold; margin-top:6px; color:var(--txt); text-align:center;">${op.name.replace(/-/g, ' ')}</span>
-                ${moveBadges ? `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:5px; justify-content:center;">${moveBadges}</div>` : ''}
+                <div style="display:flex; align-items:center; gap:6px;">
+                    ${spriteImg(op)}
+                    <span style="font-size:11px; font-weight:bold; color:var(--txt);">${op.name.replace(/-/g,' ')}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                    ${abilitySelect}
+                    ${itemSelect}
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                    ${moveSelects}
+                </div>
             </div>`;
         }).join('');
 
@@ -213,11 +268,18 @@ window.getMatchupsUI = function(selected) {
             if(score > bestScore) { bestScore = score; bestCounter = my; }
         });
 
-        // Show opponent move badges if available
+        // Show opponent move badges, ability, and item if available
         const oppMoveNames = oppSlotData && oppSlotData.moveNames ? oppSlotData.moveNames : [];
         const oppMoveTypes = oppSlotData && oppSlotData.moves ? oppSlotData.moves : [];
+        const oppAbility   = oppSlotData && oppSlotData.ability ? oppSlotData.ability : '';
+        const oppItem      = oppSlotData && oppSlotData.item    ? oppSlotData.item    : '';
+
+        const abilityBadge = oppAbility ? `<span style="font-size:10px; background:rgba(99,212,113,0.15); border:1px solid #63d471; color:#63d471; border-radius:3px; padding:1px 6px; font-weight:bold;" title="Ability">⚙ ${oppAbility.replace(/-/g,' ')}</span>` : '';
+        const itemBadge    = oppItem    ? `<span style="font-size:10px; background:rgba(255,193,7,0.15); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 6px; font-weight:bold;" title="Held Item">🎒 ${oppItem}</span>` : '';
+
         const movesHtml = oppMoveNames.some(Boolean)
             ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:3px;">
+                ${abilityBadge}${itemBadge}
                 ${oppMoveNames.map((mn, i) => {
                     if (!mn) return '';
                     const mType = oppMoveTypes[i] || '';
@@ -225,7 +287,9 @@ window.getMatchupsUI = function(selected) {
                     return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold;" title="${mType}">${mn.replace(/-/g, ' ')}</span>`;
                 }).join('')}
                </div>`
-            : '';
+            : (abilityBadge || itemBadge)
+                ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:3px;">${abilityBadge}${itemBadge}</div>`
+                : '';
 
         if(bestCounter) {
             // Damage estimate (best move vs opponent)
