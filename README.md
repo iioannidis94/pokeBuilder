@@ -12,7 +12,7 @@
 
 ### ⚔️ Team Builder & Analysis
 - Auto-Build 6 AI with Phase scoring: Raw Power, Defensive Synergy, Offensive Coverage, Role Balance.
-- Assassin Mode / Target Mode: add an opponent team (manually or via Showdown paste) to see best counters from your roster.
+- Assassin Mode / Target Mode: add an opponent team (manually or via Showdown paste) to see best counters from your roster. Each opponent Pokémon supports inline editing of **moves** (4 slots), **ability**, and **held item** — all persisted in `localStorage` and displayed as context badges in the Counters panel.
 - Pro-Tier Move Optimizer: role-aware move recommendations (Tank, Physical Sweeper, Special Sweeper).
 - Full stat calculator: Base Stats, IVs, EVs, Natures, Level — real stat values computed live.
 - Multi-team management with Import/Export JSON and Showdown paste support.
