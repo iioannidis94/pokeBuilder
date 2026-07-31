@@ -131,11 +131,16 @@ function getMetaThreatAnalysis(selected, threats) {
         let bestSource = null;
 
         selected.forEach(mon => {
+            const teraType = mon.slot && mon.slot.teraType ? String(mon.slot.teraType).toLowerCase() : '';
             // Check STAB types
             mon.p.types.forEach(atkType => {
                 const mult = multAtkVsTypes(atkType, threat.types);
                 if (mult > bestMult) { bestMult = mult; bestSource = mon.p.name; }
             });
+            if (teraType) {
+                const mult = multAtkVsTypes(teraType, threat.types);
+                if (mult > bestMult) { bestMult = mult; bestSource = `${mon.p.name} (Tera)`; }
+            }
 
             // Check equipped moves
             (mon.slot.moves || []).forEach((moveType, i) => {
@@ -154,6 +159,56 @@ function getMetaThreatAnalysis(selected, threats) {
     return { results, covered, total: threats.length, score };
 }
 
+function getNatureMultiplier(nature, statName) {
+    if (!nature) return 1;
+    const n = String(nature).toLowerCase();
+    const buffs = { adamant: 'ATK', brave: 'ATK', lonely: 'ATK', naughty: 'ATK', bold: 'DEF', impish: 'DEF', lax: 'DEF', relaxed: 'DEF', modest: 'SPATK', mild: 'SPATK', quiet: 'SPATK', rash: 'SPATK', calm: 'SPDEF', gentle: 'SPDEF', sassy: 'SPDEF', careful: 'SPDEF', timid: 'SPD', jolly: 'SPD', hasty: 'SPD', naive: 'SPD' };
+    const nerfs = { adamant: 'SPATK', brave: 'SPD', lonely: 'DEF', naughty: 'SPDEF', bold: 'ATK', impish: 'SPATK', lax: 'SPDEF', relaxed: 'SPD', modest: 'ATK', mild: 'DEF', quiet: 'SPD', rash: 'SPDEF', calm: 'ATK', gentle: 'DEF', sassy: 'SPD', careful: 'SPATK', timid: 'ATK', jolly: 'SPATK', hasty: 'DEF', naive: 'SPDEF' };
+    if (buffs[n] === statName) return 1.1;
+    if (nerfs[n] === statName) return 0.9;
+    return 1;
+}
+
+function getSpeedTierComparisonHTML(selected) {
+    if (!selected || !selected.length) return '';
+    const threats = ((typeof window !== 'undefined' && window.metaThreatFormat) || 'vgc') === 'pro' ? META_THREATS_PRO : META_THREATS;
+
+    const myRows = selected.map(mon => {
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || { spe: 70 };
+        const iv = mon.slot.iv?.SPD === '' || mon.slot.iv?.SPD === undefined ? 31 : Number(mon.slot.iv?.SPD) || 31;
+        const ev = Number(mon.slot.ev?.SPD) || 0;
+        const lv = Number(mon.slot.level) || 100;
+        const raw = Math.floor(((2 * (Number(bs.spe) || 70) + iv + Math.floor(ev / 4)) * lv) / 100) + 5;
+        const real = Math.floor(raw * getNatureMultiplier(mon.slot.nature, 'SPD'));
+        return { name: mon.p.name, speed: real };
+    });
+
+    const threatRows = threats.map(threat => {
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[threat.id]) || { spe: 70 };
+        const speed = Math.floor(((2 * (Number(bs.spe) || 70) + 31 + Math.floor(252 / 4)) * 100) / 100) + 5;
+        return { name: threat.name, speed };
+    });
+
+    const maxSpeed = Math.max(...myRows.map(r => r.speed), ...threatRows.map(r => r.speed), 1);
+    const renderRow = (row, mine) => {
+        const pct = Math.max(8, Math.round((row.speed / maxSpeed) * 100));
+        const color = mine ? '#4dabf7' : '#ff6b6b';
+        return `<div style="display:grid; grid-template-columns:120px 1fr 38px; gap:8px; align-items:center; font-size:11px;">
+            <span style="color:${mine ? 'var(--txt)' : '#ffb3b3'}; font-weight:700; text-transform:capitalize; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.name.replace(/-/g, ' ')}</span>
+            <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${color};"></div></div>
+            <span style="font-weight:900; color:${color}; text-align:right;">${row.speed}</span>
+        </div>`;
+    };
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:rgba(77,171,247,0.08); border:1px solid #4dabf7; border-radius:8px;">
+        <strong style="color:#4dabf7; font-size:13px;">🏁 Speed Tier Comparison</strong>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+            ${myRows.sort((a,b)=>b.speed-a.speed).slice(0, 6).map(r => renderRow(r, true)).join('')}
+            ${threatRows.sort((a,b)=>b.speed-a.speed).slice(0, 5).map(r => renderRow(r, false)).join('')}
+        </div>
+    </div>`;
+}
+
 // ==========================================
 // 4. DAMAGE CALCULATION (Simplified Gen 9 formula)
 // ==========================================
@@ -162,7 +217,7 @@ function getMetaThreatAnalysis(selected, threats) {
  * Returns estimated damage percentage dealt by atkMon using moveInfo against defPoke.
  * defLevel defaults to 50 (standard VGC).
  */
-function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel) {
+function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     if (!atkMon || !moveInfo || !defPoke || !moveInfo.power) return null;
     defLevel = defLevel || 50;
 
@@ -172,13 +227,29 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel) {
     const isPhys = moveInfo.cat === 'physical';
     const atkBase= isPhys ? (Number(atkBs.atk) || 80) : (Number(atkBs.spa) || 80);
     const atkEv  = isPhys ? (Number((atkMon.slot.ev || {}).ATK) || 0) : (Number((atkMon.slot.ev || {}).SPATK) || 0);
-    const atkStat= Math.floor(((2 * atkBase + 31 + Math.floor(atkEv / 4)) * atkLv) / 100) + 5;
+    const atkIv  = isPhys ? (atkMon.slot.iv?.ATK === '' || atkMon.slot.iv?.ATK === undefined ? 31 : Number(atkMon.slot.iv?.ATK) || 31)
+                          : (atkMon.slot.iv?.SPATK === '' || atkMon.slot.iv?.SPATK === undefined ? 31 : Number(atkMon.slot.iv?.SPATK) || 31);
+    const atkNature = getNatureMultiplier(atkMon.slot.nature, isPhys ? 'ATK' : 'SPATK');
+    const atkRaw = Math.floor(((2 * atkBase + atkIv + Math.floor(atkEv / 4)) * atkLv) / 100) + 5;
+    const atkStat= Math.floor(atkRaw * atkNature);
 
     // Defender stats
     const defBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[defPoke.id]) || { hp: 80, def: 80, spd: 80 };
-    const defHP  = Math.floor(((2 * (Number(defBs.hp) || 80) + 31) * defLevel) / 100) + defLevel + 10;
+    const hpIv = (defSlotData && defSlotData.iv && defSlotData.iv.HP !== '' && defSlotData.iv.HP !== undefined) ? Number(defSlotData.iv.HP) : 31;
+    const hpEv = (defSlotData && defSlotData.ev && defSlotData.ev.HP !== '' && defSlotData.ev.HP !== undefined) ? Number(defSlotData.ev.HP) : 0;
+    const defHP  = Math.floor(((2 * (Number(defBs.hp) || 80) + hpIv + Math.floor(hpEv / 4)) * defLevel) / 100) + defLevel + 10;
     const defBase= isPhys ? (Number(defBs.def) || 80) : (Number(defBs.spd) || 80);
-    const defStat= Math.floor(((2 * defBase + 31) * defLevel) / 100) + 5;
+    const defIvRaw = (defSlotData && defSlotData.iv)
+        ? (isPhys ? defSlotData.iv.DEF : defSlotData.iv.SPDEF)
+        : undefined;
+    const defEvRaw = (defSlotData && defSlotData.ev)
+        ? (isPhys ? defSlotData.ev.DEF : defSlotData.ev.SPDEF)
+        : undefined;
+    const defIv = defIvRaw === '' || defIvRaw === undefined ? 31 : Number(defIvRaw) || 31;
+    const defEv = defEvRaw === '' || defEvRaw === undefined ? 0 : Number(defEvRaw) || 0;
+    const defNature = getNatureMultiplier(defSlotData && defSlotData.nature, isPhys ? 'DEF' : 'SPDEF');
+    const defRaw = Math.floor(((2 * defBase + defIv + Math.floor(defEv / 4)) * defLevel) / 100) + 5;
+    const defStat= Math.floor(defRaw * defNature);
 
     // Type effectiveness
     const typeMult = multAtkVsTypes(moveInfo.type, defPoke.types);
@@ -188,27 +259,30 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel) {
     const stab = (atkMon.p.types || []).includes(moveInfo.type) ? 1.5 : 1;
 
     // Damage formula (Gen 5+)
-    const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / defStat) / 50) + 2;
-    const dmgMin = Math.floor(base * 0.85 * stab * typeMult);
-    const dmgMax = Math.floor(base * stab * typeMult);
+    const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / Math.max(defStat, 1)) / 50) + 2;
+    const rolls = [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
+        .map(r => Math.floor(base * (r / 100) * stab * typeMult));
+    const dmgMin = Math.min(...rolls);
+    const dmgMax = Math.max(...rolls);
 
     const minPct = Math.min(Math.round(dmgMin / defHP * 100), 999);
     const maxPct = Math.min(Math.round(dmgMax / defHP * 100), 999);
 
+    const ohkoChance = Math.round((rolls.filter(d => d >= defHP).length / rolls.length) * 100);
     let label = '';
     if (minPct >= 100)       label = 'OHKO';
     else if (minPct >= 50)   label = '2HKO';
     else if (minPct >= 34)   label = '3HKO';
     else                     label = `~${minPct}%`;
 
-    return { minPct, maxPct, label, typeMult };
+    return { minPct, maxPct, label, typeMult, ohkoChance };
 }
 
 /**
  * Returns the best damage estimate for atkMon against defPoke across all equipped moves.
  * Returns { label, minPct, maxPct, moveName } or null.
  */
-function getBestDamageEstimate(atkMon, defPoke) {
+function getBestDamageEstimate(atkMon, defPoke, defSlotData) {
     if (!atkMon || !defPoke || !atkMon.slot.moveNames) return null;
 
     let best = null;
@@ -218,7 +292,7 @@ function getBestDamageEstimate(atkMon, defPoke) {
         const mInfo = (typeof MOVE_INFO !== 'undefined') ? (MOVE_INFO[mName] || MOVE_INFO[mName.toLowerCase().replace(/\s+/g, '-')]) : null;
         if (!mInfo || mInfo.cat === 'status' || !mInfo.power) return;
 
-        const est = estimateDamagePct(atkMon, mInfo, defPoke);
+        const est = estimateDamagePct(atkMon, mInfo, defPoke, Number(defSlotData?.level) || 50, defSlotData);
         if (!est) return;
 
         if (!best || est.maxPct > best.maxPct) {

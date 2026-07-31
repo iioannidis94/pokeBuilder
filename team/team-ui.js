@@ -35,9 +35,60 @@ function setMoveName(slot, move, value) {
     saveTeam(); 
     renderTeamSlots() 
 }
-function setMeta(slot, field, value) { team[slot][field] = value; saveTeam(); if (field === 'nature') renderTeamSlots() }
+function setMeta(slot, field, value) { team[slot][field] = value; saveTeam(); if (field === 'nature' || field === 'teraType' || field === 'item') renderTeamSlots() }
 function natureClass(nature, stat) { const e = TEAM_NATURE_EFFECTS[nature]; if (!e) return ''; return e[0] === stat ? 'boost' : e[1] === stat ? 'drop' : '' }
 function clearSlot(i) { team[i] = EMPTY_SLOT(); saveTeam(); renderTeamSlots() }
+
+function getRoleForSlot(slot, p) {
+    const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[p.id]) || { hp: 80, atk: 80, def: 80, spa: 80, spd: 80, spe: 80 };
+    const atk = (Number(bs.atk) || 80) + (Number(slot.ev?.ATK) || 0) / 4;
+    const spa = (Number(bs.spa) || 80) + (Number(slot.ev?.SPATK) || 0) / 4;
+    const bulk = (Number(bs.hp) || 80) + (Number(bs.def) || 80) + (Number(bs.spd) || 80);
+    const offense = atk + spa + (Number(bs.spe) || 80);
+    if (bulk > offense * 1.15) return 'tank';
+    if (atk > spa * 1.15) return 'physical';
+    if (spa > atk * 1.15) return 'special';
+    return 'mixed';
+}
+
+function getRecommendedBuild(slot, p) {
+    const role = getRoleForSlot(slot, p);
+    const rec = {
+        role,
+        nature: 'Jolly',
+        item: 'Life Orb',
+        ev: { HP: '4', ATK: '252', DEF: '', SPATK: '', SPDEF: '', SPD: '252' }
+    };
+    if (role === 'special') {
+        rec.nature = 'Timid';
+        rec.item = 'Choice Specs';
+        rec.ev = { HP: '4', ATK: '', DEF: '', SPATK: '252', SPDEF: '', SPD: '252' };
+    } else if (role === 'tank') {
+        rec.nature = 'Careful';
+        rec.item = p.types.includes('poison') ? 'Black Sludge' : 'Leftovers';
+        rec.ev = { HP: '252', ATK: '', DEF: '156', SPATK: '', SPDEF: '100', SPD: '' };
+    } else if (role === 'mixed') {
+        rec.nature = 'Naive';
+        rec.item = 'Heavy-Duty Boots';
+        rec.ev = { HP: '4', ATK: '124', DEF: '', SPATK: '128', SPDEF: '', SPD: '252' };
+    } else {
+        rec.nature = 'Jolly';
+        rec.item = 'Choice Band';
+    }
+    return rec;
+}
+
+function applyRecommendedBuild(slotIndex) {
+    const slot = team[slotIndex];
+    const p = POKE.find(x => x.id === slot.pokemonId);
+    if (!slot || !p) return;
+    const rec = getRecommendedBuild(slot, p);
+    team[slotIndex].nature = rec.nature;
+    team[slotIndex].item = rec.item;
+    TEAM_STATS.forEach(st => { team[slotIndex].ev[st] = rec.ev[st] || ''; });
+    saveTeam();
+    renderTeamSlots();
+}
 function calcTeam() { 
     return team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) }))
         .filter(x => x.slot.pokemonId && x.slot.calc && x.p)
@@ -117,6 +168,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     // Analytics (Archetype, Speed Control, Meta Threats)
     const archetypeHTML  = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
     const speedWarnHTML  = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
+    const speedTierHTML  = (typeof getSpeedTierComparisonHTML === 'function') ? getSpeedTierComparisonHTML(selected) : '';
     const metaThreatHTML = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
@@ -125,6 +177,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         <!-- Archetype & Speed Control -->
         ${archetypeHTML}
         ${speedWarnHTML}
+        ${speedTierHTML}
 
         <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΓΙΑ ΤΙΣ ΕΠΙΘΕΣΕΙΣ (Move Optimizer) -->
         <button onclick="showMoveRecommendations()" style="width:100%; padding:10px; margin-top:10px; margin-bottom:15px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
@@ -178,6 +231,8 @@ function renderTeamSlots() {
         if (!p) return ''; 
         const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
         
+        const rec = getRecommendedBuild(slot, p);
+        const teraOptions = (typeof AT !== 'undefined' ? AT : []);
         const meta = `<div class="metaGrid" style="margin-bottom: 12px;">
             <label>Level
                 <input type="number" min="1" max="100" value="${slot.level}" data-slot="${i}" data-field="level" style="width:100%; box-sizing:border-box; background:var(--bg); border:1px solid var(--brd); border-radius:7px; color:var(--txt); font:800 12px 'Nunito',sans-serif; padding:6px; outline:none; text-align:center;">
@@ -185,7 +240,12 @@ function renderTeamSlots() {
             <label>Nature<select data-slot="${i}" data-field="nature"><option value="">Select nature</option>${TEAM_NATURES.map(n => `<option value="${n}" ${slot.nature === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
             <label>Ability<select data-slot="${i}" data-field="ability"><option value="">Select ability</option>${(ABILITIES[String(p.id)] || []).map(a => `<option value="${a}" ${slot.ability === a ? 'selected' : ''}>${a.replace(/-/g, ' ')}</option>`).join('')}</select></label>
             <label>Item<select data-slot="${i}" data-field="item"><option value="">No item</option>${HELD_ITEMS.map(item => `<option value="${item}" ${slot.item === item ? 'selected' : ''}>${item}</option>`).join('')}</select></label>
+            <label>Tera Type<select data-slot="${i}" data-field="teraType"><option value="">No tera</option>${teraOptions.map(t => `<option value="${t}" ${slot.teraType === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+            <label style="justify-content:flex-end;">
+                <button class="teamTool" type="button" data-auto-build="${i}" style="padding:7px 10px; font-size:11px; border-color:#63d471; color:#63d471; background:rgba(99,212,113,0.08); width:100%;">⚙️ EV/Nature Optimize</button>
+            </label>
         </div>`; 
+        const recHint = `<div style="margin:-6px 0 10px; font-size:11px; color:var(--dim);">Role: <b style="color:#4dabf7; text-transform:capitalize;">${rec.role}</b> · Suggested nature: <b style="color:#63d471;">${rec.nature}</b> · Suggested item: <b style="color:#ffc107;">${rec.item}</b></div>`;
         
         const stats = `<div class="statGrid" style="margin-bottom: 15px;">` + TEAM_STATS.map(st => { const nc = natureClass(slot.nature, st), ivClass = nc ? `iv${nc[0].toUpperCase() + nc.slice(1)}` : ""; return `<div class="statBox ${nc}"><label>${st}</label><div class="statInputs"><span>IV</span><span>EV</span><input class="${ivClass}" type="number" min="0" max="31" value="${slot.iv[st]}" data-slot="${i}" data-kind="iv" data-stat="${st}" placeholder="0"><input type="number" min="0" max="252" value="${slot.ev[st]}" data-slot="${i}" data-kind="ev" data-stat="${st}" placeholder="0"></div></div>` }).join('') + `</div>`; 
         
@@ -229,7 +289,7 @@ function renderTeamSlots() {
         }).join('')}</div>`; 
         
         // Το μυστικό είναι το `style="height: auto; min-height: max-content; padding-bottom: 20px;"` στην κάρτα!
-        return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${stats}${moves}</article>` 
+        return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${recHint}${stats}${moves}</article>` 
     }).join('');
 }
 
@@ -284,7 +344,9 @@ document.getElementById('teamSlots').addEventListener('click', e => {
     const calc = e.target.closest('[data-calc]'); 
     if (calc) { toggleCalc(Number(calc.dataset.calc)); return } 
     const btn = e.target.closest('[data-clear]'); 
-    if (btn) clearSlot(Number(btn.dataset.clear));
+    if (btn) { clearSlot(Number(btn.dataset.clear)); return; }
+    const build = e.target.closest('[data-auto-build]');
+    if (build) applyRecommendedBuild(Number(build.dataset.autoBuild));
 }); 
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeam() });
@@ -350,6 +412,5 @@ window.addEventListener('load', () => {
         renderTeamSlots();
     }
 });
-
 
 

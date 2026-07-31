@@ -12,6 +12,45 @@ function exportTeam() {
     alert(`Exported ${filled.length} Pokémon to JSON.`); 
 }
 
+function exportTeamShowdown() {
+    const filled = team.filter(s => s.pokemonId);
+    if (!filled.length) { alert('Your team is empty.'); return; }
+
+    const statOut = { HP: 'HP', ATK: 'Atk', DEF: 'Def', SPATK: 'SpA', SPDEF: 'SpD', SPD: 'Spe' };
+    const lines = filled.map(slot => {
+        const p = POKE.find(x => x.id === slot.pokemonId);
+        if (!p) return '';
+        const out = [];
+        out.push(`${p.name.replace(/-/g, ' ')}${slot.item ? ` @ ${slot.item}` : ''}`);
+        if (slot.ability) out.push(`Ability: ${slot.ability.replace(/-/g, ' ')}`);
+        if (slot.level) out.push(`Level: ${slot.level}`);
+        if (slot.teraType) out.push(`Tera Type: ${slot.teraType}`);
+
+        const evParts = TEAM_STATS
+            .filter(st => Number(slot.ev?.[st]) > 0)
+            .map(st => `${Number(slot.ev[st])} ${statOut[st]}`);
+        if (evParts.length) out.push(`EVs: ${evParts.join(' / ')}`);
+
+        const ivParts = TEAM_STATS
+            .map(st => ({ st, val: slot.iv?.[st] === '' || slot.iv?.[st] === undefined ? 31 : Number(slot.iv[st]) }))
+            .filter(x => x.val !== 31)
+            .map(x => `${x.val} ${statOut[x.st]}`);
+        if (ivParts.length) out.push(`IVs: ${ivParts.join(' / ')}`);
+
+        if (slot.nature) out.push(`${slot.nature} Nature`);
+        (slot.moveNames || []).filter(Boolean).forEach(m => out.push(`- ${m.replace(/-/g, ' ')}`));
+        return out.join('\n');
+    }).filter(Boolean);
+
+    if (!lines.length) { alert('No valid Pokémon found to export.'); return; }
+    const text = lines.join('\n\n');
+    navigator.clipboard.writeText(text).then(() => {
+        alert(`Copied ${lines.length} Pokémon in Showdown format.`);
+    }).catch(() => {
+        prompt('Copy your Showdown export:', text);
+    });
+}
+
 function importTeamFile(file) { 
     if (!file) return; 
     const reader = new FileReader(); 
@@ -85,6 +124,12 @@ function parseShowdownBlock(text) {
             const nat = natMatch[1].trim();
             // Μετατροπή στο σωστό format (π.χ. "Timid")
             slot.nature = nat.charAt(0).toUpperCase() + nat.slice(1).toLowerCase();
+            continue;
+        }
+
+        const teraMatch = line.match(/^Tera Type:\s*(.+)/i);
+        if (teraMatch) {
+            slot.teraType = teraMatch[1].trim().toLowerCase();
             continue;
         }
 
@@ -300,7 +345,16 @@ window.addEventListener('DOMContentLoaded', () => {
         
         shareBtn.addEventListener('click', generateShareLink);
         
+        const showdownBtn = document.createElement('button');
+        showdownBtn.className = 'teamTool';
+        showdownBtn.type = 'button';
+        showdownBtn.id = 'showdownExportBtn';
+        showdownBtn.innerHTML = '📄 Export Showdown';
+        showdownBtn.style.cssText = 'border-color:#63d471; color:#63d471; background:rgba(99,212,113,0.1); margin-right: 5px;';
+        showdownBtn.addEventListener('click', exportTeamShowdown);
+
         // Το βάζουμε δίπλα στο κουμπί Export
+        exportBtn.parentNode.insertBefore(showdownBtn, exportBtn);
         exportBtn.parentNode.insertBefore(shareBtn, exportBtn);
     });
 })();

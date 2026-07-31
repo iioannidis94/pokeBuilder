@@ -10,7 +10,7 @@ const HELD_ITEMS = ['Leftovers', 'Choice Band', 'Choice Scarf', 'Choice Specs', 
 const TEAM_NATURE_EFFECTS = { Lonely: ['ATK', 'DEF'], Brave: ['ATK', 'SPD'], Adamant: ['ATK', 'SPATK'], Naughty: ['ATK', 'SPDEF'], Bold: ['DEF', 'ATK'], Relaxed: ['DEF', 'SPD'], Impish: ['DEF', 'SPATK'], Lax: ['DEF', 'SPDEF'], Timid: ['SPD', 'ATK'], Hasty: ['SPD', 'DEF'], Jolly: ['SPD', 'SPATK'], Naive: ['SPD', 'SPDEF'], Modest: ['SPATK', 'ATK'], Mild: ['SPATK', 'DEF'], Quiet: ['SPATK', 'SPD'], Rash: ['SPATK', 'SPDEF'], Calm: ['SPDEF', 'ATK'], Gentle: ['SPDEF', 'DEF'], Sassy: ['SPDEF', 'SPD'], Careful: ['SPDEF', 'SPATK'] };
 
 // Δομή ενός κενού Slot (Πλέον συμπεριλαμβάνει το Level!)
-const EMPTY_SLOT = () => ({ pokemonId: null, level: 100, nature: '', ability: '', item: '', calc: false, moveNames: ['', '', '', ''], moves: ['', '', '', ''], moveCats: ['', '', '', ''], iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' } });
+const EMPTY_SLOT = () => ({ pokemonId: null, level: 100, nature: '', ability: '', item: '', teraType: '', calc: false, moveNames: ['', '', '', ''], moves: ['', '', '', ''], moveCats: ['', '', '', ''], iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' } });
 
 // Κανονικοποίηση δεδομένων slot (αν λείπουν πεδία από παλιά saves)
 function normalizeSlot(slot) { 
@@ -21,6 +21,7 @@ function normalizeSlot(slot) {
     base.nature = slot.nature ? String(slot.nature) : ''; 
     base.ability = slot.ability ? String(slot.ability) : ''; 
     base.item = slot.item ? String(slot.item) : ''; 
+    base.teraType = slot.teraType ? String(slot.teraType) : '';
     base.calc = !!slot.calc; 
     base.moveNames = Array.from({ length: 4 }, (_, i) => slot.moveNames && slot.moveNames[i] ? String(slot.moveNames[i]) : ''); 
     base.moves = Array.from({ length: 4 }, (_, i) => slot.moves && slot.moves[i] ? String(slot.moves[i]) : ''); 

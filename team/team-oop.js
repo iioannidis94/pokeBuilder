@@ -5,8 +5,8 @@
 (function() {
     const raw = JSON.parse(localStorage.getItem('tb_oppTeam')) || [];
     window.oppTeam = raw.map(entry => {
-        if (typeof entry === 'number') return { id: entry, ability: '', item: '', moveNames: [], moves: [], moveCats: [] };
-        return Object.assign({ ability: '', item: '' }, entry);
+        if (typeof entry === 'number') return { id: entry, ability: '', item: '', level: 50, nature: '', iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, moveNames: [], moves: [], moveCats: [] };
+        return Object.assign({ ability: '', item: '', level: 50, nature: '', iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' } }, entry);
     });
 })();
 window.showOppPanel = JSON.parse(localStorage.getItem('tb_showOppPanel')) || false;
@@ -38,7 +38,7 @@ window.searchAndAddOpponent = function() {
     if(!p) return alert('Το Pokémon δεν βρέθηκε! Δοκίμασε στα Αγγλικά (π.χ. charizard) ή το ID του.');
     if(window.oppTeam.length >= 6) return alert('Η αντίπαλη ομάδα είναι γεμάτη (Max 6)!');
 
-    window.oppTeam.push({ id: p.id, ability: '', item: '', moveNames: [], moves: [], moveCats: [] });
+    window.oppTeam.push({ id: p.id, ability: '', item: '', level: 50, nature: '', iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, moveNames: [], moves: [], moveCats: [] });
     window.saveOpponents();
 
     if(document.getElementById('oppSearchInput')) document.getElementById('oppSearchInput').value = '';
@@ -97,6 +97,10 @@ window.importOpponentsFromShowdown = function(text) {
             id: slot.pokemonId,
             ability: slot.ability || '',
             item: slot.item || '',
+            level: slot.level || 50,
+            nature: slot.nature || '',
+            iv: slot.iv || { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
+            ev: slot.ev || { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
             moveNames: slot.moveNames || [],
             moves: slot.moves || [],
             moveCats: slot.moveCats || []
@@ -112,6 +116,7 @@ window.importOpponentsFromShowdown = function(text) {
 // oppSlotData: { moveNames, moves, moveCats } – optional, enables move-aware scoring
 window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
     let score = 0;
+    const PRIORITY_MOVES = new Set(['fake-out', 'sucker-punch', 'bullet-punch', 'ice-shard', 'extreme-speed', 'mach-punch', 'aqua-jet', 'shadow-sneak']);
 
     let opBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[oppP.id]) ? BASE_STATS[oppP.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80};
 
@@ -133,12 +138,14 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
             if (!mType) return;
             const mCat = oppSlotData.moveCats && oppSlotData.moveCats[idx];
             if (mCat === 'status') return;
+            const oppMoveName = ((oppSlotData.moveNames && oppSlotData.moveNames[idx]) || '').toLowerCase();
             const incomingMult = (typeof getDynamicMult === 'function')
                 ? getDynamicMult(mType, myCandidate.p.types, myCandidate.slot.ability)
                 : multAtkVsTypes(mType, myCandidate.p.types);
             if (incomingMult > 1) score -= 60 * incomingMult;
             if (incomingMult < 1) score += 30;
             if (incomingMult === 0) score += 80;
+            if (PRIORITY_MOVES.has(oppMoveName) && incomingMult >= 1) score -= 55;
         });
     }
 
@@ -166,6 +173,7 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
             if (opBs.spd < 70) moveScore += 45;
             if (mySpa > myAtk) moveScore += 20;
         }
+        if (PRIORITY_MOVES.has(String(mName).toLowerCase())) moveScore += 45;
 
         if (moveScore > bestMoveScore) bestMoveScore = moveScore;
     });
@@ -284,7 +292,11 @@ window.getMatchupsUI = function(selected) {
                     if (!mn) return '';
                     const mType = oppMoveTypes[i] || '';
                     const color = (typeof TC !== 'undefined' && TC[mType]) ? TC[mType] : '#555';
-                    return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold;" title="${mType}">${mn.replace(/-/g, ' ')}</span>`;
+                    const clean = String(mn).toLowerCase();
+                    const prio = ['fake-out', 'sucker-punch', 'bullet-punch', 'ice-shard', 'extreme-speed', 'mach-punch', 'aqua-jet', 'shadow-sneak'].includes(clean)
+                        ? `<span style="font-size:10px; background:rgba(255,193,7,0.18); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 4px; font-weight:900;">⚡ Priority</span>`
+                        : '';
+                    return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold;" title="${mType}">${mn.replace(/-/g, ' ')}</span>${prio}`;
                 }).join('')}
                </div>`
             : (abilityBadge || itemBadge)
@@ -295,12 +307,12 @@ window.getMatchupsUI = function(selected) {
             // Damage estimate (best move vs opponent)
             let dmgHTML = '';
             if (typeof getBestDamageEstimate === 'function') {
-                const est = getBestDamageEstimate(bestCounter, op);
+                const est = getBestDamageEstimate(bestCounter, op, oppSlotData);
                 if (est) {
                     const dmgColor = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#63d471';
                     const moveName = est.moveName ? est.moveName.replace(/-/g, ' ') : '';
                     dmgHTML = `<div style="margin-top:6px; font-size:11px; font-weight:bold; color:${dmgColor}; background:${dmgColor}18; padding:3px 8px; border-radius:4px; display:inline-block;">
-                        ${est.label} · ${est.minPct}%–${est.maxPct}% via <i>${moveName}</i>
+                        ${est.label} · ${est.minPct}%–${est.maxPct}% via <i>${moveName}</i> · OHKO: ${est.ohkoChance || 0}%
                     </div>`;
                 }
             }
@@ -411,6 +423,3 @@ window.calcAssassinScore = function(candidate) {
 setTimeout(() => {
     if (typeof renderTeamSlots === 'function') renderTeamSlots();
 }, 50);
-
-
-
