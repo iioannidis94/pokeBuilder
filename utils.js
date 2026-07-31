@@ -36,7 +36,8 @@ function multAtkVsTypes(atk, types) {
 
 function spriteImg(p, cls = '') { 
     const b64 = SPRITES[String(p.id)] || ''; 
-    return b64 ? `<img class="${cls}" src="data:image/png;base64,${b64}" alt="${p.name}">` : '?'; 
+    if (b64) return `<img class="${cls}" src="data:image/png;base64,${b64}" alt="${p.name}">`;
+    return `<img class="${cls}" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
 }
 
 // --- ΝΕΟ: TYPE CHART MODAL ---
