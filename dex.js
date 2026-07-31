@@ -65,6 +65,21 @@ const grid = document.getElementById('grid');
 const cntEl = document.getElementById('cnt');
 let qDex = '';
 
+const THEME_KEY = 'pokedex_theme_v1';
+function applyTheme(theme) {
+    const light = theme === 'light';
+    document.body.classList.toggle('light-mode', light);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = light ? '☀️' : '🌙';
+}
+const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+applyTheme(savedTheme);
+document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const next = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, next);
+    applyTheme(next);
+});
+
 function renderDex() {
     const ql = qDex.toLowerCase().trim();
     let list = POKE;

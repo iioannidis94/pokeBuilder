@@ -3,6 +3,11 @@
   --brd:#252545; --txt:#e8e8ff; --dim:#7070aa;
   --red:#ff4466; --yel:#ffcc00; --r:12px;
 }
+body.light-mode{
+  --bg:#f4f6ff; --surf:#ffffff; --surf2:#eef1ff;
+  --brd:#cfd6ff; --txt:#1e2240; --dim:#59608f;
+  --red:#e03131; --yel:#f59f00;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;min-height:100vh}
 body::before{
@@ -149,6 +154,16 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
   color:#171015;
   box-shadow:0 0 22px rgba(255,204,0,.18);
 }
+.themeToggle{
+  border:1.5px solid var(--brd);
+  background:var(--surf2);
+  color:var(--txt);
+  border-radius:50px;
+  padding:8px 11px;
+  font:900 12px 'Nunito',sans-serif;
+  cursor:pointer;
+}
+.themeToggle:hover{border-color:var(--yel)}
 
 body.team-view .sw,body.team-view .tfs,body.team-view .sb,body.team-view main{display:none}
 
@@ -301,7 +316,7 @@ header::-webkit-scrollbar-track { background: transparent; }
 header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 
 /* Αναγκάζουμε τα στοιχεία να μην μικραίνουν */
-.logo, .sw, .teamBtn, .dexBtn {
+.logo, .sw, .teamBtn, .dexBtn, .themeToggle {
   flex-shrink: 0;
   white-space: nowrap;
 }
