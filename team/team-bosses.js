@@ -12,6 +12,20 @@
     const DIFFICULTY_LABELS = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
     const DIFFICULTY_COLORS = { easy: '#63d471', medium: '#ffc107', hard: '#ff6b6b' };
 
+    // EVs applied per difficulty when loading as opponent
+    const DIFFICULTY_EVS = {
+        easy:   0,
+        medium: 252,
+        hard:   400,
+    };
+
+    // Human-readable rules shown in the detail panel per difficulty
+    const DIFFICULTY_RULES = {
+        easy:   'Κανένα EV · Κανένο item · Εξασθενημένα moves · Χωρίς bonus συνεχόμενων νικών',
+        medium: '252 EVs σε κάθε stat · Items',
+        hard:   '400 EVs σε κάθε stat · Items · Απαγορεύονται τα items μάχης (Revives κ.λπ.)',
+    };
+
     // ─── Open / Close ─────────────────────────────────────────────────────
     window.openBossesModal = function () {
         const modal = document.getElementById('bossesOverlay');
@@ -133,6 +147,9 @@
                 ? moves.map(m => `<span style="background:var(--brd); border-radius:6px; padding:2px 8px; font-size:11px; color:var(--txt);">${m.replace(/-/g, ' ')}</span>`).join('')
                 : '<span style="font-size:11px; color:var(--dim);">—</span>';
 
+            const effectiveItem = (selectedDifficulty === 'easy') ? '' : (mon.item || '');
+            const effectiveNature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
+
             return `<div style="background:var(--bg); border:1px solid var(--brd); border-radius:10px; padding:12px; display:flex; gap:10px; align-items:flex-start; min-width:0;">
                 <div style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px;">
                     ${spriteHtml}
@@ -140,8 +157,9 @@
                 </div>
                 <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:5px;">
                     <div style="display:flex; flex-wrap:wrap; gap:8px; font-size:11px;">
+                        ${effectiveNature ? `<span style="color:var(--dim);">Nature: <b style="color:var(--txt);">${effectiveNature}</b></span>` : ''}
                         ${mon.ability ? `<span style="color:var(--dim);">Ability: <b style="color:var(--txt);">${mon.ability.replace(/-/g, ' ')}</b></span>` : ''}
-                        ${mon.item    ? `<span style="color:var(--dim);">Item: <b style="color:#ffc107;">${mon.item.replace(/-/g, ' ')}</b></span>`    : ''}
+                        ${effectiveItem ? `<span style="color:var(--dim);">Item: <b style="color:#ffc107;">${effectiveItem.replace(/-/g, ' ')}</b></span>` : ''}
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:4px;">${movesHtml}</div>
                 </div>
@@ -157,6 +175,7 @@
                     ${boss.region ? `<div style="font-size:11px; margin-top:4px;"><span style="color:${REGION_COLORS[boss.region] || '#aaa'}; font-weight:700;">${boss.region}</span>${boss.location ? ` <span style="color:var(--dim);">— ${boss.location}</span>` : ''}</div>` : ''}
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;" id="bossDiffTabs">${tabsHtml}</div>
+                ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}</div>` : ''}
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     ${teamData.length ? pokemonHtml : '<div style="color:var(--dim); font-size:13px;">Δεν υπάρχουν Pokémon για αυτή τη δυσκολία.</div>'}
                 </div>
@@ -197,6 +216,9 @@
 
         window.clearOpponents();
 
+        const evValue  = String(DIFFICULTY_EVS[difficulty] ?? 0);
+        const isEasy   = difficulty === 'easy';
+
         const limited = teamData.slice(0, 6);
         for (const mon of limited) {
             const pokeEntry = (typeof POKE !== 'undefined')
@@ -212,17 +234,22 @@
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
 
+            const nature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
+            const item   = isEasy ? '' : (mon.item || '');
+
+            const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
+
             window.oppTeam.push({
                 id:        pokeEntry.id,
                 ability:   mon.ability || '',
-                item:      mon.item    || '',
+                item,
                 level:     50,
-                nature:    '',
-                moveNames: moveNames,
+                nature,
+                moveNames,
                 moves:     moveTypes,
-                moveCats:  moveCats,
+                moveCats,
                 iv:  { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
-                ev:  { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
+                ev,
             });
         }
 
