@@ -204,7 +204,7 @@ function getSpeedTierComparisonHTML(selected) {
     const renderRow = (row, mine) => {
         const pct = Math.max(8, Math.round((row.speed / maxSpeed) * 100));
         const color = mine ? '#4dabf7' : '#ff6b6b';
-        return `<div style="display:grid; grid-template-columns:120px 1fr 38px; gap:8px; align-items:center; font-size:11px;">
+        return `<div class="speedBar">
             <span style="color:${mine ? 'var(--txt)' : '#ffb3b3'}; font-weight:700; text-transform:capitalize; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.name.replace(/-/g, ' ')}</span>
             <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${color};"></div></div>
             <span style="font-weight:900; color:${color}; text-align:right;">${row.speed}</span>
@@ -397,11 +397,11 @@ function getStatComparisonHTML(selected) {
         const val  = row.stats[activeStat] || 0;
         const pct  = Math.max(8, Math.round((val / maxVal) * 100));
         const isBest = !row.isOpp && val === myMax && myMax > 0;
-        const rowColor = row.isOpp ? '#ff6b6b' : (isBest ? color : 'rgba(255,255,255,0.55)');
+        const rowColor = row.isOpp ? '#ff6b6b' : '#63d471';
         const label = row.isOpp
             ? `<span title="Max stats (31 IV / 252 EV / Lv 100)" style="font-size:9px; background:rgba(255,107,107,0.15); border:1px solid #ff6b6b; color:#ff6b6b; border-radius:2px; padding:0 4px; margin-left:3px;">MAX</span>`
-            : (isBest ? `<span style="font-size:9px; background:${color}22; border:1px solid ${color}; color:${color}; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
-        return `<div style="display:grid; grid-template-columns:130px 1fr 44px; gap:8px; align-items:center; font-size:11px;">
+            : (isBest ? `<span style="font-size:9px; background:#63d47122; border:1px solid #63d471; color:#63d471; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
+        return `<div class="statBar">
             <span style="color:${rowColor}; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize;">${row.name}${label}</span>
             <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${rowColor};"></div></div>
             <span style="font-weight:900; color:${rowColor}; text-align:right;">${val}</span>

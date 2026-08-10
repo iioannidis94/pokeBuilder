@@ -330,8 +330,53 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 3. Δημιουργία του Κουμπιού "Share Link" δυναμικά
-(function injectShareButton() {
+// 4. One-click Export Report: Showdown paste + Share link in one clipboard copy
+function copyTeamReport() {
+    const filled = team.filter(s => s.pokemonId);
+    if (!filled.length) { alert('Your team is empty! Add some Pokémon before exporting.'); return; }
+
+    // Build Showdown text
+    const statOut = { HP: 'HP', ATK: 'Atk', DEF: 'Def', SPATK: 'SpA', SPDEF: 'SpD', SPD: 'Spe' };
+    const showdownLines = filled.map(slot => {
+        const p = POKE.find(x => x.id === slot.pokemonId);
+        if (!p) return '';
+        const out = [];
+        out.push(`${p.name.replace(/-/g, ' ')}${slot.item ? ` @ ${slot.item}` : ''}`);
+        if (slot.ability) out.push(`Ability: ${slot.ability.replace(/-/g, ' ')}`);
+        if (slot.level) out.push(`Level: ${slot.level}`);
+        if (slot.teraType) out.push(`Tera Type: ${slot.teraType}`);
+        const evParts = TEAM_STATS.filter(st => Number(slot.ev?.[st]) > 0).map(st => `${Number(slot.ev[st])} ${statOut[st]}`);
+        if (evParts.length) out.push(`EVs: ${evParts.join(' / ')}`);
+        const ivParts = TEAM_STATS.map(st => ({ st, val: slot.iv?.[st] === '' || slot.iv?.[st] === undefined ? 31 : Number(slot.iv[st]) })).filter(x => x.val !== 31).map(x => `${x.val} ${statOut[x.st]}`);
+        if (ivParts.length) out.push(`IVs: ${ivParts.join(' / ')}`);
+        if (slot.nature) out.push(`${slot.nature} Nature`);
+        (slot.moveNames || []).filter(Boolean).forEach(m => out.push(`- ${m.replace(/-/g, ' ')}`));
+        return out.join('\n');
+    }).filter(Boolean);
+
+    // Build share link
+    let shareUrl = '';
+    try {
+        const json = JSON.stringify(filled);
+        const b64 = btoa(encodeURIComponent(json));
+        shareUrl = window.location.origin + window.location.pathname + '#team=' + b64;
+    } catch (e) { /* ignore */ }
+
+    const report = [
+        '=== pokeBuilder Team Export ===',
+        '',
+        showdownLines.join('\n\n'),
+        '',
+        shareUrl ? `Share Link: ${shareUrl}` : '',
+    ].filter(l => l !== undefined).join('\n').trim();
+
+    navigator.clipboard.writeText(report).then(() => {
+        alert(`📋 Team report copied!\n\nIncludes Showdown format for ${showdownLines.length} Pokémon + share link.`);
+    }).catch(() => {
+        prompt('Copy your team report:', report);
+    });
+}
+
     window.addEventListener('DOMContentLoaded', () => {
         const exportBtn = document.getElementById('teamExport');
         if (!exportBtn) return;
