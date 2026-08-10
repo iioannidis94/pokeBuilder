@@ -324,7 +324,28 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Cerulean Cave B1F',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'togekiss',    nature: 'Timid',   ability: 'Serene Grace', item: 'Sitrus Berry', moves: ['Air Slash', 'Flamethrower', 'Aura Sphere', 'Dazzling Gleam'] },
+                    { name: 'snorlax',     nature: 'Adamant', ability: 'Thick Fat',    item: 'Leftovers',    moves: ['Crunch', 'Body Slam', 'Fire Punch', 'Earthquake'] },
+                    { name: 'mr-mime',     nature: 'Modest',  ability: 'Filter',       item: 'Focus Sash',   moves: ['Psychic', 'Focus Blast', 'Dazzling Gleam', 'Shadow Ball'] },
+                    { name: 'blissey',     nature: 'Bold',    ability: 'Natural Cure', item: 'Leftovers',    moves: ['Toxic', 'Soft-Boiled', 'Seismic Toss', 'Wish'] },
+                    { name: 'electivire',  nature: 'Adamant', ability: 'Vital Spirit', item: 'Life Orb',     moves: ['Wild Charge', 'Fire Punch', 'Cross Chop', 'Ice Punch'] },
+                    { name: 'magmortar',   nature: 'Rash',    ability: 'Flame Body',   item: 'Life Orb',     moves: ['Fire Blast', 'Earthquake', 'Thunderbolt', 'Focus Blast'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'togekiss',    nature: 'Timid',   ability: 'Serene Grace', item: 'Sitrus Berry', moves: ['Air Slash', 'Flamethrower', 'Aura Sphere', 'Dazzling Gleam'] },
+                    { name: 'snorlax',     nature: 'Adamant', ability: 'Thick Fat',    item: 'Leftovers',    moves: ['Crunch', 'Body Slam', 'Fire Punch', 'Earthquake'] },
+                    { name: 'mr-mime',     nature: 'Modest',  ability: 'Filter',       item: 'Focus Sash',   moves: ['Psychic', 'Focus Blast', 'Dazzling Gleam', 'Shadow Ball'] },
+                    { name: 'blissey',     nature: 'Bold',    ability: 'Natural Cure', item: 'Leftovers',    moves: ['Toxic', 'Soft-Boiled', 'Seismic Toss', 'Wish'] },
+                    { name: 'electivire',  nature: 'Adamant', ability: 'Vital Spirit', item: 'Life Orb',     moves: ['Wild Charge', 'Fire Punch', 'Cross Chop', 'Ice Punch'] },
+                    { name: 'magmortar',   nature: 'Rash',    ability: 'Flame Body',   item: 'Life Orb',     moves: ['Fire Blast', 'Earthquake', 'Thunderbolt', 'Focus Blast'] },
+                ]
+            }
+        }
     },
 
     {
@@ -333,7 +354,28 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Pinkan City (Pinkan Lighthouse 2F)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'arcanine',    nature: '',        ability: 'Intimidate',   item: '',             moves: ['Wild Charge'] },
+                    { name: 'swanna',      nature: '',        ability: '',             item: '',             moves: ['Hurricane'] },
+                    { name: 'stoutland',   nature: '',        ability: '',             item: '',             moves: ['Thunder Punch', 'Return', 'Superpower'] },
+                    { name: 'manectric',   nature: '',        ability: '',             item: 'Life Orb',     moves: ['Thunderbolt', 'Overheat'] },
+                    { name: 'jumpluff',    nature: '',        ability: '',             item: '',             moves: ['Swords Dance', 'Acrobatics', 'Seed Bomb'] },
+                    { name: 'pidgeot',     nature: '',        ability: '',             item: '',             moves: ['Brave Bird'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'arcanine',    nature: '',        ability: 'Intimidate',   item: 'Choice Band',  moves: ['Flare Blitz', 'Wild Charge', 'Close Combat', 'Crunch', 'Extreme Speed'] },
+                    { name: 'gengar',      nature: '',        ability: 'Cursed Body',  item: 'Choice Specs', moves: ['Shadow Ball', 'Sludge Wave', 'Focus Blast', 'Thunderbolt'] },
+                    { name: 'luxray',      nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Superpower', 'Ice Fang', 'Wild Charge', 'Facade'] },
+                    { name: 'manectric',   nature: '',        ability: 'Lightning Rod', item: 'Choice Scarf', moves: ['Overheat', 'Thunderbolt', 'Roar', 'Hidden Power'] },
+                    { name: 'stoutland',   nature: '',        ability: 'Scrappy',      item: 'Choice Band',  moves: ['Superpower', 'Ice Fang', 'Thunder Fang', 'Return'] },
+                    { name: 'blastoise',   nature: '',        ability: 'Mega Launcher', item: 'Blastoisinite', moves: ['Ice Beam', 'Focus Blast', 'Hydro Pump', 'Aura Sphere', 'Dark Pulse'] },
+                ]
+            }
+        }
     },
 
     {
@@ -342,7 +384,28 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Pewter City (Jail)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'swampert',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
+                    { name: 'swellow',     nature: 'Timid',   ability: 'Guts',         item: 'Choice Specs', moves: ['Hurricane', 'Boomburst', 'Heat Wave', 'Ominous Wind'] },
+                    { name: 'goodra',      nature: 'Modest',  ability: 'Sap Sipper',   item: 'Assault Vest', moves: ['Fire Blast', 'Draco Meteor', 'Thunder', 'Sludge Wave'] },
+                    { name: 'lapras',      nature: 'Modest',  ability: 'Water Absorb', item: 'Mystic Water', moves: ['Hydro Pump', 'Blizzard', 'Sheer Cold', 'Sing'] },
+                    { name: 'cinccino',    nature: 'Jolly',   ability: 'Skill Link',   item: 'Choice Band',  moves: ['Tail Slap', 'Rock Blast', 'Bullet Seed', 'Knock Off'] },
+                    { name: 'latias',      nature: 'Timid',   ability: 'Levitate',     item: 'Life Orb',     moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'swampert',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
+                    { name: 'swellow',     nature: 'Timid',   ability: 'Guts',         item: 'Choice Specs', moves: ['Hurricane', 'Boomburst', 'Heat Wave', 'Ominous Wind'] },
+                    { name: 'goodra',      nature: 'Modest',  ability: 'Sap Sipper',   item: 'Assault Vest', moves: ['Fire Blast', 'Draco Meteor', 'Thunder', 'Sludge Wave'] },
+                    { name: 'lapras',      nature: 'Modest',  ability: 'Water Absorb', item: 'Mystic Water', moves: ['Hydro Pump', 'Blizzard', 'Sheer Cold', 'Sing'] },
+                    { name: 'cinccino',    nature: 'Jolly',   ability: 'Skill Link',   item: 'Choice Band',  moves: ['Tail Slap', 'Rock Blast', 'Bullet Seed', 'Knock Off'] },
+                    { name: 'latias',      nature: 'Timid',   ability: 'Levitate',     item: 'Life Orb',     moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                ]
+            }
+        }
     },
 
     {
@@ -351,7 +414,24 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Munchlax Resort (House 1)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Silk Scarf',   moves: ['Tackle', 'Double-Edge', 'Body Slam', 'Rest'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Silk Scarf',   moves: ['Stockpile', 'Counter', 'Rock Slide', 'Zen Headbutt'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Leftovers',    moves: ['Earthquake', 'Body Slam', 'Brick Break', 'Whirlwind'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Leftovers',    moves: ['Flamethrower', 'Ice Beam', 'Thunderbolt', 'Psychic'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Silk Scarf',   moves: ['Tackle', 'Double-Edge', 'Body Slam', 'Rest'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Silk Scarf',   moves: ['Stockpile', 'Counter', 'Rock Slide', 'Zen Headbutt'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Leftovers',    moves: ['Earthquake', 'Body Slam', 'Brick Break', 'Whirlwind'] },
+                    { name: 'munchlax',    nature: '',        ability: '',             item: 'Leftovers',    moves: ['Flamethrower', 'Ice Beam', 'Thunderbolt', 'Psychic'] },
+                ]
+            }
+        }
     },
 
     {
@@ -360,7 +440,28 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Cinnabar Island (Lab Room 2)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'rotom-wash',  nature: 'Bold',    ability: 'Levitate',     item: 'Leftovers',    moves: ['Defog', 'Thunderbolt', 'Hydro Pump', 'Reflect'] },
+                    { name: 'venusaur',    nature: 'Modest',  ability: 'Overgrow',     item: 'Black Sludge', moves: ['Petal Dance', 'Sleep Powder', 'Sludge Bomb', 'Leech Seed'] },
+                    { name: 'charizard',   nature: '',        ability: 'Tough Claws',  item: 'Charizardite X', moves: ['Flare Blitz', 'Dragon Dance', 'Dragon Claw', 'Earthquake'] },
+                    { name: 'blastoise',   nature: 'Modest',  ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Dark Pulse', 'Toxic', 'Ice Beam'] },
+                    { name: 'tauros',      nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Rock Climb', 'Earthquake', 'Rock Slide', 'Iron Tail'] },
+                    { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Outrage', 'Dragon Dance', 'Fire Punch', 'Extreme Speed'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'rotom-wash',  nature: 'Bold',    ability: 'Levitate',     item: 'Leftovers',    moves: ['Defog', 'Thunderbolt', 'Hydro Pump', 'Reflect'] },
+                    { name: 'venusaur',    nature: 'Modest',  ability: 'Overgrow',     item: 'Black Sludge', moves: ['Petal Dance', 'Sleep Powder', 'Sludge Bomb', 'Leech Seed'] },
+                    { name: 'charizard',   nature: '',        ability: 'Tough Claws',  item: 'Charizardite X', moves: ['Flare Blitz', 'Dragon Dance', 'Dragon Claw', 'Earthquake'] },
+                    { name: 'blastoise',   nature: 'Modest',  ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Dark Pulse', 'Toxic', 'Ice Beam'] },
+                    { name: 'tauros',      nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Rock Climb', 'Earthquake', 'Rock Slide', 'Iron Tail'] },
+                    { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Outrage', 'Dragon Dance', 'Fire Punch', 'Extreme Speed'] },
+                ]
+            }
+        }
     },
 
     {
@@ -369,7 +470,44 @@ const BOSSES = [
         title: '',
         region: 'Kanto',
         location: 'Love Island (House 1)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    // Shary
+                    { name: 'flareon',         nature: 'Adamant', ability: 'Guts',         item: 'Toxic Orb',    moves: ['Flare Blitz', 'Facade', 'Superpower', 'Iron Tail'] },
+                    { name: 'mienshao',        nature: 'Jolly',   ability: 'Reckless',     item: 'Black Belt',   moves: ['Stone Edge', 'Poison Jab', 'Knock Off', 'High Jump Kick'] },
+                    { name: 'meloetta-aria',   nature: 'Timid',   ability: 'Serene Grace', item: 'Assault Vest', moves: ['Psychic', 'Hyper Voice', 'Focus Blast', 'Shadow Ball'] },
+                    { name: 'latias',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                    { name: 'jolteon',         nature: 'Timid',   ability: 'Volt Absorb',  item: 'Choice Specs', moves: ['Thunder', 'Signal Beam', 'Shadow Ball', 'Thunder Wave'] },
+                    { name: 'togekiss',        nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Aura Sphere', 'Flamethrower', 'Dazzling Gleam'] },
+                    // Shaui
+                    { name: 'shaymin-sky',     nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Specs', moves: ['Air Slash', 'Seed Flare', 'Earth Power'] },
+                    { name: 'conkeldurr',      nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Facade', 'Knock Off', 'Ice Punch'] },
+                    { name: 'dragonite',       nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Outrage', 'Fire Punch', 'Extreme Speed'] },
+                    { name: 'alakazam',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
+                    { name: 'greninja',        nature: 'Naive',   ability: 'Protean',      item: 'Expert Belt',  moves: ['Hydro Pump', 'Gunk Shot', 'Ice Beam', 'Dark Pulse'] },
+                    { name: 'azelf',           nature: 'Timid',   ability: 'Levitate',     item: 'Focus Sash',   moves: ['Psychic', 'Thunderbolt', 'Flamethrower', 'Dazzling Gleam'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    // Shary
+                    { name: 'flareon',         nature: 'Adamant', ability: 'Guts',         item: 'Toxic Orb',    moves: ['Flare Blitz', 'Facade', 'Superpower', 'Iron Tail'] },
+                    { name: 'mienshao',        nature: 'Jolly',   ability: 'Reckless',     item: 'Black Belt',   moves: ['Stone Edge', 'Poison Jab', 'Knock Off', 'High Jump Kick'] },
+                    { name: 'meloetta-aria',   nature: 'Timid',   ability: 'Serene Grace', item: 'Assault Vest', moves: ['Psychic', 'Hyper Voice', 'Focus Blast', 'Shadow Ball'] },
+                    { name: 'latias',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                    { name: 'jolteon',         nature: 'Timid',   ability: 'Volt Absorb',  item: 'Choice Specs', moves: ['Thunder', 'Signal Beam', 'Shadow Ball', 'Thunder Wave'] },
+                    { name: 'togekiss',        nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Aura Sphere', 'Flamethrower', 'Dazzling Gleam'] },
+                    // Shaui
+                    { name: 'shaymin-sky',     nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Specs', moves: ['Air Slash', 'Seed Flare', 'Earth Power'] },
+                    { name: 'conkeldurr',      nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Facade', 'Knock Off', 'Ice Punch'] },
+                    { name: 'dragonite',       nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Outrage', 'Fire Punch', 'Extreme Speed'] },
+                    { name: 'alakazam',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
+                    { name: 'greninja',        nature: 'Naive',   ability: 'Protean',      item: 'Expert Belt',  moves: ['Hydro Pump', 'Gunk Shot', 'Ice Beam', 'Dark Pulse'] },
+                    { name: 'azelf',           nature: 'Timid',   ability: 'Levitate',     item: 'Focus Sash',   moves: ['Psychic', 'Thunderbolt', 'Flamethrower', 'Dazzling Gleam'] },
+                ]
+            }
+        }
     },
 
     {
@@ -605,7 +743,28 @@ const BOSSES = [
         title: '',
         region: 'Johto',
         location: 'Ice Path B2F',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'ninetales-alola',  nature: 'Timid',   ability: 'Snow Warning', item: 'Icy Rock',     moves: ['Blizzard', 'Moonblast', 'Nasty Plot', 'Freeze-Dry'] },
+                    { name: 'sandslash-alola',  nature: 'Adamant', ability: 'Slush Rush',   item: 'Focus Sash',   moves: ['Earthquake', 'Icicle Crash', 'Iron Head', 'Aqua Tail'] },
+                    { name: 'articuno',         nature: 'Timid',   ability: 'Pressure',     item: 'Leftovers',    moves: ['Freeze-Dry', 'Hurricane', 'Toxic', 'Blizzard'] },
+                    { name: 'weavile',          nature: 'Jolly',   ability: 'Pressure',     item: 'Black Glasses', moves: ['Ice Shard', 'Knock Off', 'Icicle Crash', 'Low Kick'] },
+                    { name: 'lapras',           nature: 'Calm',    ability: 'Water Absorb', item: 'Leftovers',    moves: ['Hydro Pump', 'Blizzard', 'Thunderbolt', 'Scald'] },
+                    { name: 'slowbro',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'ninetales-alola',  nature: 'Timid',   ability: 'Snow Warning', item: 'Icy Rock',     moves: ['Blizzard', 'Moonblast', 'Nasty Plot', 'Freeze-Dry'] },
+                    { name: 'sandslash-alola',  nature: 'Adamant', ability: 'Slush Rush',   item: 'Focus Sash',   moves: ['Earthquake', 'Icicle Crash', 'Iron Head', 'Aqua Tail'] },
+                    { name: 'articuno',         nature: 'Timid',   ability: 'Pressure',     item: 'Leftovers',    moves: ['Freeze-Dry', 'Hurricane', 'Toxic', 'Blizzard'] },
+                    { name: 'weavile',          nature: 'Jolly',   ability: 'Pressure',     item: 'Black Glasses', moves: ['Ice Shard', 'Knock Off', 'Icicle Crash', 'Low Kick'] },
+                    { name: 'lapras',           nature: 'Calm',    ability: 'Water Absorb', item: 'Leftovers',    moves: ['Hydro Pump', 'Blizzard', 'Thunderbolt', 'Scald'] },
+                    { name: 'slowbro',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
+                ]
+            }
+        }
     },
 
     {
@@ -621,11 +780,24 @@ const BOSSES = [
                     { name: 'starmie',    ability: 'Natural Cure', item: '',            moves: ['Water Gun', 'Psychic', 'Swift', 'Recover'] },
                 ]
             },
+            medium: {
+                pokemon: [
+                    { name: 'milotic',   nature: 'Bold',    ability: 'Competitive',  item: 'Leftovers',    moves: ['Scald', 'Ice Beam', 'Recover', 'Dragon Tail'] },
+                    { name: 'gyarados',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
+                    { name: 'starmie',   nature: 'Timid',   ability: 'Analytic',     item: 'Choice Specs', moves: ['Surf', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
+                    { name: 'cradily',   nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Toxic', 'Curse', 'Seed Bomb', 'Ingrain'] },
+                    { name: 'blastoise', nature: 'Bold',    ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Aura Sphere', 'Dark Pulse', 'Flash Cannon'] },
+                    { name: 'togekiss',  nature: 'Bold',    ability: 'Serene Grace', item: 'Leftovers',    moves: ['Thunder Wave', 'Roost', 'Nasty Plot', 'Air Slash'] },
+                ]
+            },
             hard: {
                 pokemon: [
-                    { name: 'starmie',    ability: 'Analytic',     item: 'Life Orb',    moves: ['Surf', 'Psychic', 'Ice Beam', 'Thunderbolt'] },
-                    { name: 'gyarados',   ability: 'Intimidate',   item: 'Lum Berry',   moves: ['Waterfall', 'Dragon Dance', 'Crunch', 'Ice Fang'] },
-                    { name: 'vaporeon',   ability: 'Water Absorb', item: 'Leftovers',   moves: ['Surf', 'Ice Beam', 'Wish', 'Protect'] },
+                    { name: 'milotic',   nature: 'Bold',    ability: 'Competitive',  item: 'Leftovers',    moves: ['Scald', 'Ice Beam', 'Recover', 'Dragon Tail'] },
+                    { name: 'gyarados',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
+                    { name: 'starmie',   nature: 'Timid',   ability: 'Analytic',     item: 'Choice Specs', moves: ['Surf', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
+                    { name: 'cradily',   nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Toxic', 'Curse', 'Seed Bomb', 'Ingrain'] },
+                    { name: 'blastoise', nature: 'Bold',    ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Aura Sphere', 'Dark Pulse', 'Flash Cannon'] },
+                    { name: 'togekiss',  nature: 'Bold',    ability: 'Serene Grace', item: 'Leftovers',    moves: ['Thunder Wave', 'Roost', 'Nasty Plot', 'Air Slash'] },
                 ]
             }
         }
@@ -637,7 +809,28 @@ const BOSSES = [
         title: '',
         region: 'Johto',
         location: 'Ilex Forest',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'celebi',      nature: 'Timid',   ability: 'Natural Cure', item: 'Leftovers',    moves: ['Earth Power', 'Psyshock', 'Giga Drain', 'Ancient Power'] },
+                    { name: 'donphan',     nature: 'Adamant', ability: 'Sturdy',       item: 'Choice Band',  moves: ['Earthquake', 'Knock Off', 'Ice Shard', 'Seed Bomb'] },
+                    { name: 'roserade',    nature: 'Timid',   ability: 'Technician',   item: 'Choice Specs', moves: ['Hidden Power', 'Leaf Storm', 'Sludge Bomb', 'Dazzling Gleam'] },
+                    { name: 'kingdra',     nature: 'Adamant', ability: 'Sniper',       item: 'Scope Lens',   moves: ['Waterfall', 'Outrage', 'Iron Head', 'Swords Dance'] },
+                    { name: 'serperior',   nature: 'Timid',   ability: 'Contrary',     item: 'Choice Specs', moves: ['Leaf Storm', 'Hidden Power', 'Dragon Pulse', 'Synthesis'] },
+                    { name: 'gardevoir',   nature: 'Modest',  ability: 'Pixilate',     item: 'Gardevoirite', moves: ['Moonblast', 'Psyshock', 'Shadow Ball', 'Focus Blast'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'celebi',      nature: 'Timid',   ability: 'Natural Cure', item: 'Leftovers',    moves: ['Earth Power', 'Psyshock', 'Giga Drain', 'Ancient Power', 'Dazzling Gleam', 'Recover'] },
+                    { name: 'diancie',     nature: 'Naive',   ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Hidden Power', 'Earth Power', 'Psyshock', 'Calm Mind'] },
+                    { name: 'florges',     nature: 'Timid',   ability: 'Flower Veil',  item: 'Leftovers',    moves: ['Moonblast', 'Hidden Power', 'Psychic', 'Energy Ball', 'Synthesis'] },
+                    { name: 'chandelure',  nature: 'Timid',   ability: 'Flash Fire',   item: 'Choice Scarf', moves: ['Shadow Ball', 'Energy Ball', 'Fire Blast', 'Hidden Power', 'Trick'] },
+                    { name: 'goodra',      nature: 'Adamant', ability: 'Sap Sipper',   item: 'Choice Band',  moves: ['Outrage', 'Iron Tail', 'Power Whip', 'Earthquake', 'Fire Punch', 'Superpower', 'Aqua Tail'] },
+                    { name: 'clefable',    nature: 'Modest',  ability: 'Unaware',      item: 'Choice Specs', moves: ['Moonblast', 'Petal Dance', 'Fire Blast', 'Psychic', 'Thunderbolt', 'Shadow Ball', 'Focus Blast'] },
+                ]
+            }
+        }
     },
 
     {
@@ -646,7 +839,28 @@ const BOSSES = [
         title: '',
         region: 'Johto',
         location: 'Ruins of Alph (Research Center)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'corsola',     nature: 'Bold',    ability: 'Natural Cure', item: 'Focus Sash',   moves: ['Surf', 'Power Gem', 'Mirror Coat', 'Light Screen'] },
+                    { name: 'togekiss',    nature: 'Timid',   ability: 'Serene Grace', item: 'Leftovers',    moves: ['Nasty Plot', 'Air Slash', 'Flamethrower', 'Aura Sphere'] },
+                    { name: 'meganium',    nature: 'Bold',    ability: 'Overgrow',     item: 'Light Clay',   moves: ['Giga Drain', 'Toxic', 'Reflect', 'Petal Dance'] },
+                    { name: 'typhlosion',  nature: 'Modest',  ability: 'Blaze',        item: 'Charcoal',     moves: ['Eruption', 'Fire Blast', 'Focus Blast', 'Roar'] },
+                    { name: 'feraligatr',  nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Dragon Dance', 'Liquidation', 'Ice Punch', 'Earthquake'] },
+                    { name: 'tyranitar',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'corsola',     nature: 'Bold',    ability: 'Natural Cure', item: 'Focus Sash',   moves: ['Surf', 'Power Gem', 'Mirror Coat', 'Light Screen'] },
+                    { name: 'togekiss',    nature: 'Timid',   ability: 'Serene Grace', item: 'Leftovers',    moves: ['Nasty Plot', 'Air Slash', 'Flamethrower', 'Aura Sphere'] },
+                    { name: 'meganium',    nature: 'Bold',    ability: 'Overgrow',     item: 'Light Clay',   moves: ['Giga Drain', 'Toxic', 'Reflect', 'Petal Dance'] },
+                    { name: 'typhlosion',  nature: 'Modest',  ability: 'Blaze',        item: 'Charcoal',     moves: ['Eruption', 'Fire Blast', 'Focus Blast', 'Roar'] },
+                    { name: 'feraligatr',  nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Dragon Dance', 'Liquidation', 'Ice Punch', 'Earthquake'] },
+                    { name: 'tyranitar',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
+                ]
+            }
+        }
     },
 
     {
@@ -655,7 +869,28 @@ const BOSSES = [
         title: '',
         region: 'Johto',
         location: 'Violet City (Sprout Tower F)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'glaceon',     nature: 'Modest',  ability: 'Snow Cloak',   item: '',             moves: ['Blizzard', 'Shadow Ball', 'Ice Beam', 'Toxic'] },
+                    { name: 'flareon',     nature: 'Adamant', ability: 'Guts',         item: '',             moves: ['Flare Blitz', 'Iron Tail', 'Facade', 'Superpower'] },
+                    { name: 'vaporeon',    nature: 'Bold',    ability: 'Water Absorb', item: '',             moves: ['Scald', 'Ice Beam', 'Wish', 'Protect'] },
+                    { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: '',             moves: ['Thunderbolt', 'Shadow Ball', 'Signal Beam', 'Volt Switch'] },
+                    { name: 'sylveon',     nature: 'Calm',    ability: 'Pixilate',     item: '',             moves: ['Hyper Voice', 'Shadow Ball', 'Psyshock', 'Wish'] },
+                    { name: 'espeon',      nature: 'Timid',   ability: 'Magic Bounce', item: '',             moves: ['Calm Mind', 'Psyshock', 'Dazzling Gleam', 'Morning Sun'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'glaceon',     nature: 'Modest',  ability: 'Snow Cloak',   item: '',             moves: ['Blizzard', 'Shadow Ball', 'Ice Beam', 'Toxic'] },
+                    { name: 'flareon',     nature: 'Adamant', ability: 'Guts',         item: '',             moves: ['Flare Blitz', 'Iron Tail', 'Facade', 'Superpower'] },
+                    { name: 'vaporeon',    nature: 'Bold',    ability: 'Water Absorb', item: '',             moves: ['Scald', 'Ice Beam', 'Wish', 'Protect'] },
+                    { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: '',             moves: ['Thunderbolt', 'Shadow Ball', 'Signal Beam', 'Volt Switch'] },
+                    { name: 'sylveon',     nature: 'Calm',    ability: 'Pixilate',     item: '',             moves: ['Hyper Voice', 'Shadow Ball', 'Psyshock', 'Wish'] },
+                    { name: 'espeon',      nature: 'Timid',   ability: 'Magic Bounce', item: '',             moves: ['Calm Mind', 'Psyshock', 'Dazzling Gleam', 'Morning Sun'] },
+                ]
+            }
+        }
     },
 
     {
@@ -745,17 +980,22 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'voltorb',    ability: 'Static',       item: '',            moves: ['Thunder Wave', 'Thunderbolt', 'Explosion', 'Rollout'] },
-                    { name: 'electrode',  ability: 'Static',       item: 'Sitrus Berry',moves: ['Thunderbolt', 'Thunder Wave', 'Explosion', 'Swift'] },
-                    { name: 'raichu',     ability: 'Static',       item: 'Sitrus Berry',moves: ['Thunderbolt', 'Quick Attack', 'Iron Tail', 'Brick Break'] },
+                    { name: 'raichu',     nature: 'Timid',   ability: 'Lightning Rod', item: 'Life Orb',     moves: ['Thunderbolt', 'Hidden Power', 'Grass Knot', 'Focus Blast'] },
+                    { name: 'manectric',  nature: 'Jolly',   ability: 'Lightning Rod', item: 'Choice Band',  moves: ['Wild Charge', 'Fire Fang', 'Ice Fang', 'Crunch'] },
+                    { name: 'heliolisk',  nature: 'Timid',   ability: 'Dry Skin',      item: 'Choice Scarf', moves: ['Thunderbolt', 'Surf', 'Hyper Voice', 'Dragon Pulse'] },
+                    { name: 'luxray',     nature: 'Adamant', ability: 'Guts',          item: 'Flame Orb',    moves: ['Wild Charge', 'Fire Fang', 'Ice Fang', 'Facade'] },
+                    { name: 'magnezone',  nature: 'Timid',   ability: 'Magnet Pull',   item: 'Life Orb',     moves: ['Thunderbolt', 'Flash Cannon', 'Signal Beam', 'Magnet Rise'] },
+                    { name: 'jolteon',    nature: 'Timid',   ability: 'Volt Absorb',   item: 'Choice Scarf', moves: ['Thunderbolt', 'Hidden Power', 'Shadow Ball', 'Signal Beam'] },
                 ]
             },
             hard: {
                 pokemon: [
-                    { name: 'electrode',  ability: 'Soundproof',   item: 'Choice Scarf',moves: ['Thunderbolt', 'Volt Switch', 'Signal Beam', 'Explosion'] },
-                    { name: 'jolteon',    ability: 'Volt Absorb',  item: 'Choice Specs',moves: ['Thunderbolt', 'Shadow Ball', 'Signal Beam', 'Volt Switch'] },
-                    { name: 'magneton',   ability: 'Magnet Pull',  item: 'Leftovers',   moves: ['Thunderbolt', 'Flash Cannon', 'Thunder Wave', 'Tri Attack'] },
-                    { name: 'raichu',     ability: 'Lightning Rod', item: 'Life Orb',   moves: ['Volt Tackle', 'Fake Out', 'Iron Tail', 'Quick Attack'] },
+                    { name: 'rotom-wash', nature: 'Timid',   ability: 'Levitate',      item: 'Choice Specs', moves: ['Signal Beam', 'Dark Pulse', 'Thunderbolt', 'Hidden Power', 'Hydro Pump', 'Shadow Ball'] },
+                    { name: 'electivire', nature: 'Adamant', ability: 'Vital Spirit',  item: 'Choice Band',  moves: ['Iron Tail', 'Rock Slide', 'Wild Charge', 'Ice Punch', 'Low Kick', 'Fire Punch'] },
+                    { name: 'raichu',     nature: 'Timid',   ability: '',              item: 'Choice Specs', moves: ['Grass Knot', 'Signal Beam', 'Iron Tail', 'Thunderbolt', 'Hidden Power', 'Surf', 'Focus Blast'] },
+                    { name: 'zapdos',     nature: 'Timid',   ability: 'Pressure',      item: 'Choice Specs', moves: ['Ancient Power', 'Signal Beam', 'Thunderbolt', 'Heat Wave', 'Hidden Power', 'Drill Peck'] },
+                    { name: 'golem-alola',nature: 'Adamant', ability: 'Sturdy',        item: 'Choice Band',  moves: ['Stone Edge', 'Iron Head', 'Rock Polish', 'Wild Charge', 'Earthquake', 'Fire Punch', 'Close Combat'] },
+                    { name: 'zekrom',     nature: 'Adamant', ability: 'Teravolt',      item: 'Choice Band',  moves: ['Bolt Strike', 'Outrage', 'Steel Wing', 'Rock Slide'] },
                 ]
             }
         }
@@ -767,7 +1007,28 @@ const BOSSES = [
         title: '',
         region: 'Hoenn',
         location: 'Mt. Pyre 4F',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'gengar',          nature: 'Timid',   ability: 'Shadow Tag',   item: 'Gengarite',    moves: ['Focus Blast', 'Icy Wind', 'Shadow Ball', 'Sludge Wave', 'Hex'] },
+                    { name: 'froslass',        nature: 'Timid',   ability: 'Cursed Body',  item: 'Life Orb',     moves: ['Shadow Ball', 'Thunder', 'Ice Beam', 'Signal Beam'] },
+                    { name: 'gourgeist-average', nature: 'Relaxed', ability: 'Pickup',     item: 'Leftovers',    moves: ['Will-O-Wisp', 'Leech Seed', 'Seed Bomb', 'Rock Slide'] },
+                    { name: 'golurk',          nature: 'Adamant', ability: 'No Guard',     item: 'Black Belt',   moves: ['Dynamic Punch', 'Earthquake', 'Stone Edge', 'Ice Punch'] },
+                    { name: 'cofagrigus',      nature: 'Bold',    ability: 'Mummy',        item: 'Leftovers',    moves: ['Will-O-Wisp', 'Pain Split', 'Shadow Ball', 'Protect'] },
+                    { name: 'giratina-altered',nature: 'Quiet',   ability: 'Pressure',     item: 'Choice Specs', moves: ['Shadow Ball', 'Earth Power', 'Aura Sphere', 'Draco Meteor'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'gengar',          nature: 'Timid',   ability: 'Shadow Tag',   item: 'Gengarite',    moves: ['Focus Blast', 'Icy Wind', 'Shadow Ball', 'Sludge Wave', 'Hex'] },
+                    { name: 'froslass',        nature: 'Timid',   ability: 'Cursed Body',  item: 'Life Orb',     moves: ['Shadow Ball', 'Thunder', 'Ice Beam', 'Signal Beam'] },
+                    { name: 'gourgeist-average', nature: 'Relaxed', ability: 'Pickup',     item: 'Leftovers',    moves: ['Will-O-Wisp', 'Leech Seed', 'Seed Bomb', 'Rock Slide'] },
+                    { name: 'golurk',          nature: 'Adamant', ability: 'No Guard',     item: 'Black Belt',   moves: ['Dynamic Punch', 'Earthquake', 'Stone Edge', 'Ice Punch'] },
+                    { name: 'cofagrigus',      nature: 'Bold',    ability: 'Mummy',        item: 'Leftovers',    moves: ['Will-O-Wisp', 'Pain Split', 'Shadow Ball', 'Protect'] },
+                    { name: 'giratina-altered',nature: 'Quiet',   ability: 'Pressure',     item: 'Choice Specs', moves: ['Shadow Ball', 'Earth Power', 'Aura Sphere', 'Draco Meteor'] },
+                ]
+            }
+        }
     },
 
     {
@@ -776,7 +1037,28 @@ const BOSSES = [
         title: '',
         region: 'Hoenn',
         location: 'Desert Ruins',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'exploud',     nature: '',        ability: 'Scrappy',      item: 'Choice Specs', moves: ['Focus Blast', 'Fire Blast', 'Boomburst', 'Surf'] },
+                    { name: 'sigilyph',    nature: '',        ability: 'Tinted Lens',  item: 'Life Orb',     moves: ['Psyshock', 'Air Slash', 'Energy Ball', 'Heat Wave'] },
+                    { name: 'chansey',     nature: '',        ability: 'Serene Grace', item: 'Eviolite',     moves: ['Ice Beam', 'Thunderbolt'] },
+                    { name: 'solrock',     nature: '',        ability: 'Levitate',     item: 'Choice Band',  moves: ['Flare Blitz', 'Stone Edge', 'Explosion'] },
+                    { name: 'togekiss',    nature: '',        ability: 'Serene Grace', item: 'Life Orb',     moves: ['Thunder Wave', 'Air Slash', 'Flamethrower', 'Ancient Power'] },
+                    { name: 'regigigas',   nature: '',        ability: 'Slow Start',   item: 'Choice Scarf', moves: ['Giga Impact', 'Fire Punch', 'Zen Headbutt', 'Heavy Slam'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'claydol',     nature: '',        ability: 'Levitate',     item: 'Choice Band',  moves: ['Earthquake', 'Zen Headbutt', 'Stealth Rock', 'Explosion', 'Stone Edge'] },
+                    { name: 'staraptor',   nature: '',        ability: 'Reckless',     item: 'Choice Band',  moves: ['Brave Bird', 'Close Combat', 'Steel Wing', 'Double-Edge'] },
+                    { name: 'porygon-z',   nature: '',        ability: '',             item: 'Choice Specs', moves: ['Thunderbolt', 'Tri Attack', 'Shadow Ball', 'Nasty Plot'] },
+                    { name: 'flygon',      nature: '',        ability: 'Levitate',     item: 'Life Orb',     moves: ['Superpower', 'Outrage', 'Earthquake', 'Fire Blast'] },
+                    { name: 'bronzong',    nature: '',        ability: '',             item: 'Choice Band',  moves: ['Earthquake', 'Explosion', 'Toxic', 'Iron Head'] },
+                    { name: 'lugia',       nature: '',        ability: 'Multiscale',   item: 'Choice Specs', moves: ['Aeroblast', 'Psyshock', 'Hydro Pump', 'Earth Power', 'Giga Drain'] },
+                ]
+            }
+        }
     },
 
     {
@@ -785,7 +1067,28 @@ const BOSSES = [
         title: '',
         region: 'Hoenn',
         location: 'Verdanturf Town (House 2)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'medicham',    nature: '',        ability: '',             item: '',             moves: ['High Jump Kick'] },
+                    { name: 'slaking',     nature: '',        ability: 'Truant',       item: 'Leftovers',    moves: ['Rock Slide', 'Giga Impact'] },
+                    { name: 'swellow',     nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Thief', 'Brave Bird'] },
+                    { name: 'pelipper',    nature: '',        ability: 'Drizzle',      item: '',             moves: ['Knock Off'] },
+                    { name: 'flygon',      nature: '',        ability: 'Levitate',     item: 'Life Orb',     moves: ['Outrage'] },
+                    { name: 'swampert',    nature: '',        ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Earthquake', 'Waterfall'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'medicham',    nature: '',        ability: 'Pure Power',   item: 'Choice Band',  moves: ['Zen Headbutt', 'Fire Punch', 'High Jump Kick', 'Ice Punch', 'Poison Jab'] },
+                    { name: 'slaking',     nature: '',        ability: 'Truant',       item: 'Choice Band',  moves: ['Rock Slide', 'Fire Punch', 'Hammer Arm', 'Giga Impact'] },
+                    { name: 'swellow',     nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Thief', 'Brave Bird', 'Return', 'U-turn'] },
+                    { name: 'torkoal',     nature: '',        ability: 'Drought',      item: 'Heat Rock',    moves: ['Lava Plume', 'Solar Beam', 'Earthquake', 'Explosion'] },
+                    { name: 'flygon',      nature: '',        ability: 'Levitate',     item: 'Life Orb',     moves: ['Outrage', 'Fire Blast', 'Earthquake', 'Stone Edge', 'Superpower'] },
+                    { name: 'blaziken',    nature: '',        ability: 'Speed Boost',  item: 'Blazikenite',  moves: ['Brave Bird', 'Flare Blitz', 'High Jump Kick', 'Earthquake'] },
+                ]
+            }
+        }
     },
 
     {
@@ -885,7 +1188,28 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Twinleaf Town (House 2)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'electrode',   nature: 'Timid',   ability: 'Static',       item: 'Life Orb',     moves: ['Explosion', 'Protect', 'Signal Beam', 'Taunt'] },
+                    { name: 'rapidash',    nature: 'Jolly',   ability: 'Run Away',     item: 'Choice Band',  moves: ['Megahorn', 'Flamethrower', 'Poison Jab', 'Bounce'] },
+                    { name: 'aegislash-shield', nature: 'Adamant', ability: 'Stance Change', item: 'Assault Vest', moves: ['Shadow Sneak', 'Brick Break', 'Iron Head', 'Swords Dance'] },
+                    { name: 'bronzong',    nature: 'Impish',  ability: 'Levitate',     item: 'Leftovers',    moves: ['Payback', 'Earthquake', 'Flash Cannon', 'Psychic'] },
+                    { name: 'hitmontop',   nature: 'Adamant', ability: 'Intimidate',   item: 'Choice Scarf', moves: ['Close Combat', 'Rock Slide', 'Aerial Ace', 'Bulk Up'] },
+                    { name: 'absol',       nature: 'Adamant', ability: 'Super Luck',   item: 'Life Orb',     moves: ['Shadow Ball', 'Ice Beam', 'Psycho Cut', 'Night Slash'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'hippowdon',   nature: 'Impish',  ability: 'Sand Stream',  item: 'Leftovers',    moves: ['Iron Head', 'Ice Fang', 'Earthquake', 'Stone Edge', 'Fire Fang', 'Slack Off'] },
+                    { name: 'aegislash-shield', nature: 'Adamant', ability: 'Stance Change', item: 'Choice Band', moves: ['Pursuit', 'Swords Dance', 'Iron Head', 'Sacred Sword', "King's Shield", 'Flash Cannon', 'Shadow Ball'] },
+                    { name: 'heatran',     nature: 'Timid',   ability: 'Flash Fire',   item: 'Choice Scarf', moves: ['Dragon Pulse', 'Earth Power', 'Lava Plume', 'Flash Cannon', 'Stone Edge', 'Hidden Power'] },
+                    { name: 'donphan',     nature: 'Adamant', ability: 'Sturdy',       item: 'Choice Band',  moves: ['Fire Fang', 'Thunder Fang', 'Heavy Slam', 'Earthquake', 'Seed Bomb', 'Gunk Shot', 'Knock Off'] },
+                    { name: 'skarmory',    nature: 'Careful', ability: 'Sturdy',       item: 'Leftovers',    moves: ['Roost', 'Brave Bird', 'Iron Head', 'Whirlwind'] },
+                    { name: 'emboar',      nature: 'Adamant', ability: 'Reckless',     item: 'Choice Scarf', moves: ['Earthquake', 'Stone Edge', 'Sucker Punch', 'Zen Headbutt', 'Flare Blitz'] },
+                ]
+            }
+        }
     },
 
     {
@@ -894,7 +1218,28 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Cave Of Justice (Route 210 North)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'infernape',   nature: '',        ability: 'Iron Fist',    item: 'Choice Scarf', moves: ['Flare Blitz', 'Thunder Punch', 'Close Combat', 'Gunk Shot'] },
+                    { name: 'gliscor',     nature: '',        ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Facade', 'Earthquake', 'Roost', 'Swords Dance'] },
+                    { name: 'serperior',   nature: '',        ability: 'Contrary',     item: 'Choice Specs', moves: ['Leech Seed', 'Hidden Power', 'Leaf Storm', 'Dragon Pulse'] },
+                    { name: 'rotom-wash',  nature: '',        ability: 'Levitate',     item: 'Leftovers',    moves: ['Hydro Pump', 'Discharge', 'Will-O-Wisp', 'Pain Split'] },
+                    { name: 'tyranitar',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
+                    { name: 'dialga',      nature: '',        ability: 'Pressure',     item: 'Shuca Berry',  moves: ['Thunder', 'Dragon Pulse', 'Fire Blast', 'Earth Power'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'infernape',   nature: '',        ability: 'Iron Fist',    item: 'Choice Band',  moves: ['Flare Blitz', 'Thunder Punch', 'Close Combat', 'Earthquake', 'Gunk Shot'] },
+                    { name: 'gliscor',     nature: '',        ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Facade', 'Earthquake', 'Roost', 'Swords Dance', 'Rock Slide'] },
+                    { name: 'serperior',   nature: '',        ability: 'Contrary',     item: 'Choice Specs', moves: ['Leech Seed', 'Hidden Power', 'Leaf Storm', 'Dragon Pulse'] },
+                    { name: 'rotom-wash',  nature: '',        ability: 'Levitate',     item: 'Leftovers',    moves: ['Hydro Pump', 'Discharge', 'Will-O-Wisp', 'Pain Split'] },
+                    { name: 'tyranitar',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
+                    { name: 'dialga',      nature: '',        ability: 'Pressure',     item: 'Shuca Berry',  moves: [] },
+                ]
+            }
+        }
     },
 
     {
@@ -903,7 +1248,28 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Floaroma Meadow',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'sylveon',         nature: '',        ability: '',             item: '',             moves: ['Hyper Voice'] },
+                    { name: 'absol',           nature: '',        ability: '',             item: '',             moves: [] },
+                    { name: 'jellicent-male',  nature: '',        ability: '',             item: 'Leftovers',    moves: ['Shadow Ball', 'Scald'] },
+                    { name: 'delphox',         nature: '',        ability: '',             item: '',             moves: ['Psychic'] },
+                    { name: 'roserade',        nature: '',        ability: '',             item: '',             moves: [] },
+                    { name: 'keldeo-ordinary', nature: '',        ability: 'Justified',    item: '',             moves: [] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'sylveon',         nature: '',        ability: 'Pixilate',     item: 'Choice Specs', moves: ['Wish', 'Shadow Ball', 'Hyper Voice', 'Psyshock'] },
+                    { name: 'gallade',         nature: '',        ability: 'Inner Focus',  item: 'Galladite',    moves: ['Psycho Cut', 'Swords Dance', 'Close Combat', 'Knock Off'] },
+                    { name: 'volcarona',       nature: '',        ability: 'Flame Body',   item: 'Choice Specs', moves: ['Flamethrower', 'Giga Drain', 'Bug Buzz', 'Quiver Dance', 'Hidden Power'] },
+                    { name: 'keldeo-ordinary', nature: '',        ability: 'Justified',    item: 'Choice Specs', moves: ['Hydro Pump', 'Focus Blast', 'Calm Mind'] },
+                    { name: 'arcanine',        nature: '',        ability: 'Intimidate',   item: 'Choice Band',  moves: ['Flare Blitz', 'Wild Charge', 'Close Combat', 'Crunch'] },
+                    { name: 'xerneas',         nature: '',        ability: 'Fairy Aura',   item: 'Choice Scarf', moves: ['Moonblast', 'Thunder', 'Focus Blast', 'Grass Knot'] },
+                ]
+            }
+        }
     },
 
     {
@@ -912,7 +1278,44 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Oreburgh Gate (Legends Cave)',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    // Medusa
+                    { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Choice Band',  moves: ['Dragon Claw', 'Earthquake', 'Iron Head', 'Fire Punch'] },
+                    { name: 'conkeldurr',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Assault Vest', moves: ['Drain Punch', 'Knock Off', 'Poison Jab', 'Ice Punch'] },
+                    { name: 'lucario',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Choice Scarf', moves: ['Close Combat', 'Meteor Mash', 'Crunch', 'Ice Punch'] },
+                    { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: 'Life Orb',     moves: ['Discharge', 'Thunder', 'Signal Beam', 'Shadow Ball'] },
+                    { name: 'garchomp',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'reshiram',    nature: 'Modest',  ability: 'Turboblaze',   item: 'Life Orb',     moves: ['Blue Flare', 'Roost', 'Outrage', 'Earth Power'] },
+                    // Eldir
+                    { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Choice Band',  moves: ['Dragon Dance', 'Waterfall', 'Crunch', 'Earthquake'] },
+                    { name: 'muk-alola',   nature: 'Adamant', ability: 'Poison Touch', item: 'Assault Vest', moves: ['Knock Off', 'Pursuit', 'Gunk Shot', 'Fire Punch'] },
+                    { name: 'alakazam',    nature: 'Modest',  ability: 'Magic Guard',  item: 'Focus Sash',   moves: ['Hidden Power', 'Psyshock', 'Energy Ball', 'Dazzling Gleam'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Poison Jab', 'Earthquake', 'Fire Blast'] },
+                    { name: 'slowbro',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
+                    { name: 'zekrom',      nature: 'Adamant', ability: 'Teravolt',     item: 'Life Orb',     moves: ['Bolt Strike', 'Dragon Claw', 'Outrage', 'Roost'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    // Medusa
+                    { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Choice Band',  moves: ['Dragon Claw', 'Earthquake', 'Iron Head', 'Fire Punch'] },
+                    { name: 'conkeldurr',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Assault Vest', moves: ['Drain Punch', 'Knock Off', 'Poison Jab', 'Ice Punch'] },
+                    { name: 'lucario',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Choice Scarf', moves: ['Close Combat', 'Meteor Mash', 'Crunch', 'Ice Punch'] },
+                    { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: 'Life Orb',     moves: ['Discharge', 'Thunder', 'Signal Beam', 'Shadow Ball'] },
+                    { name: 'garchomp',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'reshiram',    nature: 'Modest',  ability: 'Turboblaze',   item: 'Life Orb',     moves: ['Blue Flare', 'Roost', 'Outrage', 'Earth Power'] },
+                    // Eldir
+                    { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Choice Band',  moves: ['Dragon Dance', 'Waterfall', 'Crunch', 'Earthquake'] },
+                    { name: 'muk-alola',   nature: 'Adamant', ability: 'Poison Touch', item: 'Assault Vest', moves: ['Knock Off', 'Pursuit', 'Gunk Shot', 'Fire Punch'] },
+                    { name: 'alakazam',    nature: 'Modest',  ability: 'Magic Guard',  item: 'Focus Sash',   moves: ['Hidden Power', 'Psyshock', 'Energy Ball', 'Dazzling Gleam'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Poison Jab', 'Earthquake', 'Fire Blast'] },
+                    { name: 'slowbro',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
+                    { name: 'zekrom',      nature: 'Adamant', ability: 'Teravolt',     item: 'Life Orb',     moves: ['Bolt Strike', 'Dragon Claw', 'Outrage', 'Roost'] },
+                ]
+            }
+        }
     },
 
     {
@@ -921,7 +1324,28 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Jubilife City School',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'torterra',    nature: 'Adamant', ability: 'Overgrow',     item: 'Choice Band',  moves: ['Wood Hammer', 'Earthquake', 'Stone Edge', 'Seed Bomb'] },
+                    { name: 'empoleon',    nature: 'Modest',  ability: 'Torrent',      item: 'Focus Sash',   moves: ['Ice Beam', 'Hydro Pump', 'Grass Knot', 'Toxic'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Flare Blitz', 'Gunk Shot', 'Grass Knot'] },
+                    { name: 'staraptor',   nature: 'Adamant', ability: 'Reckless',     item: 'Choice Band',  moves: ['Brave Bird', 'Double-Edge', 'Close Combat', 'Quick Attack'] },
+                    { name: 'gliscor',     nature: 'Adamant', ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Earthquake', 'Ice Fang', 'Facade', 'Knock Off'] },
+                    { name: 'rotom',       nature: 'Modest',  ability: 'Levitate',     item: 'Choice Specs', moves: ['Thunderbolt', 'Shadow Ball', 'Will-O-Wisp', 'Defog'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'torterra',    nature: 'Adamant', ability: 'Overgrow',     item: 'Choice Band',  moves: ['Wood Hammer', 'Earthquake', 'Stone Edge', 'Seed Bomb'] },
+                    { name: 'empoleon',    nature: 'Modest',  ability: 'Torrent',      item: 'Choice Scarf', moves: ['Ice Beam', 'Hydro Pump', 'Grass Knot', 'Toxic'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Flare Blitz', 'Gunk Shot', 'Grass Knot'] },
+                    { name: 'staraptor',   nature: 'Adamant', ability: 'Reckless',     item: 'Choice Band',  moves: ['Brave Bird', 'Double-Edge', 'Close Combat', 'Quick Attack'] },
+                    { name: 'gliscor',     nature: 'Adamant', ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Earthquake', 'Ice Fang', 'Facade', 'Knock Off'] },
+                    { name: 'manaphy',     nature: 'Modest',  ability: 'Hydration',    item: 'Choice Specs', moves: ['Surf', 'Ice Beam', 'Energy Ball', 'Tail Glow'] },
+                ]
+            }
+        }
     },
 
     {
@@ -930,7 +1354,28 @@ const BOSSES = [
         title: '',
         region: 'Sinnoh',
         location: 'Route 227',
-        difficulties: {}
+        difficulties: {
+            medium: {
+                pokemon: [
+                    { name: 'charizard',   nature: 'Modest',  ability: 'Blaze',        item: 'Focus Sash',   moves: ['Fire Blast', 'Air Slash', 'Focus Blast', 'Roost'] },
+                    { name: 'garchomp',    nature: 'Adamant', ability: 'Rough Skin',   item: 'Focus Sash',   moves: ['Earthquake', 'Outrage', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'tangrowth',   nature: 'Modest',  ability: 'Chlorophyll',  item: 'Choice Specs', moves: ['Solar Beam', 'Ancient Power', 'Sludge Bomb', 'Focus Blast'] },
+                    { name: 'torkoal',     nature: 'Bold',    ability: 'Drought',      item: 'Leftovers',    moves: ['Shell Smash', 'Fire Blast', 'Earth Power', 'Yawn'] },
+                    { name: 'volcarona',   nature: 'Modest',  ability: 'Flame Body',   item: 'Life Orb',     moves: ['Fire Blast', 'Giga Drain', 'Bug Buzz', 'Roost'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Grass Knot', 'Fire Blast', 'Earthquake'] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'groudon',     nature: 'Adamant', ability: 'Drought',      item: 'Choice Band',  moves: ['Earthquake', 'Stone Edge', 'Fire Blast', 'Dragon Tail'] },
+                    { name: 'garchomp',    nature: 'Adamant', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Earthquake', 'Outrage', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'tangrowth',   nature: 'Modest',  ability: 'Chlorophyll',  item: 'Choice Specs', moves: ['Solar Beam', 'Ancient Power', 'Sludge Bomb', 'Focus Blast'] },
+                    { name: 'torkoal',     nature: 'Bold',    ability: 'Drought',      item: 'Leftovers',    moves: ['Shell Smash', 'Fire Blast', 'Earth Power', 'Yawn'] },
+                    { name: 'volcarona',   nature: 'Modest',  ability: 'Flame Body',   item: 'Choice Specs', moves: ['Fire Blast', 'Giga Drain', 'Bug Buzz', 'Roost'] },
+                    { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Grass Knot', 'Fire Blast', 'Earthquake'] },
+                ]
+            }
+        }
     },
 
     {
