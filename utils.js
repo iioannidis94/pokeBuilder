@@ -37,6 +37,14 @@ function multAtkVsTypes(atk, types) {
 function spriteImg(p, cls = '') { 
     const b64 = SPRITES[String(p.id)] || ''; 
     if (b64) return `<img class="${cls}" src="data:image/png;base64,${b64}" alt="${p.name}">`;
+    // Mega Evolution IDs 10062–10080 have incorrect/shifted sprites in the PokeAPI path;
+    // use Pokémon Showdown sprites (keyed by name) which are correct.
+    const isBrokenMega = p.id >= 10062 && p.id <= 10080;
+    if (isBrokenMega) {
+        const showdownName = p.name; // already in showdown format (e.g. "pidgeot-mega")
+        const spriteUrl = `https://play.pokemonshowdown.com/sprites/gen6/${showdownName}.png`;
+        return `<img class="${cls}" src="${spriteUrl}" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
+    }
     // Alolan form IDs (10091–10108) have incorrect/duplicate sprites in the main PokeAPI path;
     // use the generation-vii sprites which are correct for all Alolan forms.
     // In the gen-vii/usum directory, IDs 10093–10099 are duplicates or placeholders,
