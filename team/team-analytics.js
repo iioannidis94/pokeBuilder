@@ -315,7 +315,115 @@ function getBestDamageEstimate(atkMon, defPoke, defSlotData) {
 }
 
 // ==========================================
-// 5. UI HELPERS
+// 5. STAT COMPARISON
+// ==========================================
+
+/**
+ * Calculates final battle stats for a Pokémon given base stats, IV, EV, level, nature.
+ * For opponents pass iv=31, ev=252, level=100, nature=null.
+ */
+function calcFinalStats(bs, iv, ev, level, nature) {
+    const lv = Number(level) || 100;
+    const statKeys = [
+        { key: 'hp',  label: 'HP',   mapKey: 'HP'    },
+        { key: 'atk', label: 'ATK',  mapKey: 'ATK'   },
+        { key: 'def', label: 'DEF',  mapKey: 'DEF'   },
+        { key: 'spa', label: 'SpA',  mapKey: 'SPATK' },
+        { key: 'spd', label: 'SpD',  mapKey: 'SPDEF' },
+        { key: 'spe', label: 'SPE',  mapKey: 'SPD'   },
+    ];
+    const result = {};
+    statKeys.forEach(({ key, label, mapKey }) => {
+        const base = Number(bs[key]) || 50;
+        const ivVal  = iv  !== null ? (typeof iv  === 'object' ? (iv [mapKey]  === '' || iv [mapKey]  === undefined ? 31 : Number(iv [mapKey])  || 0) : iv)  : 31;
+        const evVal  = ev  !== null ? (typeof ev  === 'object' ? (ev [mapKey]  === '' || ev [mapKey]  === undefined ?  0 : Number(ev [mapKey])  || 0) : ev)  :  0;
+        const rawBase = Math.floor(((2 * base + ivVal + Math.floor(evVal / 4)) * lv) / 100);
+        let final;
+        if (key === 'hp') {
+            final = rawBase + lv + 10;
+        } else {
+            const nat = getNatureMultiplier(nature, mapKey);
+            final = Math.floor((rawBase + 5) * nat);
+        }
+        result[label] = final;
+    });
+    return result;
+}
+
+const STAT_LABELS   = ['HP', 'ATK', 'DEF', 'SpA', 'SpD', 'SPE'];
+const STAT_COLORS   = { HP: '#63d471', ATK: '#ff6b6b', DEF: '#4dabf7', SpA: '#cc5de8', SpD: '#74c0fc', SPE: '#ffd43b' };
+
+window.calcStatView = window.calcStatView || 'ATK';
+window.setCalcStatView = function(stat) { window.calcStatView = stat; renderTeamSlots(); };
+
+function getStatComparisonHTML(selected) {
+    if (!selected || !selected.length) return '';
+
+    const activeStat = window.calcStatView || 'ATK';
+
+    // Compute my team final stats
+    const myRows = selected.map(mon => {
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || {};
+        const stats = calcFinalStats(bs, mon.slot.iv || {}, mon.slot.ev || {}, mon.slot.level, mon.slot.nature);
+        return { name: mon.p.name.replace(/-/g, ' '), stats, isOpp: false };
+    });
+
+    // Compute opponent team at max (31 IV, 252 EV, Lv 100)
+    const oppRows = [];
+    if (typeof window !== 'undefined' && window.oppTeam && window.oppTeam.length) {
+        window.oppTeam.forEach(opp => {
+            const opId = typeof opp === 'number' ? opp : opp.id;
+            const op   = (typeof POKE !== 'undefined') ? POKE.find(p => p.id === opId) : null;
+            if (!op) return;
+            const bs   = (typeof BASE_STATS !== 'undefined' && BASE_STATS[op.id]) || {};
+            const stats = calcFinalStats(bs, 31, 252, 100, null);
+            oppRows.push({ name: op.name.replace(/-/g, ' '), stats, isOpp: true });
+        });
+    }
+
+    const allRows = [...myRows, ...oppRows];
+    const maxVal  = Math.max(...allRows.map(r => r.stats[activeStat] || 0), 1);
+    const myMax   = Math.max(...myRows.map(r => r.stats[activeStat] || 0), 1);
+
+    const color   = STAT_COLORS[activeStat] || '#4dabf7';
+
+    const buttons = STAT_LABELS.map(s => {
+        const active = s === activeStat;
+        const c      = STAT_COLORS[s];
+        return `<button onclick="window.setCalcStatView('${s}')" style="padding:4px 10px; border-radius:20px; border:1px solid ${active ? c : '#555'}; background:${active ? c + '28' : 'transparent'}; color:${active ? c : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">${s}</button>`;
+    }).join('');
+
+    const renderRow = (row) => {
+        const val  = row.stats[activeStat] || 0;
+        const pct  = Math.max(8, Math.round((val / maxVal) * 100));
+        const isBest = !row.isOpp && val === myMax && myMax > 0;
+        const rowColor = row.isOpp ? '#ff6b6b' : (isBest ? color : 'rgba(255,255,255,0.55)');
+        const label = row.isOpp
+            ? `<span title="Max stats (31 IV / 252 EV / Lv 100)" style="font-size:9px; background:rgba(255,107,107,0.15); border:1px solid #ff6b6b; color:#ff6b6b; border-radius:2px; padding:0 4px; margin-left:3px;">MAX</span>`
+            : (isBest ? `<span style="font-size:9px; background:${color}22; border:1px solid ${color}; color:${color}; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
+        return `<div style="display:grid; grid-template-columns:130px 1fr 44px; gap:8px; align-items:center; font-size:11px;">
+            <span style="color:${rowColor}; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize;">${row.name}${label}</span>
+            <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${rowColor};"></div></div>
+            <span style="font-weight:900; color:${rowColor}; text-align:right;">${val}</span>
+        </div>`;
+    };
+
+    const mySection  = myRows.sort((a,b)  => (b.stats[activeStat]||0) - (a.stats[activeStat]||0)).map(r => renderRow(r)).join('');
+    const oppSection = oppRows.length
+        ? `<div style="margin-top:6px; border-top:1px dashed rgba(255,107,107,0.3); padding-top:6px; display:flex; flex-direction:column; gap:6px;">${oppRows.sort((a,b) => (b.stats[activeStat]||0) - (a.stats[activeStat]||0)).map(r => renderRow(r)).join('')}</div>`
+        : '';
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}55; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">📊 Stat Comparison — ${activeStat}</strong>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin:8px 0 10px;">${buttons}</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">${mySection}</div>
+        ${oppSection}
+        ${oppRows.length ? `<p style="margin:8px 0 0; font-size:10px; color:var(--dim);">🔴 Opponent stats shown at maximum (31 IV · 252 EV · Lv 100) for reference.</p>` : ''}
+    </div>`;
+}
+
+// ==========================================
+// 6. UI HELPERS
 // ==========================================
 
 function getArchetypeHTML(selected) {
