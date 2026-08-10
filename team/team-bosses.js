@@ -48,7 +48,7 @@
         const listEl = document.getElementById('bossListPanel');
         if (!listEl) return;
 
-        if (!window.BOSSES || !window.BOSSES.length) {
+        if (typeof BOSSES === 'undefined' || !BOSSES.length) {
             listEl.innerHTML = '<div style="padding:16px; color:var(--dim); font-size:13px;">Δεν βρέθηκαν bosses.</div>';
             return;
         }
@@ -96,7 +96,7 @@
         const detailEl = document.getElementById('bossDetailPanel');
         if (!detailEl) return;
 
-        const boss = window.BOSSES && selectedBossId
+        const boss = (typeof BOSSES !== 'undefined') && selectedBossId
             ? BOSSES.find(b => b.id === selectedBossId)
             : null;
 
@@ -150,6 +150,23 @@
             const effectiveItem = (selectedDifficulty === 'easy') ? '' : (mon.item || '');
             const effectiveNature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
 
+            // Base stats
+            const bs = (pokeEntry && typeof BASE_STATS !== 'undefined') ? BASE_STATS[String(pokeEntry.id)] : null;
+            const STAT_LABELS = [['hp','HP','#a3e4b5'],['atk','ATK','#f28b82'],['def','DEF','#fbb26a'],['spa','SpA','#85c1e9'],['spd','SpD','#82e0aa'],['spe','SPE','#f9e79f']];
+            const MAX_STAT = 255;
+            const statsHtml = bs ? `<div style="display:flex; flex-direction:column; gap:2px; margin-top:4px;">` +
+                STAT_LABELS.map(([key, label, color]) => {
+                    const val = bs[key] || 0;
+                    const pct = Math.round((val / MAX_STAT) * 100);
+                    return `<div style="display:flex; align-items:center; gap:4px; font-size:10px;">
+                        <span style="width:26px; text-align:right; color:var(--dim); font-weight:700;">${label}</span>
+                        <div style="flex:1; background:var(--brd); border-radius:4px; height:6px; overflow:hidden;">
+                            <div style="width:${pct}%; background:${color}; height:100%; border-radius:4px;"></div>
+                        </div>
+                        <span style="width:24px; color:var(--txt); font-weight:700;">${val}</span>
+                    </div>`;
+                }).join('') + `</div>` : '';
+
             return `<div style="background:var(--bg); border:1px solid var(--brd); border-radius:10px; padding:12px; display:flex; gap:10px; align-items:flex-start; min-width:0;">
                 <div style="flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px;">
                     ${spriteHtml}
@@ -162,6 +179,7 @@
                         ${effectiveItem ? `<span style="color:var(--dim);">Item: <b style="color:#ffc107;">${effectiveItem.replace(/-/g, ' ')}</b></span>` : ''}
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:4px;">${movesHtml}</div>
+                    ${statsHtml}
                 </div>
             </div>`;
         }).join('');
