@@ -362,13 +362,13 @@ function copyTeamReport() {
         shareUrl = window.location.origin + window.location.pathname + '#team=' + b64;
     } catch (e) { /* ignore */ }
 
-    const report = [
+    const parts = [
         '=== pokeBuilder Team Export ===',
         '',
         showdownLines.join('\n\n'),
-        '',
-        shareUrl ? `Share Link: ${shareUrl}` : '',
-    ].filter(l => l !== undefined).join('\n').trim();
+    ];
+    if (shareUrl) parts.push('', `Share Link: ${shareUrl}`);
+    const report = parts.join('\n').trim();
 
     navigator.clipboard.writeText(report).then(() => {
         alert(`📋 Team report copied!\n\nIncludes Showdown format for ${showdownLines.length} Pokémon + share link.`);
@@ -377,6 +377,8 @@ function copyTeamReport() {
     });
 }
 
+// 3. Δημιουργία του Κουμπιού "Share Link" δυναμικά
+(function injectShareButton() {
     window.addEventListener('DOMContentLoaded', () => {
         const exportBtn = document.getElementById('teamExport');
         if (!exportBtn) return;
