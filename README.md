@@ -2,7 +2,7 @@
 
 A competitive Pokémon builder focused on **fast team creation, matchup clarity, and practical AI-assisted decisions**.
 
-The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **VGC 2024 Regulation G** and **PRO PvP** workflows.
+The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **PRO PvP** workflows.
 
 ---
 
@@ -48,9 +48,7 @@ The goal is not just to list Pokémon, but to help the user:
 ### Battle Analysis
 - Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
 - Speed-control warnings when a team is too slow
-- Meta Threat Check with persistent format switch:
-  - **VGC 2024 Regulation G**
-  - **PRO PvP** (3-tier threat model)
+- Meta Threat Check against the **PRO PvP** 3-tier threat model (Sweepers / Pivots / Walls)
 - **Speed Tier Comparison** versus current meta threats
 - **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel, right next to Speed Tier — my team shown in **green** using actual EV/IV/level/nature, opponent shown in **red** at maximum potential (31 IV · 252 EV · Lv 100); switch between stats with pill buttons
 - Assassin / Target Mode with editable opponent team

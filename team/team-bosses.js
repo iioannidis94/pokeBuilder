@@ -173,8 +173,8 @@
 
         window.clearOpponents();
 
-        teamData.forEach(mon => {
-            if (window.oppTeam.length >= 6) return;
+        const limited = teamData.slice(0, 6);
+        for (const mon of limited) {
             const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p =>
                     p.name.toLowerCase() === (mon.name || '').toLowerCase() ||
@@ -182,7 +182,7 @@
                 )
                 : null;
 
-            if (!pokeEntry) return;
+            if (!pokeEntry) continue;
 
             const moveNames  = (mon.moves || []).filter(m => m && m.trim());
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
@@ -200,7 +200,7 @@
                 iv:  { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
                 ev:  { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
             });
-        });
+        }
 
         window.saveOpponents();
 
