@@ -74,14 +74,46 @@ function autoRecommendTeam() {
         baseScore += (totalIvs); 
 
         if (candidate.slot.ability) baseScore += 60;
-        // Bonus for top-tier competitive abilities
+        // Bonus for competitive abilities — replaces the flat +60 for recognised ones
         const abilityNorm = (candidate.slot.ability || '').toLowerCase().replace(/[^a-z]/g, '');
         const eliteAbilities = {
-            sereenegrace: 150, speedboost: 150, intimidate: 140, regenerator: 140,
-            magicguard: 130, toughclaws: 120, download: 120, adaptability: 120,
-            contrary: 120, levitate: 110, drought: 110, drizzle: 110, sandstream: 110,
-            snowwarning: 110, moxie: 110, hustle: 100, ironfist: 100, sheerforce: 100,
-            multiscale: 100, naturalcure: 100, pressure: 80, roughskin: 80, ironbarbs: 80,
+            // ─── Weather Setters ───────────────────────────────────────────────────
+            drought: 150, drizzle: 150, sandstream: 150, snowwarning: 150,
+            cloudnine: 70, airlock: 70,
+            // ─── Terrain Setters ──────────────────────────────────────────────────
+            electricsurge: 140, psychicsurge: 140, grassysurge: 140, mistysurge: 140,
+            // ─── Speed & Sweeper ──────────────────────────────────────────────────
+            speedboost: 160, contrary: 130, swordofruin: 130, beadsofdruin: 130,
+            tabletofruin: 130, vesselofruin: 130,
+            trickster: 110, moxie: 120, beastboost: 120, powerspot: 80,
+            hustle: 100, ironfist: 110, sheerforce: 120, reckless: 110,
+            strongjaw: 100, toughclaws: 130, adaptability: 130, download: 130,
+            technician: 120, punkrock: 110, transistor: 120, dragonsmaw: 120,
+            // ─── Defensive / Passive ──────────────────────────────────────────────
+            intimidate: 150, regenerator: 150, multiscale: 120,
+            magicguard: 140, wonderguard: 90, solidrock: 90, filterfr: 90,
+            filter: 90, prismarmor: 90,
+            naturalcure: 110, poisonheal: 120, guts: 120, marvelscale: 90,
+            thickfat: 100, waterabsorb: 100, voltabsorb: 100, flashfire: 100,
+            levitate: 120, sapsipper: 100, motordrive: 100, lightningrod: 100,
+            stormdrain: 100, eartheater: 100,
+            immunity: 80, owntempo: 70, innerfocus: 70, oblivious: 60,
+            // ─── Weather / Terrain Beneficiaries ──────────────────────────────────
+            swiftswim: 100, chlorophyll: 100, sandrush: 100, slushrush: 100,
+            icebody: 70, raindish: 70, sandforce: 90, sandveil: 60, snowcloak: 60,
+            solarpanel: 70, leafguard: 60, flowergift: 60,
+            electricseed: 70, psychicseed: 70, grassyseed: 70, mistyseed: 70,
+            surgesurfer: 100, hadronengine: 130, orichalcumpulse: 130,
+            // ─── Hazard / Utility ─────────────────────────────────────────────────
+            pressure: 80, roughskin: 90, ironbarbs: 90, aftermath: 80,
+            cursedbody: 70, flamebody: 70, poisonpoint: 60, effectspore: 60,
+            static: 60, synchronize: 60,
+            unaware: 100, shadowtag: 80, arenatrap: 80, magnetpull: 80,
+            // ─── Role / Misc ──────────────────────────────────────────────────────
+            protosynthesis: 120, quarkdrive: 120, zenmode: 80, powerofalchemy: 70,
+            serenegrace: 160, skilllink: 100, sniper: 70, superluck: 60,
+            moody: 80, pickpocket: 60, prankster: 110, infiltrator: 90,
+            magician: 70, trace: 80, imposter: 90,
         };
         if (eliteAbilities[abilityNorm]) baseScore += eliteAbilities[abilityNorm] - 60; // replace flat +60
         if (candidate.slot.nature) baseScore += 40;
@@ -231,6 +263,150 @@ function autoRecommendTeam() {
                 if (candidate.details.role === 'tank' && tanks >= 2) currentScore -= 100; 
                 if (candidate.details.role === 'physical' && phys >= 3) currentScore -= 100; 
                 if (candidate.details.role === 'special' && spec >= 3) currentScore -= 100; 
+
+                // ============================================================
+                // 4. ABILITY SYNERGY ENGINE
+                // Detect what the current team already brings (weather, terrain,
+                // pivoting, etc.) and reward candidates that synergise with it.
+                // Also reward setters more when the team already has beneficiaries.
+                // ============================================================
+                const teamAbilities = bestTeam.map(m => (m.slot.ability || '').toLowerCase().replace(/[^a-z]/g, ''));
+                const candAb = (candidate.slot.ability || '').toLowerCase().replace(/[^a-z]/g, '');
+
+                // Identify conditions the team already sets
+                const teamHasSand     = teamAbilities.some(a => a === 'sandstream');
+                const teamHasRain     = teamAbilities.some(a => a === 'drizzle');
+                const teamHasSun      = teamAbilities.some(a => a === 'drought');
+                const teamHasHail     = teamAbilities.some(a => a === 'snowwarning');
+                const teamHasElecTer  = teamAbilities.some(a => a === 'electricsurge');
+                const teamHasPsyTer   = teamAbilities.some(a => a === 'psychicsurge');
+                const teamHasGrsTer   = teamAbilities.some(a => a === 'grassysurge');
+                const teamHasMstTer   = teamAbilities.some(a => a === 'mistysurge');
+                const teamHasIntim    = teamAbilities.some(a => a === 'intimidate');
+
+                // Rain synergies
+                if (teamHasRain) {
+                    if (candAb === 'swiftswim') { currentScore += 200; tempLog.push('Swift Swim+Rain (+200)'); }
+                    if (candAb === 'dryskin')   { currentScore += 120; tempLog.push('Dry Skin+Rain (+120)'); }
+                    if (candAb === 'raindish')  { currentScore += 80;  tempLog.push('Rain Dish+Rain (+80)'); }
+                    if (candAb === 'hydration') { currentScore += 80;  tempLog.push('Hydration+Rain (+80)'); }
+                    if (candidate.p.types.includes('water')) { currentScore += 60; tempLog.push('Water in Rain (+60)'); }
+                }
+                // Drizzle setter bonus when team already has Swift Swim / rain abusers
+                if (!teamHasRain && candAb === 'drizzle') {
+                    const rainAbusers = ['swiftswim', 'dryskin', 'raindish', 'hydration'];
+                    const count = teamAbilities.filter(a => rainAbusers.includes(a)).length;
+                    if (count > 0) { currentScore += count * 150; tempLog.push(`Drizzle setter+${count} abusers (+${count*150})`); }
+                }
+
+                // Sun synergies
+                if (teamHasSun) {
+                    if (candAb === 'chlorophyll') { currentScore += 200; tempLog.push('Chlorophyll+Sun (+200)'); }
+                    if (candAb === 'solarpower')  { currentScore += 140; tempLog.push('Solar Power+Sun (+140)'); }
+                    if (candAb === 'dryskin')     { currentScore -= 60;  tempLog.push('Dry Skin hurt by Sun (-60)'); }
+                    if (candidate.p.types.includes('fire')) { currentScore += 60; tempLog.push('Fire in Sun (+60)'); }
+                    if (candidate.p.types.includes('grass') && candAb !== 'solarpower') { currentScore += 40; tempLog.push('Grass in Sun (+40)'); }
+                }
+                if (!teamHasSun && candAb === 'drought') {
+                    const sunAbusers = ['chlorophyll', 'solarpower'];
+                    const count = teamAbilities.filter(a => sunAbusers.includes(a)).length;
+                    if (count > 0) { currentScore += count * 150; tempLog.push(`Drought setter+${count} abusers (+${count*150})`); }
+                }
+
+                // Sand synergies
+                if (teamHasSand) {
+                    if (candAb === 'sandrush')   { currentScore += 200; tempLog.push('Sand Rush+Sand (+200)'); }
+                    if (candAb === 'sandforce')  { currentScore += 140; tempLog.push('Sand Force+Sand (+140)'); }
+                    if (candAb === 'sandveil')   { currentScore += 60;  tempLog.push('Sand Veil+Sand (+60)'); }
+                    if (candidate.p.types.includes('rock') || candidate.p.types.includes('ground') || candidate.p.types.includes('steel')) {
+                        currentScore += 60; tempLog.push('Sand immunity type (+60)');
+                    }
+                }
+                if (!teamHasSand && candAb === 'sandstream') {
+                    const sandAbusers = ['sandrush', 'sandforce', 'sandveil'];
+                    const count = teamAbilities.filter(a => sandAbusers.includes(a)).length;
+                    if (count > 0) { currentScore += count * 150; tempLog.push(`Sand Stream setter+${count} abusers (+${count*150})`); }
+                }
+
+                // Hail/Snow synergies
+                if (teamHasHail) {
+                    if (candAb === 'slushrush')  { currentScore += 200; tempLog.push('Slush Rush+Snow (+200)'); }
+                    if (candAb === 'icebody')    { currentScore += 80;  tempLog.push('Ice Body+Snow (+80)'); }
+                    if (candAb === 'snowcloak')  { currentScore += 60;  tempLog.push('Snow Cloak+Snow (+60)'); }
+                    if (candidate.p.types.includes('ice')) { currentScore += 50; tempLog.push('Ice in Snow (+50)'); }
+                }
+
+                // Electric Terrain synergies
+                if (teamHasElecTer) {
+                    if (candAb === 'surgesurfer')   { currentScore += 200; tempLog.push('Surge Surfer+E.Terrain (+200)'); }
+                    if (candAb === 'hadronengine')  { currentScore += 180; tempLog.push('Hadron Engine+E.Terrain (+180)'); }
+                    if (candAb === 'electricseed')  { currentScore += 100; tempLog.push('Electric Seed+E.Terrain (+100)'); }
+                    if (candidate.p.types.includes('electric')) { currentScore += 50; tempLog.push('Electric in E.Terrain (+50)'); }
+                }
+
+                // Psychic Terrain synergies
+                if (teamHasPsyTer) {
+                    if (candAb === 'psychicseed')  { currentScore += 100; tempLog.push('Psychic Seed+P.Terrain (+100)'); }
+                    if (candidate.p.types.includes('psychic')) { currentScore += 50; tempLog.push('Psychic in P.Terrain (+50)'); }
+                }
+
+                // Grassy Terrain synergies
+                if (teamHasGrsTer) {
+                    if (candAb === 'grassyseed')   { currentScore += 100; tempLog.push('Grassy Seed+G.Terrain (+100)'); }
+                    if (candAb === 'grasspelt')    { currentScore += 80;  tempLog.push('Grass Pelt+G.Terrain (+80)'); }
+                    if (candidate.p.types.includes('grass')) { currentScore += 40; tempLog.push('Grass in G.Terrain (+40)'); }
+                }
+
+                // Misty Terrain synergies
+                if (teamHasMstTer) {
+                    if (candAb === 'mistyseed')    { currentScore += 100; tempLog.push('Misty Seed+M.Terrain (+100)'); }
+                    if (candidate.p.types.includes('fairy')) { currentScore += 40; tempLog.push('Fairy in M.Terrain (+40)'); }
+                }
+
+                // Intimidate chain: reward 2nd Intimidate as rotation partner, penalise 3+
+                if (teamHasIntim && candAb === 'intimidate') {
+                    const intimCount = teamAbilities.filter(a => a === 'intimidate').length;
+                    if (intimCount === 1) { currentScore += 120; tempLog.push('Intimidate pair (+120)'); }
+                    else { currentScore -= 80; tempLog.push('3rd Intimidate (-80)'); }
+                }
+
+                // Regenerator: reward 2nd Regen (rotation core), soft-penalise 3+
+                if (teamAbilities.includes('regenerator') && candAb === 'regenerator') {
+                    const regenCount = teamAbilities.filter(a => a === 'regenerator').length;
+                    if (regenCount === 1) { currentScore += 100; tempLog.push('Regen pair (+100)'); }
+                    else { currentScore -= 60; tempLog.push('3rd Regen (-60)'); }
+                }
+
+                // Prankster: reward support pairings; penalise too many setters
+                if (candAb === 'prankster') {
+                    if (candidate.details.role === 'tank') { currentScore += 80; tempLog.push('Prankster support tank (+80)'); }
+                }
+
+                // Trick Room synergy: slow tanks become sweepers with a TR setter
+                const teamHasTR = bestTeam.some(m => (m.slot.moveNames || []).some(mn => {
+                    const md = typeof MOVE_INFO !== 'undefined' ? (MOVE_INFO[mn] || MOVE_INFO[(mn || '').toLowerCase().replace(/\s+/g, '-')]) : null;
+                    return md && md.name && md.name.toLowerCase().includes('trick room');
+                }));
+                if (teamHasTR && candidate.details.rSpe < 70 && candidate.details.role !== 'tank') {
+                    currentScore += 150; tempLog.push('Slow Sweeper+TrickRoom (+150)');
+                }
+                if (candAb === 'trickroom') {
+                    // Not standard — penalise if already have TR
+                    if (teamHasTR) { currentScore -= 100; tempLog.push('Dupe TrickRoom (-100)'); }
+                }
+
+                // Speed tie / Paralysis support: reward Prankster + Paralysis enablers
+                const teamHasParaSupport = bestTeam.some(m => (m.slot.moveNames || []).some(mn => {
+                    const md = typeof MOVE_INFO !== 'undefined' ? (MOVE_INFO[mn] || MOVE_INFO[(mn || '').toLowerCase().replace(/\s+/g, '-')]) : null;
+                    return md && md.cat === 'status' && md.type === 'electric';
+                }));
+                if (teamHasParaSupport && candAb === 'swiftswim') { /* no extra bonus */ }
+
+                // Weather-immune / Overcast: if team has multiple weather setters, Cloud Nine/Air Lock gets bonus
+                const weatherSetterCount = teamAbilities.filter(a => ['drought','drizzle','sandstream','snowwarning'].includes(a)).length;
+                if (weatherSetterCount >= 2 && (candAb === 'cloudnine' || candAb === 'airlock')) {
+                    currentScore += 120; tempLog.push('Weather cancel utility (+120)');
+                }
             }
 
             // Assassin Mode Check

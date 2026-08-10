@@ -2,7 +2,8 @@
 
 ### 🧠 AI & Competitive Logic
 - **Ability Intelligence:** The AI reads specific Abilities (e.g. *Levitate*, *Thick Fat*, *Flash Fire*) and adjusts defensive synergy scores dynamically — immunities and resistances granted by abilities are fully factored in.
-- **Elite Ability Scoring:** The Auto-Build AI now scores 25+ top-tier competitive abilities individually (Serene Grace, Speed Boost, Intimidate, Regenerator, Magic Guard, Contrary, Levitate, weather setters, etc.) giving significantly higher bonuses than generic abilities.
+- **Elite Ability Scoring:** The Auto-Build AI now scores 80+ top-tier competitive abilities individually (weather setters, terrain setters, Speed Boost, Intimidate, Regenerator, Magic Guard, Contrary, Levitate, weather beneficiaries, etc.) giving significantly higher bonuses than generic abilities.
+- **Ability Synergy Engine:** When building the team in Phase 2, the AI detects what conditions the current team already brings (Rain, Sun, Sand, Snow, Electric/Psychic/Grassy/Misty Terrain, Intimidate chains, Regenerator cores, Trick Room) and rewards candidates that synergise. E.g. Swift Swim next to Drizzle (+200), Sand Rush next to Sand Stream (+200), Slush Rush next to Snow Warning (+200), Surge Surfer next to Electric Surge (+200), and setter bonus when the team already has beneficiaries.
 - **Move Completeness & Glass Cannon Check:** The AI penalises Pokémon that are missing moves (−120 per missing move for Sweepers, −60 for Tanks). Fast glass-cannon Pokémon with fewer than 2 moves receive an additional −500 penalty, preventing them from crowding out well-built bulky threats.
 - **Key-Stat IV Quality:** For non-tank Pokémon, the AI checks IVs in the relevant attack stat and Speed — poor IVs (< 20) apply a scaling penalty so glass-cannon slots with bad IVs are deprioritised.
 - **Item Synergy:** Held items (Choice Band, Leftovers, Focus Sash, Life Orb, Assault Vest) influence the AI's team scoring and role classification.
@@ -14,12 +15,13 @@
 - **Precise Damage Calculations:** The Counters (Assassin Mode) panel now shows estimated damage output for the best counter move — including **OHKO / 2HKO / 3HKO** labels and a min–max damage % range using the standard Gen 9 formula.
 
 ### ⚔️ Team Builder & Analysis
-- Auto-Build 6 AI with Phase scoring: Raw Power, Defensive Synergy, Offensive Coverage, Role Balance.
+- Auto-Build 6 AI with Phase scoring: Raw Power, Defensive Synergy, Offensive Coverage, Role Balance, **Ability Synergy** (weather/terrain/pivot combos).
 - Assassin Mode / Target Mode: add an opponent team (manually or via Showdown paste) to see best counters from your roster. Each opponent Pokémon supports inline editing of **moves** (4 slots), **ability**, and **held item** — all persisted in `localStorage` and displayed as context badges in the Counters panel.
 - Pro-Tier Move Optimizer: role-aware move recommendations (Tank, Physical Sweeper, Special Sweeper).
 - Full stat calculator: Base Stats, IVs, EVs, Natures, Level — real stat values computed live.
 - Multi-team management with Import/Export JSON and Showdown paste support.
 - Clickable Type Chart modal on every type badge.
+- **Therian Formes:** Landorus-Therian (Intimidate), Tornadus-Therian (Regenerator) and Thundurus-Therian (Volt Absorb) are fully available in the Pokédex with correct base stats and types.
 
 ---
 
