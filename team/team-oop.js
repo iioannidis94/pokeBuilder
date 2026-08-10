@@ -30,6 +30,8 @@ window.setOppMode = function(mode) {
     window.saveOpponents();
     if (mode === 'bosses') {
         if (typeof window.openBossesModal === 'function') window.openBossesModal();
+        // renderTeamSlots will be called after the boss is loaded via loadBossAsOpponent
+        return;
     }
     if(typeof renderTeamSlots === 'function') renderTeamSlots();
 };
