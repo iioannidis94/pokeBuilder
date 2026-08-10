@@ -74,6 +74,16 @@ function autoRecommendTeam() {
         baseScore += (totalIvs); 
 
         if (candidate.slot.ability) baseScore += 60;
+        // Bonus for top-tier competitive abilities
+        const abilityNorm = (candidate.slot.ability || '').toLowerCase().replace(/[^a-z]/g, '');
+        const eliteAbilities = {
+            sereenegrace: 150, speedboost: 150, intimidate: 140, regenerator: 140,
+            magicguard: 130, toughclaws: 120, download: 120, adaptability: 120,
+            contrary: 120, levitate: 110, drought: 110, drizzle: 110, sandstream: 110,
+            snowwarning: 110, moxie: 110, hustle: 100, ironfist: 100, sheerforce: 100,
+            multiscale: 100, naturalcure: 100, pressure: 80, roughskin: 80, ironbarbs: 80,
+        };
+        if (eliteAbilities[abilityNorm]) baseScore += eliteAbilities[abilityNorm] - 60; // replace flat +60
         if (candidate.slot.nature) baseScore += 40;
         if (candidate.slot.item) {
             let item = candidate.slot.item.toLowerCase().replace(/[^a-z]/g, '');
@@ -110,6 +120,30 @@ function autoRecommendTeam() {
                 else if (moveData.power >= 70) baseScore += 30;
             }
         });
+
+        // Move completeness & glass cannon viability check
+        const filledMoves = (candidate.slot.moveNames || []).filter(x => x).length;
+        const missingMoves = 4 - filledMoves;
+        if (details.role !== 'tank') {
+            // Attackers are useless without moves — scale penalty by missing count
+            baseScore -= missingMoves * 120;
+            // Glass cannon (fast + low bulk): brutal if it has no real moves
+            const isGlassCannon = details.bulk < 280 && details.rSpe > 110;
+            if (isGlassCannon && filledMoves < 2) baseScore -= 500;
+        } else {
+            baseScore -= missingMoves * 60;
+        }
+        if (filledMoves === 4) baseScore += 80;
+
+        // Key-stat IV quality for sweepers (bad IVs in attack/speed = wasted slot)
+        if (details.role !== 'tank') {
+            const atkIV  = (candidate.slot.iv?.ATK   === '' || candidate.slot.iv?.ATK   === undefined) ? 31 : Number(candidate.slot.iv?.ATK);
+            const spaIV  = (candidate.slot.iv?.SPATK === '' || candidate.slot.iv?.SPATK === undefined) ? 31 : Number(candidate.slot.iv?.SPATK);
+            const speIV  = (candidate.slot.iv?.SPD   === '' || candidate.slot.iv?.SPD   === undefined) ? 31 : Number(candidate.slot.iv?.SPD);
+            const relevantIV = details.rAtk >= details.rSpa ? Math.min(atkIV, speIV) : Math.min(spaIV, speIV);
+            if (relevantIV < 20) baseScore -= (20 - relevantIV) * 15;
+        }
+
         candidate.baseScore = baseScore;
     });
 

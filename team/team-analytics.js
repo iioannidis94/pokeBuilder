@@ -99,18 +99,29 @@ const META_THREATS = [
     { id: 279,  name: 'Pelipper',        types: ['water',    'flying']   },
 ];
 
-// Top 10 threats in Pokemon Revolution Online (PRO) PvP — Gen 7 (USUM) mechanics
+// PRO PvP Meta — Pokemon Revolution Online (Gen 7 USUM mechanics) — 18 threats in 3 tiers
 const META_THREATS_PRO = [
-    { id: 645,  name: 'Landorus-T',   types: ['ground',   'flying']   },
-    { id: 445,  name: 'Garchomp',     types: ['dragon',   'ground']   },
-    { id: 598,  name: 'Ferrothorn',   types: ['grass',    'steel']    },
-    { id: 748,  name: 'Toxapex',      types: ['poison',   'water']    },
-    { id: 801,  name: 'Magearna',     types: ['steel',    'fairy']    },
-    { id: 36,   name: 'Clefable',     types: ['fairy']               },
-    { id: 376,  name: 'Metagross',    types: ['steel',    'psychic']  },
-    { id: 785,  name: 'Tapu Koko',    types: ['electric', 'fairy']   },
-    { id: 130,  name: 'Gyarados',     types: ['water',    'flying']  },
-    { id: 248,  name: 'Tyranitar',    types: ['rock',     'dark']    },
+    // Tier 1 — Sweepers (heavy offensive threats)
+    { id: 497,  name: 'Serperior',   types: ['grass'],              tier: 1 },
+    { id: 445,  name: 'Garchomp',    types: ['dragon',  'ground'],  tier: 1 },
+    { id: 461,  name: 'Weavile',     types: ['dark',    'ice'],     tier: 1 },
+    { id: 392,  name: 'Infernape',   types: ['fire',    'fighting'],tier: 1 },
+    { id: 149,  name: 'Dragonite',   types: ['dragon',  'flying'],  tier: 1 },
+    { id: 308,  name: 'Medicham',    types: ['fighting','psychic'], tier: 1 },
+    // Tier 2 — Pivots (bulky attackers & utility)
+    { id: 376,  name: 'Metagross',   types: ['steel',   'psychic'], tier: 2 },
+    { id: 130,  name: 'Gyarados',    types: ['water',   'flying'],  tier: 2 },
+    { id: 468,  name: 'Togekiss',    types: ['fairy',   'flying'],  tier: 2 },
+    { id: 385,  name: 'Jirachi',     types: ['steel',   'psychic'], tier: 2 },
+    { id: 212,  name: 'Scizor',      types: ['bug',     'steel'],   tier: 2 },
+    { id: 36,   name: 'Clefable',    types: ['fairy'],              tier: 2 },
+    // Tier 3 — Walls (defensive / support anchors)
+    { id: 598,  name: 'Ferrothorn',  types: ['grass',   'steel'],   tier: 3 },
+    { id: 748,  name: 'Toxapex',     types: ['poison',  'water'],   tier: 3 },
+    { id: 801,  name: 'Magearna',    types: ['steel',   'fairy'],   tier: 3 },
+    { id: 645,  name: 'Landorus-T',  types: ['ground',  'flying'],  tier: 3 },
+    { id: 248,  name: 'Tyranitar',   types: ['rock',    'dark'],    tier: 3 },
+    { id: 80,   name: 'Slowbro',     types: ['water',   'psychic'], tier: 3 },
 ];
 
 // Persist chosen format across page reloads
@@ -346,7 +357,7 @@ function getMetaThreatHTML(selected) {
     const analysis = getMetaThreatAnalysis(selected, threats);
     if (!analysis) return '';
 
-    const fmtLabel   = isPro ? 'PRO PvP Top 10' : 'VGC 2024 Top 10';
+    const fmtLabel    = isPro ? 'PRO PvP Meta (3 Tiers · 18)' : 'VGC 2024 Top 10';
     const accentColor = isPro ? '#f5a623' : '#4dabf7';
     const scoreColor  = analysis.score >= 70 ? '#63d471' : analysis.score >= 50 ? '#ffc107' : '#ff6b6b';
     const uncovered   = analysis.results.filter(r => r.coverage < 2);
@@ -356,7 +367,7 @@ function getMetaThreatHTML(selected) {
         <button onclick="window.setMetaFormat('pro')" style="padding:4px 12px; border-radius:20px; border:1px solid ${isPro ? '#f5a623' : '#555'}; background:${isPro ? 'rgba(245,166,35,0.18)' : 'transparent'}; color:${isPro ? '#f5a623' : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">PRO PvP</button>
     </div>`;
 
-    const threatBadges = analysis.results.map(r => {
+    const makeBadge = r => {
         const p = (typeof POKE !== 'undefined') ? POKE.find(x => x.id === r.id) : null;
         const sprite = (p && typeof spriteImg !== 'undefined') ? spriteImg(p, '') : '';
         const bgColor = r.coverage >= 4 ? '#2b8a3e' : r.coverage >= 2 ? '#1864ab' : '#7b2929';
@@ -367,7 +378,30 @@ function getMetaThreatHTML(selected) {
             <span style="font-size:10px; font-weight:bold; color:var(--txt); text-align:center; margin-top:3px;">${r.name.replace(/-/g, ' ')}</span>
             <span style="font-size:10px; font-weight:900; color:${r.coverage >= 2 ? '#63d471' : '#ff6b6b'};">${label}</span>
         </div>`;
-    }).join('');
+    };
+
+    let threatBadgesHTML = '';
+    if (isPro) {
+        const tierMeta = [
+            { tier: 1, label: '⚔️ Sweepers' },
+            { tier: 2, label: '🔄 Pivots' },
+            { tier: 3, label: '🛡️ Walls' },
+        ];
+        tierMeta.forEach(({ tier, label: tLabel }) => {
+            const group = analysis.results.filter(r => r.tier === tier);
+            if (!group.length) return;
+            threatBadgesHTML += `<div style="width:100%; margin-bottom:2px;">
+                <span style="font-size:10px; font-weight:900; color:${accentColor}; letter-spacing:.5px;">${tLabel}</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                ${group.map(makeBadge).join('')}
+            </div>`;
+        });
+    } else {
+        threatBadgesHTML = `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:${uncovered.length ? '10px' : '0'};">
+            ${analysis.results.map(makeBadge).join('')}
+        </div>`;
+    }
 
     return `<div style="margin:10px 0; padding:12px 14px; background:${accentColor}0d; border:1px solid ${accentColor}; border-radius:8px;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
@@ -375,9 +409,7 @@ function getMetaThreatHTML(selected) {
             <span style="font-size:13px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; padding:4px 10px; border-radius:20px; border:1px solid ${scoreColor};">${analysis.score}% Win Rate</span>
         </div>
         ${tabs}
-        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:${uncovered.length ? '10px' : '0'};">
-            ${threatBadges}
-        </div>
+        ${threatBadgesHTML}
         ${uncovered.length ? `<p style="margin:6px 0 0; font-size:11px; color:#ff6b6b;">⚠️ No super-effective coverage vs: <b>${uncovered.map(r => r.name).join(', ')}</b></p>` : ''}
     </div>`;
 }
