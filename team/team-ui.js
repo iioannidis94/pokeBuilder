@@ -168,7 +168,6 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     // Analytics (Archetype, Speed Control, Meta Threats)
     const archetypeHTML   = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
     const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
-    const speedTierHTML   = (typeof getSpeedTierComparisonHTML === 'function') ? getSpeedTierComparisonHTML(selected) : '';
     const metaThreatHTML  = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
 
@@ -178,7 +177,6 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         <!-- Archetype & Speed Control -->
         ${archetypeHTML}
         ${speedWarnHTML}
-        ${speedTierHTML}
 
         <!-- Stat Comparison (My Team + Opponent Max) -->
         ${statCompareHTML}

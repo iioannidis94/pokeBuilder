@@ -10,16 +10,29 @@
     });
 })();
 window.showOppPanel = JSON.parse(localStorage.getItem('tb_showOppPanel')) || false;
+window.oppMode = localStorage.getItem('tb_oppMode') || 'custom'; // 'custom' or 'bosses'
 
 // Βοηθητική συνάρτηση αποθήκευσης
 window.saveOpponents = function() {
     localStorage.setItem('tb_oppTeam', JSON.stringify(window.oppTeam));
     localStorage.setItem('tb_showOppPanel', JSON.stringify(window.showOppPanel));
+    localStorage.setItem('tb_oppMode', window.oppMode || 'custom');
 };
 
 window.toggleOppPanel = function() {
     window.showOppPanel = !window.showOppPanel;
     window.saveOpponents();
+    if(typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
+window.setOppMode = function(mode) {
+    window.oppMode = mode;
+    window.saveOpponents();
+    if (mode === 'bosses') {
+        if (typeof window.openBossesModal === 'function') window.openBossesModal();
+        // renderTeamSlots will be called after the boss is loaded via loadBossAsOpponent
+        return;
+    }
     if(typeof renderTeamSlots === 'function') renderTeamSlots();
 };
 
@@ -247,6 +260,10 @@ window.getOpponentUI = function() {
                 <button onclick="window._openOppShowdownModal && window._openOppShowdownModal()" style="background:#4dabf7; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">📋 Paste Showdown</button>
                 <button onclick="clearOpponents()" style="background:#ff4d4f; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">Καθαρισμός</button>
             </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <button onclick="setOppMode('custom')" style="flex:1; padding:8px 10px; border-radius:6px; border:2px solid ${window.oppMode !== 'bosses' ? '#4dabf7' : '#555'}; background:${window.oppMode !== 'bosses' ? 'rgba(77,171,247,0.15)' : 'transparent'}; color:${window.oppMode !== 'bosses' ? '#4dabf7' : 'var(--dim)'}; font-size:12px; font-weight:bold; cursor:pointer; transition:.15s;">🎯 Custom Team</button>
+            <button onclick="setOppMode('bosses')" style="flex:1; padding:8px 10px; border-radius:6px; border:2px solid ${window.oppMode === 'bosses' ? '#ff6b6b' : '#555'}; background:${window.oppMode === 'bosses' ? 'rgba(255,107,107,0.15)' : 'transparent'}; color:${window.oppMode === 'bosses' ? '#ff6b6b' : 'var(--dim)'}; font-size:12px; font-weight:bold; cursor:pointer; transition:.15s;">⚔️ Bosses</button>
         </div>
         <div style="display:flex; gap:10px; margin-bottom:15px;">
             <input type="text" id="oppSearchInput" list="oppPokeList" onkeydown="if(event.key === 'Enter') searchAndAddOpponent()" placeholder="Π.χ. garchomp ή 445" style="flex:1; padding:8px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt);">
