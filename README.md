@@ -2,7 +2,7 @@
 
 A competitive Pokémon builder focused on **fast team creation, matchup clarity, and practical AI-assisted decisions**.
 
-The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **VGC 2024 Regulation G** and **PRO PvP** workflows.
+The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **PRO PvP** workflows.
 
 ---
 
@@ -32,6 +32,8 @@ The goal is not just to list Pokémon, but to help the user:
 - Recommended build helper for common physical / special / tank / mixed roles
 - **Showdown import and full Showdown export**
 - **Shareable team links** through URL encoding
+- **One-click Export Report** in Battle Calculate: copies Showdown paste + share link together
+- Slot cards show **BST (Base Stat Total)** with color-coded tiers and competitive context (ability, Tera type, role, nature, item)
 
 ### AI Builder
 - **Auto-Build 6** with phase-based scoring
@@ -46,11 +48,9 @@ The goal is not just to list Pokémon, but to help the user:
 ### Battle Analysis
 - Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
 - Speed-control warnings when a team is too slow
-- Meta Threat Check with persistent format switch:
-  - **VGC 2024 Regulation G**
-  - **PRO PvP** (3-tier threat model)
+- Meta Threat Check against the **PRO PvP** 3-tier threat model (Sweepers / Pivots / Walls)
 - **Speed Tier Comparison** versus current meta threats
-- **Stat Comparison** in Battle Calculate panel: view HP / ATK / DEF / SpA / SpD / SPE for every selected Pokémon with best-in-team highlighted; opponent Pokémon displayed at maximum potential (31 IV · 252 EV · Lv 100) for reference
+- **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel, right next to Speed Tier — my team shown in **green** using actual EV/IV/level/nature, opponent shown in **red** at maximum potential (31 IV · 252 EV · Lv 100); switch between stats with pill buttons
 - Assassin / Target Mode with editable opponent team
 - Opponent Showdown paste support
 - Best-counter suggestions using moves, typings, and context
@@ -99,10 +99,10 @@ If the app grows further, the next clean split should be **inside analytics/AI b
 - [ ] Add matchup summaries that explain **why** a team struggles against specific meta threats
 
 ### UX / Product Polish
-- [ ] Mobile-first responsive upgrade for the Team Builder and analysis panels
+- [x] Mobile-first responsive upgrade for the Team Builder and analysis panels
+- [x] One-click export/share package for team + matchup report
+- [x] Cleaner card/details view for each Pokémon with more competitive context
 - [ ] Better comparison views for multiple saved teams
-- [ ] One-click export/share package for team + matchup report
-- [ ] Cleaner card/details view for each Pokémon with more competitive context
 
 ### Data & Automation
 - [ ] Optional integration path for external meta sources when stable/public data is available

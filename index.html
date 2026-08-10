@@ -34,6 +34,7 @@
       <button id="addTeamBtn" class="teamTool" type="button">+ New Team</button>
       <button id="renameTeamBtn" class="teamTool" type="button" style="margin-right: auto;">Rename</button>
       
+      <button class="teamTool" id="bossesBtn" type="button" style="border-color: #ff6b6b; color: #ff6b6b; background: rgba(255,107,107,0.1);">⚔️ Bosses</button>
       <button class="teamTool" id="autoTeamBtn" type="button" style="border-color: #38d878; color: #38d878; background: rgba(56,216,120,0.1);">✨ Auto-Build 6</button>
       <button class="teamTool" id="teamExport" type="button">Export JSON</button>
       <label class="teamTool importTool" for="teamImport">Import JSON</label>
@@ -51,6 +52,36 @@
   </section>
 </div>
 
+<!-- Bosses Modal -->
+<div id="bossesOverlay" aria-hidden="true" style="
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.7); align-items:center; justify-content:center;
+    transition:.2s;
+" role="dialog" aria-modal="true" aria-labelledby="bossesTitle">
+  <section style="
+    background:var(--panel); border:1px solid var(--brd); border-radius:16px;
+    width:min(96vw, 900px); max-height:90vh; display:flex; flex-direction:column;
+    overflow:hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  ">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; padding:14px 20px; border-bottom:1px solid var(--brd); gap:10px; flex-shrink:0;">
+      <span style="font-size:20px;">⚔️</span>
+      <h2 id="bossesTitle" style="margin:0; font-size:16px; font-weight:900; color:var(--txt); flex:1;">Boss Trainers</h2>
+      <button type="button" onclick="closeBossesModal()" style="background:none; border:none; color:var(--dim); font-size:22px; cursor:pointer; line-height:1; padding:0 4px;" aria-label="Close">×</button>
+    </div>
+    <!-- Body -->
+    <div style="display:flex; flex:1; overflow:hidden;">
+      <!-- Boss List -->
+      <div id="bossListPanel" style="
+        width:220px; flex-shrink:0; overflow-y:auto; border-right:1px solid var(--brd);
+        background:var(--bg);
+      "></div>
+      <!-- Boss Detail -->
+      <div id="bossDetailPanel" style="flex:1; overflow-y:auto;"></div>
+    </div>
+  </section>
+</div>
+
 <!-- 1. Data Layer (Πρώτα φορτώνουμε τις σταθερές) -->
 <script src="data/TC.js" defer></script>
 
@@ -62,6 +93,7 @@
 <script src="data/sprites.js" defer></script>
 <script src="data/moves.js" defer></script>
     <script src="data/move-info.js" defer></script>
+<script src="data/bosses.js" defer></script>
 
 
 <!-- 3. Εργαλεία που χρησιμοποιούνται παντού -->
@@ -78,6 +110,7 @@
     
 <script src="team/team-ui.js" defer></script>
     <script src="team/team-oop.js" defer></script>
+<script src="team/team-bosses.js" defer></script>
 <script src="dex.js" defer></script>
 
 </body>

@@ -216,6 +216,15 @@ body.dex-view .sw{display:block}
 .calcThreat{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--brd);border-radius:50px;padding:2px 7px 2px 2px;font-size:10px;font-weight:900;color:var(--txt);background:var(--surf2)}.calcThreat span{border-radius:50px;padding:1px 7px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.45)}.calcNone,.calcEmpty{color:var(--dim);font-size:11px;font-weight:800}.slotActions{display:flex;align-items:center;gap:6px}.calcToggle{border:1px solid var(--brd);background:var(--surf);color:var(--dim);border-radius:50px;padding:7px 9px;font:900 10px 'Nunito',sans-serif;cursor:pointer;white-space:nowrap}.calcToggle.on{border-color:var(--yel);background:rgba(255,204,0,.16);color:var(--yel)}
 @media(max-width:980px){.calcRows{grid-template-columns:1fr}.slotActions{flex-direction:column;align-items:flex-end}.calcToggle{font-size:9px;padding:6px 8px}}
 
+/* Responsive bar rows for Speed Tier & Stat Comparison */
+.speedBar{display:grid;grid-template-columns:minmax(60px,120px) 1fr 38px;gap:8px;align-items:center;font-size:11px;}
+.statBar{display:grid;grid-template-columns:minmax(60px,130px) 1fr 44px;gap:8px;align-items:center;font-size:11px;}
+@media(max-width:480px){
+  .speedBar,.statBar{grid-template-columns:minmax(50px,90px) 1fr 34px;gap:5px;font-size:10px;}
+  .calcPanel{padding:8px;}
+  .calcHead strong{font-size:12px;}
+}
+
 /* ΝΕΟΣ ΣΧΕΔΙΑΣΜΟΣ ΓΙΑ ΤΑ MOVES */
 .movesGrid {
   display: grid;
@@ -320,3 +329,9 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
   flex-shrink: 0;
   white-space: nowrap;
 }
+
+/* Bosses Modal */
+#bossesOverlay[aria-hidden="true"] { display: none; }
+#bossesOverlay[aria-hidden="false"] { display: flex; }
+.bossListItem:hover { background: var(--brd) !important; }
+.bossListItem.active { background: var(--brd) !important; }

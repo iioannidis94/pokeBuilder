@@ -180,10 +180,18 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         ${speedWarnHTML}
         ${speedTierHTML}
 
+        <!-- Stat Comparison (My Team + Opponent Max) -->
+        ${statCompareHTML}
+
         <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΓΙΑ ΤΙΣ ΕΠΙΘΕΣΕΙΣ (Move Optimizer) -->
-        <button onclick="showMoveRecommendations()" style="width:100%; padding:10px; margin-top:10px; margin-bottom:15px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
-            💡 Έξυπνες Προτάσεις Επιθέσεων (Optimizer)
-        </button>
+        <div style="display:flex; gap:8px; margin-top:10px; margin-bottom:15px;">
+            <button onclick="showMoveRecommendations()" style="flex:1; padding:10px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
+                💡 Optimizer
+            </button>
+            <button onclick="copyTeamReport()" style="flex:1; padding:10px; background:rgba(177,151,252,0.12); color:#b197fc; border:1px solid #b197fc; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; transition: 0.2s;">
+                📤 Export Report
+            </button>
+        </div>
 
         <div class="calcScores">
             <div><span>Offense</span><strong>${offenseScore}/18</strong></div>
@@ -201,9 +209,6 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
 
         <!-- Meta Threat Check -->
         ${metaThreatHTML}
-
-        <!-- Stat Comparison (My Team + Opponent Max) -->
-        ${statCompareHTML}
         
         <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
         ${oppUI}
@@ -233,7 +238,10 @@ function renderTeamSlots() {
     el.innerHTML = calcPanel() + filled.map(({ slot, i }, displayIndex) => { 
         const p = POKE.find(x => x.id === slot.pokemonId); 
         if (!p) return ''; 
-        const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[p.id]) || {};
+        const bst = ['hp','atk','def','spa','spd','spe'].reduce((s, k) => s + (Number(bs[k]) || 0), 0);
+        const bstColor = bst >= 600 ? '#ffd43b' : bst >= 500 ? '#63d471' : bst >= 400 ? '#4dabf7' : 'var(--dim)';
+        const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}${bst ? ` · <span title="Base Stat Total" style="color:${bstColor}; font-weight:900;">BST ${bst}</span>` : ''}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
         
         const rec = getRecommendedBuild(slot, p);
         const teraOptions = (typeof AT !== 'undefined' ? AT : []);
@@ -249,7 +257,15 @@ function renderTeamSlots() {
                 <button class="teamTool" type="button" data-auto-build="${i}" style="padding:7px 10px; font-size:11px; border-color:#63d471; color:#63d471; background:rgba(99,212,113,0.08); width:100%;">⚙️ EV/Nature Optimize</button>
             </label>
         </div>`; 
-        const recHint = `<div style="margin:-6px 0 10px; font-size:11px; color:var(--dim);">Role: <b style="color:#4dabf7; text-transform:capitalize;">${rec.role}</b> · Suggested nature: <b style="color:#63d471;">${rec.nature}</b> · Suggested item: <b style="color:#ffc107;">${rec.item}</b></div>`;
+        const recHint = `<div style="margin:-6px 0 10px; font-size:11px; color:var(--dim); display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <span>Role: <b style="color:#4dabf7; text-transform:capitalize;">${rec.role}</b></span>
+            <span>·</span>
+            <span>Nature: <b style="color:#63d471;">${rec.nature}</b></span>
+            <span>·</span>
+            <span>Item: <b style="color:#ffc107;">${rec.item}</b></span>
+            ${slot.teraType ? `<span>·</span><span>Tera: <b style="color:#cc5de8;">${slot.teraType}</b></span>` : ''}
+            ${slot.ability ? `<span>·</span><span>Ability: <b style="color:var(--txt);">${slot.ability.replace(/-/g,' ')}</b></span>` : ''}
+        </div>`;
         
         const stats = `<div class="statGrid" style="margin-bottom: 15px;">` + TEAM_STATS.map(st => { const nc = natureClass(slot.nature, st), ivClass = nc ? `iv${nc[0].toUpperCase() + nc.slice(1)}` : ""; return `<div class="statBox ${nc}"><label>${st}</label><div class="statInputs"><span>IV</span><span>EV</span><input class="${ivClass}" type="number" min="0" max="31" value="${slot.iv[st]}" data-slot="${i}" data-kind="iv" data-stat="${st}" placeholder="0"><input type="number" min="0" max="252" value="${slot.ev[st]}" data-slot="${i}" data-kind="ev" data-stat="${st}" placeholder="0"></div></div>` }).join('') + `</div>`; 
         
@@ -391,6 +407,10 @@ document.getElementById('teamReset').addEventListener('click', () => {
 });
 
 document.getElementById('autoTeamBtn')?.addEventListener('click', autoRecommendTeam);
+
+document.getElementById('bossesBtn')?.addEventListener('click', () => {
+    if (typeof window.openBossesModal === 'function') window.openBossesModal();
+});
 
 // Inject Showdown Paste Button dynamically
 (function injectPasteButton() {

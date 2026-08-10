@@ -124,8 +124,8 @@ const META_THREATS_PRO = [
     { id: 80,   name: 'Slowbro',     types: ['water',   'psychic'], tier: 3 },
 ];
 
-// Persist chosen format across page reloads
-window.metaThreatFormat = localStorage.getItem('tb_metaFormat') || 'vgc';
+// Persist chosen format across page reloads (VGC 2024 removed — PRO PvP only)
+window.metaThreatFormat = 'pro';
 
 window.setMetaFormat = function(fmt) {
     window.metaThreatFormat = fmt;
@@ -182,7 +182,7 @@ function getNatureMultiplier(nature, statName) {
 
 function getSpeedTierComparisonHTML(selected) {
     if (!selected || !selected.length) return '';
-    const threats = ((typeof window !== 'undefined' && window.metaThreatFormat) || 'vgc') === 'pro' ? META_THREATS_PRO : META_THREATS;
+    const threats = META_THREATS_PRO;
 
     const myRows = selected.map(mon => {
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || { spe: 70 };
@@ -204,7 +204,7 @@ function getSpeedTierComparisonHTML(selected) {
     const renderRow = (row, mine) => {
         const pct = Math.max(8, Math.round((row.speed / maxSpeed) * 100));
         const color = mine ? '#4dabf7' : '#ff6b6b';
-        return `<div style="display:grid; grid-template-columns:120px 1fr 38px; gap:8px; align-items:center; font-size:11px;">
+        return `<div class="speedBar">
             <span style="color:${mine ? 'var(--txt)' : '#ffb3b3'}; font-weight:700; text-transform:capitalize; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.name.replace(/-/g, ' ')}</span>
             <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${color};"></div></div>
             <span style="font-weight:900; color:${color}; text-align:right;">${row.speed}</span>
@@ -397,11 +397,11 @@ function getStatComparisonHTML(selected) {
         const val  = row.stats[activeStat] || 0;
         const pct  = Math.max(8, Math.round((val / maxVal) * 100));
         const isBest = !row.isOpp && val === myMax && myMax > 0;
-        const rowColor = row.isOpp ? '#ff6b6b' : (isBest ? color : 'rgba(255,255,255,0.55)');
+        const rowColor = row.isOpp ? '#ff6b6b' : '#63d471';
         const label = row.isOpp
             ? `<span title="Max stats (31 IV / 252 EV / Lv 100)" style="font-size:9px; background:rgba(255,107,107,0.15); border:1px solid #ff6b6b; color:#ff6b6b; border-radius:2px; padding:0 4px; margin-left:3px;">MAX</span>`
-            : (isBest ? `<span style="font-size:9px; background:${color}22; border:1px solid ${color}; color:${color}; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
-        return `<div style="display:grid; grid-template-columns:130px 1fr 44px; gap:8px; align-items:center; font-size:11px;">
+            : (isBest ? `<span style="font-size:9px; background:#63d47122; border:1px solid #63d471; color:#63d471; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
+        return `<div class="statBar">
             <span style="color:${rowColor}; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize;">${row.name}${label}</span>
             <div style="background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; height:8px;"><div style="width:${pct}%; height:100%; background:${rowColor};"></div></div>
             <span style="font-weight:900; color:${rowColor}; text-align:right;">${val}</span>
@@ -459,21 +459,14 @@ function getSpeedWarningHTML(selected) {
 }
 
 function getMetaThreatHTML(selected) {
-    const fmt     = (typeof window !== 'undefined' && window.metaThreatFormat) || 'vgc';
-    const isPro   = fmt === 'pro';
-    const threats = isPro ? META_THREATS_PRO : META_THREATS;
+    const threats = META_THREATS_PRO;
     const analysis = getMetaThreatAnalysis(selected, threats);
     if (!analysis) return '';
 
-    const fmtLabel    = isPro ? 'PRO PvP Meta (3 Tiers · 18)' : 'VGC 2024 Top 10';
-    const accentColor = isPro ? '#f5a623' : '#4dabf7';
+    const fmtLabel    = 'PRO PvP Meta (3 Tiers · 18)';
+    const accentColor = '#f5a623';
     const scoreColor  = analysis.score >= 70 ? '#63d471' : analysis.score >= 50 ? '#ffc107' : '#ff6b6b';
     const uncovered   = analysis.results.filter(r => r.coverage < 2);
-
-    const tabs = `<div style="display:flex; gap:4px; margin-bottom:10px;">
-        <button onclick="window.setMetaFormat('vgc')" style="padding:4px 12px; border-radius:20px; border:1px solid ${!isPro ? '#4dabf7' : '#555'}; background:${!isPro ? 'rgba(77,171,247,0.18)' : 'transparent'}; color:${!isPro ? '#4dabf7' : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">VGC 2024</button>
-        <button onclick="window.setMetaFormat('pro')" style="padding:4px 12px; border-radius:20px; border:1px solid ${isPro ? '#f5a623' : '#555'}; background:${isPro ? 'rgba(245,166,35,0.18)' : 'transparent'}; color:${isPro ? '#f5a623' : 'var(--dim)'}; cursor:pointer; font-size:11px; font-weight:bold; transition:.15s;">PRO PvP</button>
-    </div>`;
 
     const makeBadge = r => {
         const p = (typeof POKE !== 'undefined') ? POKE.find(x => x.id === r.id) : null;
@@ -489,34 +482,27 @@ function getMetaThreatHTML(selected) {
     };
 
     let threatBadgesHTML = '';
-    if (isPro) {
-        const tierMeta = [
-            { tier: 1, label: '⚔️ Sweepers' },
-            { tier: 2, label: '🔄 Pivots' },
-            { tier: 3, label: '🛡️ Walls' },
-        ];
-        tierMeta.forEach(({ tier, label: tLabel }) => {
-            const group = analysis.results.filter(r => r.tier === tier);
-            if (!group.length) return;
-            threatBadgesHTML += `<div style="width:100%; margin-bottom:2px;">
-                <span style="font-size:10px; font-weight:900; color:${accentColor}; letter-spacing:.5px;">${tLabel}</span>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                ${group.map(makeBadge).join('')}
-            </div>`;
-        });
-    } else {
-        threatBadgesHTML = `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:${uncovered.length ? '10px' : '0'};">
-            ${analysis.results.map(makeBadge).join('')}
+    const tierMeta = [
+        { tier: 1, label: '⚔️ Sweepers' },
+        { tier: 2, label: '🔄 Pivots' },
+        { tier: 3, label: '🛡️ Walls' },
+    ];
+    tierMeta.forEach(({ tier, label: tLabel }) => {
+        const group = analysis.results.filter(r => r.tier === tier);
+        if (!group.length) return;
+        threatBadgesHTML += `<div style="width:100%; margin-bottom:2px;">
+            <span style="font-size:10px; font-weight:900; color:${accentColor}; letter-spacing:.5px;">${tLabel}</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            ${group.map(makeBadge).join('')}
         </div>`;
-    }
+    });
 
     return `<div style="margin:10px 0; padding:12px 14px; background:${accentColor}0d; border:1px solid ${accentColor}; border-radius:8px;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
             <strong style="color:${accentColor}; font-size:13px;">🏆 Meta Threat Check (${fmtLabel})</strong>
             <span style="font-size:13px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; padding:4px 10px; border-radius:20px; border:1px solid ${scoreColor};">${analysis.score}% Win Rate</span>
         </div>
-        ${tabs}
         ${threatBadgesHTML}
         ${uncovered.length ? `<p style="margin:6px 0 0; font-size:11px; color:#ff6b6b;">⚠️ No super-effective coverage vs: <b>${uncovered.map(r => r.name).join(', ')}</b></p>` : ''}
     </div>`;
