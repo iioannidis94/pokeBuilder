@@ -255,11 +255,12 @@
 
         window.saveOpponents();
 
-        // Εμφανίζουμε το panel αντιπάλου αν είναι κρυφό
+        // Εμφανίζουμε το panel αντιπάλου αν είναι κρυφό και ορίζουμε mode σε 'bosses'
         if (!window.showOppPanel) {
             window.showOppPanel = true;
-            window.saveOpponents();
         }
+        window.oppMode = 'bosses';
+        window.saveOpponents();
 
         window.closeBossesModal();
         if (typeof renderTeamSlots === 'function') renderTeamSlots();
