@@ -216,7 +216,7 @@
 
         window.clearOpponents();
 
-        const evValue  = String(DIFFICULTY_EVS[difficulty] ?? 0);
+        const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
         const isEasy   = difficulty === 'easy';
 
         const limited = teamData.slice(0, 6);
