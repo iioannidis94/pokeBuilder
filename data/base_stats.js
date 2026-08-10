@@ -1041,5 +1041,54 @@ const BASE_STATS = {
   // Therian Formes (PokeAPI IDs)
   "10019": { hp: 79, atk: 100, def: 80, spa: 110, spd: 90, spe: 121 }, // Tornadus-Therian (Regenerator — faster + SpA)
   "10020": { hp: 79, atk: 105, def: 70, spa: 145, spd: 80, spe: 101 }, // Thundurus-Therian (Volt Absorb — highest SpA of Genies)
-  "10026": { hp: 89, atk: 145, def: 90, spa: 105, spd: 80, spe: 91 }  // Landorus-Therian (Intimidate — best Atk of Genies)
+  "10026": { hp: 89, atk: 145, def: 90, spa: 105, spd: 80, spe: 91 }, // Landorus-Therian (Intimidate — best Atk of Genies)
+  // Mega Forms (PokeAPI IDs)
+  "10033": { hp: 80, atk: 100, def: 123, spa: 122, spd: 120, spe: 80 }, // Mega Venusaur
+  "10034": { hp: 78, atk: 130, def: 111, spa: 130, spd: 85, spe: 100 }, // Mega Charizard X
+  "10035": { hp: 78, atk: 104, def: 78, spa: 159, spd: 115, spe: 100 }, // Mega Charizard Y
+  "10036": { hp: 79, atk: 103, def: 120, spa: 135, spd: 115, spe: 78 }, // Mega Blastoise
+  "10037": { hp: 55, atk: 50, def: 65, spa: 175, spd: 95, spe: 150 }, // Mega Alakazam
+  "10038": { hp: 60, atk: 65, def: 80, spa: 170, spd: 95, spe: 130 }, // Mega Gengar
+  "10039": { hp: 105, atk: 125, def: 100, spa: 60, spd: 100, spe: 100 }, // Mega Kangaskhan
+  "10040": { hp: 65, atk: 155, def: 120, spa: 65, spd: 90, spe: 105 }, // Mega Pinsir
+  "10041": { hp: 95, atk: 155, def: 109, spa: 70, spd: 130, spe: 81 }, // Mega Gyarados
+  "10042": { hp: 80, atk: 135, def: 85, spa: 70, spd: 95, spe: 150 }, // Mega Aerodactyl
+  "10043": { hp: 106, atk: 190, def: 100, spa: 154, spd: 100, spe: 130 }, // Mega Mewtwo X
+  "10044": { hp: 106, atk: 150, def: 70, spa: 194, spd: 120, spe: 140 }, // Mega Mewtwo Y
+  "10045": { hp: 90, atk: 95, def: 105, spa: 165, spd: 110, spe: 45 }, // Mega Ampharos
+  "10046": { hp: 70, atk: 150, def: 140, spa: 65, spd: 100, spe: 75 }, // Mega Scizor
+  "10047": { hp: 80, atk: 185, def: 115, spa: 40, spd: 105, spe: 75 }, // Mega Heracross
+  "10048": { hp: 75, atk: 90, def: 90, spa: 140, spd: 90, spe: 115 }, // Mega Houndoom
+  "10049": { hp: 100, atk: 164, def: 150, spa: 95, spd: 120, spe: 71 }, // Mega Tyranitar
+  "10050": { hp: 80, atk: 160, def: 80, spa: 130, spd: 80, spe: 100 }, // Mega Blaziken
+  "10051": { hp: 68, atk: 85, def: 65, spa: 165, spd: 135, spe: 100 }, // Mega Gardevoir
+  "10052": { hp: 50, atk: 105, def: 125, spa: 55, spd: 95, spe: 50 }, // Mega Mawile
+  "10053": { hp: 70, atk: 140, def: 230, spa: 60, spd: 80, spe: 50 }, // Mega Aggron
+  "10054": { hp: 60, atk: 100, def: 85, spa: 80, spd: 85, spe: 100 }, // Mega Medicham
+  "10055": { hp: 70, atk: 75, def: 80, spa: 135, spd: 80, spe: 135 }, // Mega Manectric
+  "10056": { hp: 64, atk: 165, def: 75, spa: 93, spd: 83, spe: 75 }, // Mega Banette
+  "10057": { hp: 65, atk: 150, def: 60, spa: 115, spd: 60, spe: 115 }, // Mega Absol
+  "10058": { hp: 108, atk: 170, def: 115, spa: 120, spd: 95, spe: 92 }, // Mega Garchomp
+  "10059": { hp: 70, atk: 145, def: 88, spa: 140, spd: 70, spe: 112 }, // Mega Lucario
+  "10060": { hp: 90, atk: 132, def: 105, spa: 132, spd: 105, spe: 30 }, // Mega Abomasnow
+  "10061": { hp: 65, atk: 150, def: 40, spa: 15, spd: 80, spe: 145 }, // Mega Beedrill
+  "10062": { hp: 83, atk: 80, def: 80, spa: 135, spd: 80, spe: 121 }, // Mega Pidgeot
+  "10063": { hp: 95, atk: 75, def: 180, spa: 130, spd: 80, spe: 30 }, // Mega Slowbro
+  "10064": { hp: 75, atk: 125, def: 230, spa: 55, spd: 95, spe: 30 }, // Mega Steelix
+  "10065": { hp: 70, atk: 110, def: 75, spa: 145, spd: 85, spe: 145 }, // Mega Sceptile
+  "10066": { hp: 100, atk: 150, def: 110, spa: 95, spd: 110, spe: 70 }, // Mega Swampert
+  "10067": { hp: 50, atk: 85, def: 125, spa: 85, spd: 115, spe: 20 }, // Mega Sableye
+  "10068": { hp: 70, atk: 140, def: 70, spa: 110, spd: 65, spe: 105 }, // Mega Sharpedo
+  "10069": { hp: 70, atk: 120, def: 100, spa: 145, spd: 105, spe: 20 }, // Mega Camerupt
+  "10070": { hp: 75, atk: 110, def: 110, spa: 110, spd: 105, spe: 80 }, // Mega Altaria
+  "10071": { hp: 80, atk: 120, def: 80, spa: 120, spd: 80, spe: 100 }, // Mega Glalie
+  "10072": { hp: 95, atk: 145, def: 130, spa: 120, spd: 90, spe: 120 }, // Mega Salamence
+  "10073": { hp: 80, atk: 145, def: 150, spa: 105, spd: 110, spe: 110 }, // Mega Metagross
+  "10074": { hp: 80, atk: 100, def: 120, spa: 140, spd: 150, spe: 110 }, // Mega Latias
+  "10075": { hp: 80, atk: 130, def: 100, spa: 160, spd: 120, spe: 110 }, // Mega Latios
+  "10076": { hp: 105, atk: 180, def: 100, spa: 180, spd: 100, spe: 115 }, // Mega Rayquaza
+  "10077": { hp: 65, atk: 136, def: 94, spa: 54, spd: 96, spe: 135 }, // Mega Lopunny
+  "10078": { hp: 68, atk: 165, def: 95, spa: 65, spd: 115, spe: 110 }, // Mega Gallade
+  "10079": { hp: 103, atk: 60, def: 126, spa: 80, spd: 126, spe: 50 }, // Mega Audino
+  "10080": { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }  // Mega Diancie
 };
