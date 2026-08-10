@@ -408,6 +408,10 @@ document.getElementById('teamReset').addEventListener('click', () => {
 
 document.getElementById('autoTeamBtn')?.addEventListener('click', autoRecommendTeam);
 
+document.getElementById('bossesBtn')?.addEventListener('click', () => {
+    if (typeof window.openBossesModal === 'function') window.openBossesModal();
+});
+
 // Inject Showdown Paste Button dynamically
 (function injectPasteButton() {
     const autoBtn = document.getElementById('autoTeamBtn');

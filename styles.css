@@ -329,3 +329,9 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
   flex-shrink: 0;
   white-space: nowrap;
 }
+
+/* Bosses Modal */
+#bossesOverlay[aria-hidden="true"] { display: none; }
+#bossesOverlay[aria-hidden="false"] { display: flex; }
+.bossListItem:hover { background: var(--brd) !important; }
+.bossListItem.active { background: var(--brd) !important; }
