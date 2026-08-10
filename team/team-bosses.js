@@ -153,7 +153,7 @@
             <div style="padding:16px 20px; display:flex; flex-direction:column; gap:14px; height:100%; box-sizing:border-box; overflow-y:auto;">
                 <div>
                     <div style="font-size:19px; font-weight:900; color:var(--txt);">${boss.name}</div>
-                    <div style="font-size:12px; color:var(--dim); margin-top:2px;">${boss.title || ''}</div>
+                    ${boss.title ? `<div style="font-size:12px; color:var(--dim); margin-top:2px;">${boss.title}</div>` : ''}
                     ${boss.region ? `<div style="font-size:11px; margin-top:4px;"><span style="color:${REGION_COLORS[boss.region] || '#aaa'}; font-weight:700;">${boss.region}</span>${boss.location ? ` <span style="color:var(--dim);">— ${boss.location}</span>` : ''}</div>` : ''}
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;" id="bossDiffTabs">${tabsHtml}</div>

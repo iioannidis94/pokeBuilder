@@ -1,14 +1,13 @@
 // --- data/bosses.js : Boss Trainer Data ---
-// Δομή: κάθε boss έχει id, name, title, και difficulties (easy / medium / hard).
+// Δομή: κάθε boss έχει id, name, title, region, location, και difficulties (easy / medium / hard).
 // Κάθε difficulty περιέχει μια λίστα από Pokémon με name, ability, item, και moves (έως 4).
-// Κάποιοι boss έχουν 3 επίπεδα δυσκολίας, άλλοι 2 ή 1.
-//
-// Παράδειγμα δομής (placeholder — τα πραγματικά δεδομένα θα δοθούν αργότερα):
 //
 // {
 //   id: 'trainer-id',
 //   name: 'Trainer Name',
 //   title: 'Trainer Title / Class',
+//   region: 'Kanto' | 'Johto' | 'Hoenn' | 'Sinnoh',
+//   location: 'Location Name',
 //   difficulties: {
 //     easy:   { pokemon: [ { name, ability, item, moves: [] } ] },
 //     medium: { pokemon: [ { name, ability, item, moves: [] } ] },
@@ -17,11 +16,15 @@
 // }
 
 const BOSSES = [
-    // ─── PLACEHOLDER BOSS 1 ────────────────────────────────────────────────
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // KANTO
+    // ══════════════════════════════════════════════════════════════════════════
+
     {
         id: 'brock',
         name: 'Brock',
-        title: 'Pewter City Gym Leader',
+        title: '',
         region: 'Kanto',
         location: "Diglett's Cave",
         difficulties: {
@@ -49,11 +52,230 @@ const BOSSES = [
         }
     },
 
-    // ─── PLACEHOLDER BOSS 2 ────────────────────────────────────────────────
+    {
+        id: 'chuck',
+        name: 'Chuck',
+        title: '',
+        region: 'Kanto',
+        location: "Saffron City (Gold's Gym)",
+        difficulties: {}
+    },
+
+    {
+        id: 'cie',
+        name: 'Cie',
+        title: '',
+        region: 'Kanto',
+        location: 'Fluffles Wonderland',
+        difficulties: {}
+    },
+
+    {
+        id: 'erika',
+        name: 'Erika',
+        title: '',
+        region: 'Kanto',
+        location: 'Viridian Maze',
+        difficulties: {}
+    },
+
+    {
+        id: 'george',
+        name: 'George',
+        title: '',
+        region: 'Kanto',
+        location: 'Pewter Jail',
+        difficulties: {}
+    },
+
+    {
+        id: 'guardian-entei',
+        name: 'Guardian (Entei)',
+        title: '',
+        region: 'Kanto',
+        location: 'Route 25 (Route 25 Cave)',
+        difficulties: {}
+    },
+
+    {
+        id: 'jessie-james',
+        name: 'Jessie & James',
+        title: '',
+        region: 'Kanto',
+        location: 'Celadon City',
+        difficulties: {}
+    },
+
+    {
+        id: 'klohver',
+        name: 'Klohver',
+        title: '',
+        region: 'Kanto',
+        location: 'Pinkan Island Meadow',
+        difficulties: {}
+    },
+
+    {
+        id: 'koichi',
+        name: 'Koichi',
+        title: '',
+        region: 'Kanto',
+        location: 'Saffron Dojo',
+        difficulties: {}
+    },
+
+    {
+        id: 'naero',
+        name: 'Naero',
+        title: '',
+        region: 'Kanto',
+        location: 'Cerulean Cave B1F',
+        difficulties: {}
+    },
+
+    {
+        id: 'officer-jenny',
+        name: 'Officer Jenny',
+        title: '',
+        region: 'Kanto',
+        location: 'Pinkan City (Pinkan Lighthouse 2F)',
+        difficulties: {}
+    },
+
+    {
+        id: 'officer-shamac',
+        name: 'Officer Shamac',
+        title: '',
+        region: 'Kanto',
+        location: 'Pewter City (Jail)',
+        difficulties: {}
+    },
+
+    {
+        id: 'prehax',
+        name: 'Prehax',
+        title: '',
+        region: 'Kanto',
+        location: 'Munchlax Resort (House 1)',
+        difficulties: {}
+    },
+
+    {
+        id: 'professor-oak',
+        name: 'Professor Oak',
+        title: '',
+        region: 'Kanto',
+        location: 'Cinnabar Island (Lab Room 2)',
+        difficulties: {}
+    },
+
+    {
+        id: 'shary-shaui',
+        name: 'Shary & Shaui',
+        title: '',
+        region: 'Kanto',
+        location: 'Love Island (House 1)',
+        difficulties: {}
+    },
+
+    {
+        id: 'the-pumpkin-king',
+        name: 'The Pumpkin King',
+        title: '',
+        region: 'Kanto',
+        location: 'Lavender Town Graveyard',
+        difficulties: {}
+    },
+
+    {
+        id: 'urahara',
+        name: 'Urahara',
+        title: '',
+        region: 'Kanto',
+        location: 'Pokemon Tower 3F',
+        difficulties: {}
+    },
+
+    {
+        id: 'xylos',
+        name: 'Xylos',
+        title: '',
+        region: 'Kanto',
+        location: 'Pokemon Club (Vermilion City)',
+        difficulties: {}
+    },
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // JOHTO
+    // ══════════════════════════════════════════════════════════════════════════
+
+    {
+        id: 'battlebot',
+        name: 'BattleBot',
+        title: '',
+        region: 'Johto',
+        location: 'Dock Island (House 2)',
+        difficulties: {}
+    },
+
+    {
+        id: 'bruno',
+        name: 'Bruno',
+        title: '',
+        region: 'Johto',
+        location: 'Mt. Mortar Lower Cave',
+        difficulties: {}
+    },
+
+    {
+        id: 'bugsy',
+        name: 'Bugsy',
+        title: '',
+        region: 'Johto',
+        location: 'Amazon Forest',
+        difficulties: {}
+    },
+
+    {
+        id: 'gamers-pewdie-diepy',
+        name: 'Gamers Pewdie and Diepy',
+        title: '',
+        region: 'Johto',
+        location: 'Goldenrod Gaming Corner',
+        difficulties: {}
+    },
+
+    {
+        id: 'guardian-suicune',
+        name: 'Guardian (Suicune)',
+        title: '',
+        region: 'Johto',
+        location: 'Lake Of Rage (Secluded Lake)',
+        difficulties: {}
+    },
+
+    {
+        id: 'lance-dragons-shrine',
+        name: 'Lance (Dragons Shrine)',
+        title: '',
+        region: 'Johto',
+        location: 'Dragons Shrine',
+        difficulties: {}
+    },
+
+    {
+        id: 'lorelei',
+        name: 'Lorelei',
+        title: '',
+        region: 'Johto',
+        location: 'Ice Path B2F',
+        difficulties: {}
+    },
+
     {
         id: 'misty',
         name: 'Misty',
-        title: 'Cerulean City Gym Leader',
+        title: '',
         region: 'Johto',
         location: 'Route 41',
         difficulties: {
@@ -73,11 +295,77 @@ const BOSSES = [
         }
     },
 
-    // ─── PLACEHOLDER BOSS 3 ────────────────────────────────────────────────
+    {
+        id: 'neroli',
+        name: 'Neroli',
+        title: '',
+        region: 'Johto',
+        location: 'Ilex Forest',
+        difficulties: {}
+    },
+
+    {
+        id: 'professor-elm',
+        name: 'Professor Elm',
+        title: '',
+        region: 'Johto',
+        location: 'Ruins of Alph (Research Center)',
+        difficulties: {}
+    },
+
+    {
+        id: 'sage',
+        name: 'Sage',
+        title: '',
+        region: 'Johto',
+        location: 'Violet City (Sprout Tower F)',
+        difficulties: {}
+    },
+
+    {
+        id: 'terminator',
+        name: 'Terminator',
+        title: '',
+        region: 'Johto',
+        location: 'Mt. Silver Moltres Chamber',
+        difficulties: {}
+    },
+
+    {
+        id: 'thor',
+        name: 'Thor',
+        title: '',
+        region: 'Johto',
+        location: 'Whirl Islands B4F',
+        difficulties: {}
+    },
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // HOENN
+    // ══════════════════════════════════════════════════════════════════════════
+
+    {
+        id: 'gingery-jones',
+        name: 'Gingery Jones',
+        title: '',
+        region: 'Hoenn',
+        location: 'Feral Site (Fiery Path)',
+        difficulties: {}
+    },
+
+    {
+        id: 'guardian-raikou',
+        name: 'Guardian (Raikou)',
+        title: '',
+        region: 'Hoenn',
+        location: 'Route 110 (Secret Base Alpha)',
+        difficulties: {}
+    },
+
     {
         id: 'lt-surge',
         name: 'Lt. Surge',
-        title: 'Vermilion City Gym Leader',
+        title: '',
         region: 'Hoenn',
         location: 'New Mauville',
         difficulties: {
@@ -105,11 +393,68 @@ const BOSSES = [
         }
     },
 
-    // ─── ASH WESTBROOK ─────────────────────────────────────────────────────
+    {
+        id: 'morty',
+        name: 'Morty',
+        title: '',
+        region: 'Hoenn',
+        location: 'Mt. Pyre 4F',
+        difficulties: {}
+    },
+
+    {
+        id: 'naruto-fanboy',
+        name: 'Naruto Fanboy',
+        title: '',
+        region: 'Hoenn',
+        location: 'Desert Ruins',
+        difficulties: {}
+    },
+
+    {
+        id: 'professor-birch',
+        name: 'Professor Birch',
+        title: '',
+        region: 'Hoenn',
+        location: 'Verdanturf Town (House 2)',
+        difficulties: {}
+    },
+
+    {
+        id: 'steven',
+        name: 'Steven',
+        title: '',
+        region: 'Hoenn',
+        location: 'Valley Of Steel (Underground)',
+        difficulties: {}
+    },
+
+    {
+        id: 'tigerous',
+        name: 'Tigerous',
+        title: '',
+        region: 'Hoenn',
+        location: 'Eumi Island Theme Park 2',
+        difficulties: {}
+    },
+
+    {
+        id: 'toothless',
+        name: 'Toothless',
+        title: '',
+        region: 'Hoenn',
+        location: 'Abandoned Ship B1F Room 1 (Route 108)',
+        difficulties: {}
+    },
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // SINNOH
+    // ══════════════════════════════════════════════════════════════════════════
+
     {
         id: 'ash-westbrook',
         name: 'Ash Westbrook',
-        title: 'Champion of Legends',
+        title: '',
         region: 'Sinnoh',
         location: 'Spear Pillar',
         difficulties: {
@@ -134,5 +479,77 @@ const BOSSES = [
                 ]
             }
         }
+    },
+
+    {
+        id: 'letrix',
+        name: 'Letrix',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Valley Windworks',
+        difficulties: {}
+    },
+
+    {
+        id: 'link',
+        name: 'Link',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Twinleaf Town (House 2)',
+        difficulties: {}
+    },
+
+    {
+        id: 'logan',
+        name: 'Logan',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Cave Of Justice (Route 210 North)',
+        difficulties: {}
+    },
+
+    {
+        id: 'maribela',
+        name: 'Maribela',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Floaroma Meadow',
+        difficulties: {}
+    },
+
+    {
+        id: 'medusa-eldir',
+        name: 'Medusa & Eldir',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Oreburgh Gate (Legends Cave)',
+        difficulties: {}
+    },
+
+    {
+        id: 'professor-rowan',
+        name: 'Professor Rowan',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Jubilife City School',
+        difficulties: {}
+    },
+
+    {
+        id: 'saphirr',
+        name: 'Saphirr',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Route 227',
+        difficulties: {}
+    },
+
+    {
+        id: 'spectify',
+        name: 'Spectify',
+        title: '',
+        region: 'Sinnoh',
+        location: 'Sandgem Town House',
+        difficulties: {}
     },
 ];
