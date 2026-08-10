@@ -1037,5 +1037,9 @@ const BASE_STATS = {
   "1022": { hp: 90, atk: 120, def: 80, spa: 68, spd: 108, spe: 124 }, // Iron Boulder
   "1023": { hp: 90, atk: 72, def: 100, spa: 122, spd: 108, spe: 98 }, // Iron Crown
   "1024": { hp: 90, atk: 65, def: 85, spa: 65, spd: 85, spe: 60 }, // Terapagos
-  "1025": { hp: 88, atk: 88, def: 160, spa: 88, spd: 88, spe: 88 }  // Pecharunt
+  "1025": { hp: 88, atk: 88, def: 160, spa: 88, spd: 88, spe: 88 }, // Pecharunt
+  // Therian Formes (PokeAPI IDs)
+  "10019": { hp: 79, atk: 100, def: 80, spa: 110, spd: 90, spe: 121 }, // Tornadus-Therian (Regenerator — faster + SpA)
+  "10020": { hp: 79, atk: 105, def: 70, spa: 145, spd: 80, spe: 101 }, // Thundurus-Therian (Volt Absorb — highest SpA of Genies)
+  "10026": { hp: 89, atk: 145, def: 90, spa: 105, spd: 80, spe: 91 }  // Landorus-Therian (Intimidate — best Atk of Genies)
 };

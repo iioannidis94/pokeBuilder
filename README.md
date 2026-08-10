@@ -1,51 +1,121 @@
-## ✅ Implemented Features
+# pokeBuilder
 
-### 🧠 AI & Competitive Logic
-- **Ability Intelligence:** The AI reads specific Abilities (e.g. *Levitate*, *Thick Fat*, *Flash Fire*) and adjusts defensive synergy scores dynamically — immunities and resistances granted by abilities are fully factored in.
-- **Item Synergy:** Held items (Choice Band, Leftovers, Focus Sash, Life Orb, Assault Vest) influence the AI's team scoring and role classification.
-- **Speed Tiering:** The AI heavily weights speed for non-tank Pokémon; tanks get a bulk-based score instead.
-- **Entry Hazard Management:** The Move Optimizer recognises Stealth Rock, Spikes, Rapid Spin, Defog and Court Change as high-value strategic moves.
-- **Archetype Recognition:** The Battle Calculator auto-detects Rain (Drizzle), Sun (Drought), Sand (Sand Stream), Snow (Snow Warning), Trick Room and Tailwind team strategies and displays the archetype with tailored advice.
-- **Speed Control Warnings:** If the selected team's average Speed is below 80 and no Tailwind / Trick Room / Icy Wind user is present, a ⚡ warning is shown with recommendations.
-- **Multi-Format Meta Threat Check:** The Battle Calculator checks team coverage against two switchable metas via a tab toggle — **VGC 2024 Regulation G** (Flutter Mane, Iron Hands, Urshifu, Ogerpon, Raging Bolt, Incineroar, Rillaboom, Amoonguss, Calyrex-Shadow, Pelipper) and **PRO PvP** (Pokemon Revolution Online Gen 7 — Landorus-T, Garchomp, Ferrothorn, Toxapex, Magearna, Clefable, Metagross, Tapu Koko, Gyarados, Tyranitar). Selected format persists across sessions via `localStorage`. Shows a **Meta Win Rate %** score and highlights uncovered threats.
-- **Precise Damage Calculations:** The Counters (Assassin Mode) panel now shows estimated damage output for the best counter move — including **OHKO / 2HKO / 3HKO** labels and a min–max damage % range using the standard Gen 9 formula.
+A competitive Pokémon builder focused on **fast team creation, matchup clarity, and practical AI-assisted decisions**.
 
-### ⚔️ Team Builder & Analysis
-- Auto-Build 6 AI with Phase scoring: Raw Power, Defensive Synergy, Offensive Coverage, Role Balance.
-- Assassin Mode / Target Mode: add an opponent team (manually or via Showdown paste) to see best counters from your roster. Each opponent Pokémon supports inline editing of **moves** (4 slots), **ability**, and **held item** — all persisted in `localStorage` and displayed as context badges in the Counters panel.
-- Pro-Tier Move Optimizer: role-aware move recommendations (Tank, Physical Sweeper, Special Sweeper).
-- Full stat calculator: Base Stats, IVs, EVs, Natures, Level — real stat values computed live.
-- Multi-team management with Import/Export JSON and Showdown paste support.
-- Clickable Type Chart modal on every type badge.
+The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **VGC 2024 Regulation G** and **PRO PvP** workflows.
 
 ---
 
-## 🔮 Future Roadmap
+## Current Product Direction
 
-### 🏆 Competitive Formats
-- [ ] Multi-format Meta selector expansion: BSS (Battle Stadium Singles) / Gen 9 OU
-- [ ] Seasonal meta updates (Regulation H, I, etc.) when the top-ranked Pokémon change
-- [ ] PRO PvP ladder data integration — auto-refresh threats from a public leaderboard or community API if one becomes available
+The goal is not just to list Pokémon, but to help the user:
+- build cleaner 6-mon cores faster
+- understand team weaknesses instantly
+- evaluate counters against specific enemy teams
+- adapt to real meta threats without leaving the app
 
-### ⚔️ Team Builder Upgrades
-- [ ] Full Showdown export — generate a paste with EVs, IVs, nature, moves, and item (not just import)
-- [ ] EV Spread Optimizer — suggest an optimal spread for the Pokémon's role (e.g. 252/252/4 or bulk EVs for tanks)
-- [ ] Nature Suggestion — AI recommends nature based on role (Physical Sweeper → Adamant / Jolly, etc.)
-- [ ] Item Recommendations expansion — suggest items beyond the current 5 (Choice Specs, Rocky Helmet, Boots, etc.)
+---
 
-### 💥 Battle Analysis
-- [ ] Full Damage Calculator — user-input EVs / IVs / Nature for exact OHKO probability
-- [ ] Speed Tier Comparison — visual chart of team Pokémon vs meta threats
-- [ ] Priority Move Awareness — recognise Fake Out, Sucker Punch, Bullet Punch in counter suggestions
-- [ ] Tera Type Support (Gen 9) — factor Tera type into Meta Threat Check coverage
+## What Is Already Implemented
 
-### 🎨 UI / UX
-- [ ] Mobile-first responsive redesign — current layout is desktop-first
-- [ ] Dark / Light mode toggle
-- [ ] Shareable team links — encode team state in a URL hash
-- [ ] Pokémon card view — full details modal with a radar chart for base stats
+### Pokédex & Core UX
+- Fast Pokédex search by name, ID, and type
+- Dual-type filtering
+- Clickable type badges with a full Type Chart modal
+- Weakness / resistance breakdown per Pokémon
+- Dark / Light mode toggle with persistence
 
-### 🌐 Data & Integration
-- [ ] Auto-refresh meta threats from Pikalytics / VGC Stats API
-- [ ] Support for Showdown-format nicknames and custom sprites
-- [ ] Offline PWA support — Service Worker for use without internet
+### Team Builder
+- Multi-team management with rename, save-state persistence, import/export JSON
+- Up to **50 stored slots** per team workspace
+- Full stat editing: level, IVs, EVs, nature, moves, item, ability, Tera type
+- Recommended build helper for common physical / special / tank / mixed roles
+- **Showdown import and full Showdown export**
+- **Shareable team links** through URL encoding
+
+### AI Builder
+- **Auto-Build 6** with phase-based scoring
+- Real role detection using actual stat profiles
+- Ability-aware scoring for high-impact competitive abilities
+- Weather / terrain / Trick Room / Intimidate / Regenerator synergy rewards
+- Item-aware scoring for common competitive items
+- Move completeness penalties for incomplete or low-quality sets
+- IV quality checks for offensive speed-based picks
+- 4x weakness penalties and defensive synergy balancing
+
+### Battle Analysis
+- Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
+- Speed-control warnings when a team is too slow
+- Meta Threat Check with persistent format switch:
+  - **VGC 2024 Regulation G**
+  - **PRO PvP** (3-tier threat model)
+- **Speed Tier Comparison** versus current meta threats
+- Assassin / Target Mode with editable opponent team
+- Opponent Showdown paste support
+- Best-counter suggestions using moves, typings, and context
+- Estimated damage ranges with **OHKO / 2HKO / 3HKO** labels
+- Priority move awareness in matchup scoring
+
+### Competitive Data Upgrades
+- Dynamic defensive logic for abilities such as Levitate, Thick Fat, Flash Fire, Volt Absorb, Water Absorb and more
+- Therian formes added with correct stats and competitive abilities
+- Expanded held item pool for better build flexibility
+
+---
+
+## Structure For Easier Future Updates
+
+The project is already in a good split for future maintenance, so no extra redistribution was necessary right now.
+
+- `index.html` → app shell and script loading order
+- `dex.js` → Pokédex view, search, theme handling
+- `utils.js` → type, damage, sprite, and shared helpers
+- `team/` → Team Builder logic split by responsibility:
+  - `team-core.js` → state and persistence
+  - `team-io.js` → import/export, Showdown, share links
+  - `team-ai.js` → Auto-Build scoring
+  - `team-analytics.js` → archetypes, meta checks, damage estimates
+  - `team-ui.js` / `team-oop.js` → UI rendering and opponent tools
+- `data/` → stats, moves, abilities, sprites, type chart data
+
+If the app grows further, the next clean split should be **inside analytics/AI by feature**, not a broad rewrite now.
+
+---
+
+## Roadmap
+
+### Next High-Value Updates
+- [ ] Expand the meta selector with newer regulations and additional ranked formats
+- [ ] Add a **meta-data refresh workflow** so threat lists can be updated faster without manual deep edits
+- [ ] Improve the AI builder with **team-style presets** (balance, hyper offense, rain, sand, Trick Room)
+- [ ] Upgrade the build helper to suggest **EV spreads, natures, and items together** with stronger competitive logic
+- [ ] Add **Tera-aware offensive and defensive scoring** across team analysis and threat checks
+
+### Battle / Counter Intelligence
+- [ ] Extend the damage calculator with better context for abilities, items, weather, terrain, and exact defender setup
+- [ ] Add clearer lead recommendations and safer switch-in suggestions versus selected threats
+- [ ] Improve counter scoring for pivots, recovery loops, status pressure, and hazard pressure
+- [ ] Add matchup summaries that explain **why** a team struggles against specific meta threats
+
+### UX / Product Polish
+- [ ] Mobile-first responsive upgrade for the Team Builder and analysis panels
+- [ ] Better comparison views for multiple saved teams
+- [ ] One-click export/share package for team + matchup report
+- [ ] Cleaner card/details view for each Pokémon with more competitive context
+
+### Data & Automation
+- [ ] Optional integration path for external meta sources when stable/public data is available
+- [ ] Easier data refresh process for threats, abilities, moves, and recommended items
+- [ ] Offline/PWA support once the competitive analysis flow is stable
+
+---
+
+## Roadmap Focus
+
+We are intentionally prioritising updates that add **real competitive value** to the builder and analysis flow.
+
+That means the next work should mainly improve:
+- smarter building
+- better matchup guidance
+- faster meta updates
+- easier sharing and iteration
