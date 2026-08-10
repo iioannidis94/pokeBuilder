@@ -22,6 +22,8 @@ const BOSSES = [
         id: 'brock',
         name: 'Brock',
         title: 'Pewter City Gym Leader',
+        region: 'Kanto',
+        location: "Diglett's Cave",
         difficulties: {
             easy: {
                 pokemon: [
@@ -52,6 +54,8 @@ const BOSSES = [
         id: 'misty',
         name: 'Misty',
         title: 'Cerulean City Gym Leader',
+        region: 'Johto',
+        location: 'Route 41',
         difficulties: {
             easy: {
                 pokemon: [
@@ -74,6 +78,8 @@ const BOSSES = [
         id: 'lt-surge',
         name: 'Lt. Surge',
         title: 'Vermilion City Gym Leader',
+        region: 'Hoenn',
+        location: 'New Mauville',
         difficulties: {
             easy: {
                 pokemon: [
@@ -94,6 +100,37 @@ const BOSSES = [
                     { name: 'jolteon',    ability: 'Volt Absorb',  item: 'Choice Specs',moves: ['Thunderbolt', 'Shadow Ball', 'Signal Beam', 'Volt Switch'] },
                     { name: 'magneton',   ability: 'Magnet Pull',  item: 'Leftovers',   moves: ['Thunderbolt', 'Flash Cannon', 'Thunder Wave', 'Tri Attack'] },
                     { name: 'raichu',     ability: 'Lightning Rod', item: 'Life Orb',   moves: ['Volt Tackle', 'Fake Out', 'Iron Tail', 'Quick Attack'] },
+                ]
+            }
+        }
+    },
+
+    // ─── ASH WESTBROOK ─────────────────────────────────────────────────────
+    {
+        id: 'ash-westbrook',
+        name: 'Ash Westbrook',
+        title: 'Champion of Legends',
+        region: 'Sinnoh',
+        location: 'Spear Pillar',
+        difficulties: {
+            easy: {
+                pokemon: [
+                    { name: 'dialga',    ability: 'Pressure',   item: '',           moves: ['Draco Meteor', '', '', ''] },
+                    { name: 'reshiram',  ability: 'Turboblaze', item: '',           moves: ['Draco Meteor', '', '', ''] },
+                    { name: 'arceus',    ability: 'Multitype',  item: '',           moves: [] },
+                    { name: 'infernape', ability: '',           item: '',           moves: [] },
+                    { name: 'kyogre',    ability: 'Drizzle',    item: '',           moves: ['', '', 'Thunder', ''] },
+                    { name: 'lugia',     ability: 'Multiscale', item: '',           moves: ['Dragon Pulse', '', '', ''] },
+                ]
+            },
+            hard: {
+                pokemon: [
+                    { name: 'dialga',    ability: 'Pressure',   item: 'Leftovers',    moves: ['Draco Meteor', 'Roar', 'Fire Blast', 'Flash Cannon'] },
+                    { name: 'reshiram',  ability: 'Turboblaze', item: 'Life Orb',     moves: ['Draco Meteor', 'Roar', 'Blue Flare', 'Stone Edge'] },
+                    { name: 'arceus',    ability: 'Multitype',  item: 'Life Orb',     moves: ['Extreme Speed', 'Shadow Claw', 'Earthquake', 'Stone Edge'] },
+                    { name: 'infernape', ability: 'Blaze',      item: 'Expert Belt',  moves: ['Close Combat', 'Fire Blast', 'Grass Knot', 'Thunder Punch'] },
+                    { name: 'kyogre',    ability: 'Drizzle',    item: 'Choice Specs', moves: ['Surf', 'Earthquake', 'Thunder', 'Ice Beam'] },
+                    { name: 'lugia',     ability: 'Multiscale', item: 'Leftovers',    moves: ['Dragon Pulse', 'Psyshock', 'Ice Beam', 'Aeroblast'] },
                 ]
             }
         }

@@ -27,6 +27,9 @@
     };
 
     // ─── Render Boss List (sidebar) ───────────────────────────────────────
+    const REGION_ORDER  = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh'];
+    const REGION_COLORS = { Kanto: '#ff6b6b', Johto: '#63d471', Hoenn: '#5bc8f5', Sinnoh: '#c084fc' };
+
     function renderBossesList() {
         const listEl = document.getElementById('bossListPanel');
         if (!listEl) return;
@@ -36,21 +39,41 @@
             return;
         }
 
-        listEl.innerHTML = BOSSES.map(boss => {
-            const diffKeys    = DIFFICULTY_ORDER.filter(d => boss.difficulties && boss.difficulties[d]);
-            const diffBadges  = diffKeys.map(d =>
-                `<span style="font-size:10px; color:${DIFFICULTY_COLORS[d]}; background:${DIFFICULTY_COLORS[d]}22; border:1px solid ${DIFFICULTY_COLORS[d]}; border-radius:10px; padding:2px 7px; font-weight:bold;">${d}</span>`
-            ).join('');
-            const isActive    = selectedBossId === boss.id;
-            return `<button class="bossListItem${isActive ? ' active' : ''}" type="button" data-boss-id="${boss.id}" style="
-                width:100%; text-align:left; padding:10px 14px; border:none; border-bottom:1px solid var(--brd);
-                background:${isActive ? 'var(--brd)' : 'transparent'}; cursor:pointer; transition:.15s;
-                display:flex; flex-direction:column; gap:4px;
-            ">
-                <span style="font-size:13px; font-weight:800; color:var(--txt);">${boss.name}</span>
-                <span style="font-size:11px; color:var(--dim);">${boss.title || ''}</span>
-                <div style="display:flex; gap:4px; flex-wrap:wrap;">${diffBadges}</div>
-            </button>`;
+        // Group bosses by region, preserving REGION_ORDER
+        const grouped = {};
+        for (const boss of BOSSES) {
+            const region = boss.region || 'Other';
+            if (!grouped[region]) grouped[region] = [];
+            grouped[region].push(boss);
+        }
+
+        const regionKeys = [...REGION_ORDER.filter(r => grouped[r]), ...Object.keys(grouped).filter(r => !REGION_ORDER.includes(r))];
+
+        listEl.innerHTML = regionKeys.map(region => {
+            const color    = REGION_COLORS[region] || '#aaa';
+            const bossRows = grouped[region].map(boss => {
+                const diffKeys   = DIFFICULTY_ORDER.filter(d => boss.difficulties && boss.difficulties[d]);
+                const diffBadges = diffKeys.map(d =>
+                    `<span style="font-size:10px; color:${DIFFICULTY_COLORS[d]}; background:${DIFFICULTY_COLORS[d]}22; border:1px solid ${DIFFICULTY_COLORS[d]}; border-radius:10px; padding:2px 7px; font-weight:bold;">${d}</span>`
+                ).join('');
+                const isActive = selectedBossId === boss.id;
+                return `<button class="bossListItem${isActive ? ' active' : ''}" type="button" data-boss-id="${boss.id}" style="
+                    width:100%; text-align:left; padding:8px 14px 8px 20px; border:none; border-bottom:1px solid var(--brd);
+                    background:${isActive ? 'var(--brd)' : 'transparent'}; cursor:pointer; transition:.15s;
+                    display:flex; flex-direction:column; gap:4px;
+                ">
+                    <span style="font-size:13px; font-weight:800; color:var(--txt);">${boss.name}</span>
+                    <span style="font-size:10px; color:var(--dim);">${boss.location || ''}</span>
+                    <div style="display:flex; gap:4px; flex-wrap:wrap;">${diffBadges}</div>
+                </button>`;
+            }).join('');
+
+            return `<div>
+                <div style="padding:7px 14px; font-size:11px; font-weight:900; color:${color}; background:${color}18; border-bottom:1px solid var(--brd); letter-spacing:1px; text-transform:uppercase;">
+                    ${region}
+                </div>
+                ${bossRows}
+            </div>`;
         }).join('');
     }
 
@@ -131,6 +154,7 @@
                 <div>
                     <div style="font-size:19px; font-weight:900; color:var(--txt);">${boss.name}</div>
                     <div style="font-size:12px; color:var(--dim); margin-top:2px;">${boss.title || ''}</div>
+                    ${boss.region ? `<div style="font-size:11px; margin-top:4px;"><span style="color:${REGION_COLORS[boss.region] || '#aaa'}; font-weight:700;">${boss.region}</span>${boss.location ? ` <span style="color:var(--dim);">— ${boss.location}</span>` : ''}</div>` : ''}
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;" id="bossDiffTabs">${tabsHtml}</div>
                 <div style="display:flex; flex-direction:column; gap:8px;">
