@@ -50,6 +50,7 @@ The goal is not just to list Pokémon, but to help the user:
   - **VGC 2024 Regulation G**
   - **PRO PvP** (3-tier threat model)
 - **Speed Tier Comparison** versus current meta threats
+- **Stat Comparison** in Battle Calculate panel: view HP / ATK / DEF / SpA / SpD / SPE for every selected Pokémon with best-in-team highlighted; opponent Pokémon displayed at maximum potential (31 IV · 252 EV · Lv 100) for reference
 - Assassin / Target Mode with editable opponent team
 - Opponent Showdown paste support
 - Best-counter suggestions using moves, typings, and context

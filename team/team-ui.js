@@ -166,10 +166,11 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
 
 // --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
     // Analytics (Archetype, Speed Control, Meta Threats)
-    const archetypeHTML  = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
-    const speedWarnHTML  = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
-    const speedTierHTML  = (typeof getSpeedTierComparisonHTML === 'function') ? getSpeedTierComparisonHTML(selected) : '';
-    const metaThreatHTML = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
+    const archetypeHTML   = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
+    const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
+    const speedTierHTML   = (typeof getSpeedTierComparisonHTML === 'function') ? getSpeedTierComparisonHTML(selected) : '';
+    const metaThreatHTML  = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
+    const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
@@ -200,6 +201,9 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
 
         <!-- Meta Threat Check -->
         ${metaThreatHTML}
+
+        <!-- Stat Comparison (My Team + Opponent Max) -->
+        ${statCompareHTML}
         
         <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
         ${oppUI}
