@@ -97,6 +97,60 @@ window.setOppItem = function(idx, item) {
     if (typeof renderTeamSlots === 'function') renderTeamSlots();
 };
 
+window.openOpponentSetup = function(idx) {
+    const opp = window.oppTeam[idx];
+    if (!opp) return;
+    const modal = document.getElementById('oppSetupModal');
+    const body = document.getElementById('oppSetupBody');
+    if (!modal || !body) return;
+    const target = POKE.find(p => p.id === opp.id);
+    if (!target) return;
+    const statInputs = TEAM_STATS.map(stat => `<div style="display:grid; grid-template-columns:52px 1fr 1fr; gap:6px; align-items:center;">
+        <span style="font-size:10px; font-weight:900; color:var(--txt);">${stat}</span>
+        <input id="opp-iv-${stat}" type="number" min="0" max="31" value="${opp.iv?.[stat] ?? ''}" placeholder="IV" style="background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); padding:6px; font:800 11px 'Nunito',sans-serif;">
+        <input id="opp-ev-${stat}" type="number" min="0" max="252" value="${opp.ev?.[stat] ?? ''}" placeholder="EV" style="background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); padding:6px; font:800 11px 'Nunito',sans-serif;">
+    </div>`).join('');
+    body.innerHTML = `
+        <input id="oppSetupIndex" type="hidden" value="${idx}">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            ${spriteImg(target)}
+            <strong style="color:#ff6b6b; font-size:15px; text-transform:capitalize;">${target.name.replace(/-/g, ' ')}</strong>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+            <label style="display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--txt);">Level
+                <input id="opp-level" type="number" min="1" max="100" value="${opp.level || 50}" style="background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); padding:6px; font:800 11px 'Nunito',sans-serif;">
+            </label>
+            <label style="display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--txt);">Nature
+                <select id="opp-nature" style="background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); padding:6px; font:800 11px 'Nunito',sans-serif;">
+                    <option value="">Neutral / Unknown</option>
+                    ${TEAM_NATURES.map(n => `<option value="${n}" ${opp.nature === n ? 'selected' : ''}>${n}</option>`).join('')}
+                </select>
+            </label>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">${statInputs}</div>
+    `;
+    modal.style.display = 'flex';
+};
+
+window.saveOpponentSetup = function() {
+    const idx = Number(document.getElementById('oppSetupIndex')?.value);
+    const opp = window.oppTeam[idx];
+    if (!opp) return;
+    opp.level = Math.max(1, Math.min(100, Number(document.getElementById('opp-level')?.value) || 50));
+    opp.nature = document.getElementById('opp-nature')?.value || '';
+    opp.iv = opp.iv || {};
+    opp.ev = opp.ev || {};
+    TEAM_STATS.forEach(stat => {
+        const ivVal = document.getElementById(`opp-iv-${stat}`)?.value ?? '';
+        const evVal = document.getElementById(`opp-ev-${stat}`)?.value ?? '';
+        opp.iv[stat] = ivVal === '' ? '' : String(Math.max(0, Math.min(31, Number(ivVal) || 0)));
+        opp.ev[stat] = evVal === '' ? '' : String(Math.max(0, Math.min(252, Number(evVal) || 0)));
+    });
+    window.saveOpponents();
+    document.getElementById('oppSetupModal').style.display = 'none';
+    if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
 // Import opponents from Showdown paste (reuses the existing parser from team-io.js)
 window.importOpponentsFromShowdown = function(text) {
     if (!text || !text.trim()) return 0;
@@ -127,9 +181,22 @@ window.importOpponentsFromShowdown = function(text) {
 
 // Σύγκριση Base Stats & Move Categories
 // oppSlotData: { moveNames, moves, moveCats } – optional, enables move-aware scoring
+const PIVOT_MOVES = new Set(['u-turn', 'volt-switch', 'flip-turn', 'parting-shot', 'teleport', 'baton-pass']);
+const RECOVERY_MOVES = new Set(['recover', 'roost', 'soft-boiled', 'slack-off', 'wish', 'moonlight', 'morning-sun', 'milk-drink', 'synthesis', 'shore-up']);
+const STATUS_PRESSURE_MOVES = new Set(['toxic', 'will-o-wisp', 'thunder-wave', 'spore', 'sleep-powder', 'glare', 'leech-seed', 'yawn']);
+const HAZARD_MOVES = new Set(['stealth-rock', 'spikes', 'toxic-spikes', 'sticky-web']);
+const HAZARD_CONTROL_MOVES = new Set(['rapid-spin', 'defog', 'mortal-spin', 'court-change']);
+
 window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
     let score = 0;
     const PRIORITY_MOVES = new Set(['fake-out', 'sucker-punch', 'bullet-punch', 'ice-shard', 'extreme-speed', 'mach-punch', 'aqua-jet', 'shadow-sneak']);
+    const myMoves = (myCandidate.slot.moveNames || []).map(m => String(m || '').toLowerCase()).filter(Boolean);
+    const oppMoves = (oppSlotData && oppSlotData.moveNames ? oppSlotData.moveNames : []).map(m => String(m || '').toLowerCase()).filter(Boolean);
+    const myRecovery = myMoves.filter(m => RECOVERY_MOVES.has(m)).length;
+    const myPivots = myMoves.filter(m => PIVOT_MOVES.has(m)).length;
+    const myStatus = myMoves.filter(m => STATUS_PRESSURE_MOVES.has(m)).length;
+    const myHazards = myMoves.filter(m => HAZARD_MOVES.has(m)).length;
+    const myHazardControl = myMoves.filter(m => HAZARD_CONTROL_MOVES.has(m)).length;
 
     let opBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[oppP.id]) ? BASE_STATS[oppP.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80};
 
@@ -191,6 +258,23 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
         if (moveScore > bestMoveScore) bestMoveScore = moveScore;
     });
 
+    const oppAttackBias = opBs.atk >= opBs.spa ? 'physical' : 'special';
+    if (myRecovery) score += (oppAttackBias === 'physical' ? 30 : 24) * myRecovery;
+    if (myPivots) score += 22 * myPivots;
+    if (myStatus) {
+        if (opBs.spe >= 100) score += 18 * myStatus;
+        if (opBs.hp + opBs.def + opBs.spd >= 280) score += 18 * myStatus;
+        if (opBs.atk >= opBs.spa) score += 10 * myStatus;
+    }
+    if (myHazards) {
+        if (multAtkVsTypes('rock', oppP.types) > 1) score += 24 * myHazards;
+        if (!(oppP.types || []).includes('flying')) score += 16 * myHazards;
+    }
+    if (myHazardControl && oppMoves.some(m => HAZARD_MOVES.has(m))) score += 24 * myHazardControl;
+    if (getRecoveryNote && getRecoveryNote(myCandidate.slot)) score += 18;
+    if (getSafeItemName(myCandidate.slot.item) === 'heavy-duty boots' && oppMoves.some(m => HAZARD_MOVES.has(m))) score += 20;
+    if (getSafeAbilityName(myCandidate.slot.ability) === 'regenerator') score += 28;
+
     return score + bestMoveScore;
 };
 
@@ -241,6 +325,7 @@ window.getOpponentUI = function() {
                     ${spriteImg(op)}
                     <span style="font-size:11px; font-weight:bold; color:var(--txt);">${op.name.replace(/-/g,' ')}</span>
                 </div>
+                <button onclick="openOpponentSetup(${idx})" style="background:rgba(77,171,247,0.12); color:#4dabf7; border:1px solid #4dabf7; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:10px; font-weight:900;">⚙ Exact Setup</button>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
                     ${abilitySelect}
                     ${itemSelect}
@@ -285,6 +370,43 @@ window.getMatchupsUI = function(selected) {
         <p style="font-size:11px; color:var(--dim); margin:4px 0 12px;">Top counters from your team vs each opponent. Outgoing ⚔️ and incoming 🛡️ damage estimates included.</p>
         <div style="display:flex; flex-direction:column; gap:14px;">`;
 
+    const aggregate = selected.map(my => {
+        let totalScore = 0;
+        let totalIncoming = 0;
+        let incomingChecks = 0;
+        window.oppTeam.forEach(opp => {
+            const opId = typeof opp === 'number' ? opp : opp.id;
+            const oppSlotData = typeof opp === 'object' ? opp : null;
+            const op = POKE.find(p => p.id === opId);
+            if (!op) return;
+            totalScore += window.getCombatScore(my, op, oppSlotData);
+            if (typeof getBestDamageEstimate === 'function' && oppSlotData) {
+                const incoming = getBestDamageEstimate({ p: op, slot: oppSlotData }, my.p, Object.assign({}, my.slot, { __side: 'me' }));
+                if (incoming) {
+                    totalIncoming += incoming.maxPct;
+                    incomingChecks++;
+                }
+            }
+        });
+        return { my, totalScore, avgIncoming: incomingChecks ? (totalIncoming / incomingChecks) : 999 };
+    }).sort((a, b) => b.totalScore - a.totalScore);
+    const recommendedLead = aggregate[0];
+    const safestSwitch = [...aggregate].sort((a, b) => a.avgIncoming - b.avgIncoming)[0];
+    if (recommendedLead && safestSwitch) {
+        html += `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px;">
+            <div style="padding:10px; border-radius:8px; background:rgba(99,212,113,0.08); border:1px solid rgba(99,212,113,0.35);">
+                <span style="display:block; color:#63d471; font-size:10px; font-weight:900; text-transform:uppercase;">Recommended lead</span>
+                <span style="display:block; color:var(--txt); font-size:13px; font-weight:900; margin-top:4px; text-transform:capitalize;">${recommendedLead.my.p.name.replace(/-/g, ' ')}</span>
+                <span style="display:block; color:var(--dim); font-size:10px; margin-top:3px;">Best all-around pressure into the selected threats.</span>
+            </div>
+            <div style="padding:10px; border-radius:8px; background:rgba(77,171,247,0.08); border:1px solid rgba(77,171,247,0.35);">
+                <span style="display:block; color:#4dabf7; font-size:10px; font-weight:900; text-transform:uppercase;">Safest switch-in</span>
+                <span style="display:block; color:var(--txt); font-size:13px; font-weight:900; margin-top:4px; text-transform:capitalize;">${safestSwitch.my.p.name.replace(/-/g, ' ')}</span>
+                <span style="display:block; color:var(--dim); font-size:10px; margin-top:3px;">Lowest average incoming damage across imported threats.</span>
+            </div>
+        </div>`;
+    }
+
     window.oppTeam.forEach(opp => {
         const opId = typeof opp === 'number' ? opp : opp.id;
         const oppSlotData = typeof opp === 'object' ? opp : null;
@@ -303,9 +425,12 @@ window.getMatchupsUI = function(selected) {
         const oppMoveTypes = oppSlotData && oppSlotData.moves ? oppSlotData.moves : [];
         const oppAbility   = oppSlotData && oppSlotData.ability ? oppSlotData.ability : '';
         const oppItem      = oppSlotData && oppSlotData.item    ? oppSlotData.item    : '';
+        const oppLevel     = oppSlotData && oppSlotData.level   ? oppSlotData.level   : '';
+        const oppNature    = oppSlotData && oppSlotData.nature  ? oppSlotData.nature  : '';
 
         const abilityBadge = oppAbility ? `<span style="font-size:10px; background:rgba(99,212,113,0.15); border:1px solid #63d471; color:#63d471; border-radius:3px; padding:1px 6px; font-weight:bold;">⚙ ${oppAbility.replace(/-/g,' ')}</span>` : '';
         const itemBadge    = oppItem    ? `<span style="font-size:10px; background:rgba(255,193,7,0.15); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 6px; font-weight:bold;">🎒 ${oppItem}</span>` : '';
+        const setupBadge   = (oppLevel || oppNature) ? `<span style="font-size:10px; background:rgba(177,151,252,0.15); border:1px solid #b197fc; color:#b197fc; border-radius:3px; padding:1px 6px; font-weight:bold;">📐 Lv${oppLevel || 50}${oppNature ? ` · ${oppNature}` : ''}</span>` : '';
 
         const movesHtml = oppMoveNames.some(Boolean)
             ? oppMoveNames.map((mn, i) => {
@@ -320,7 +445,7 @@ window.getMatchupsUI = function(selected) {
             : '';
 
         const oppInfoBar = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 10px; align-items:center;">
-            ${abilityBadge}${itemBadge}${movesHtml}
+            ${abilityBadge}${itemBadge}${setupBadge}${movesHtml}
         </div>`;
 
         // Counter rows
@@ -331,11 +456,11 @@ window.getMatchupsUI = function(selected) {
             // Outgoing damage: my best move vs opponent
             let outHtml = '';
             if (typeof getBestDamageEstimate === 'function') {
-                const est = getBestDamageEstimate(my, op, oppSlotData);
+                const est = getBestDamageEstimate(my, op, Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
                 if (est) {
                     const c = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#4dabf7';
                     outHtml = `<span style="font-size:10px; font-weight:bold; color:${c}; background:${c}18; padding:2px 6px; border-radius:3px;">
-                        ⚔️ ${est.label} ${est.minPct}%–${est.maxPct}% (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
+                        ⚔️ ${est.label} ${est.minPct}%–${est.maxPct}%${est.hazardChip ? ` · ${est.minAfterHazards}%–${est.maxAfterHazards}% after hazards` : ''} (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
                     </span>`;
                 }
             }
@@ -344,11 +469,11 @@ window.getMatchupsUI = function(selected) {
             let inHtml = '';
             if (typeof getBestDamageEstimate === 'function' && oppSlotData) {
                 const oppAtkMon = { p: op, slot: oppSlotData };
-                const est = getBestDamageEstimate(oppAtkMon, my.p, my.slot);
+                const est = getBestDamageEstimate(oppAtkMon, my.p, Object.assign({}, my.slot, { __side: 'me' }));
                 if (est) {
                     const c = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#63d471';
                     inHtml = `<span style="font-size:10px; font-weight:bold; color:${c}; background:${c}18; padding:2px 6px; border-radius:3px;">
-                        🛡️ Takes ${est.label} ${est.minPct}%–${est.maxPct}% (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
+                        🛡️ Takes ${est.label} ${est.minPct}%–${est.maxPct}%${est.hazardChip ? ` · ${est.minAfterHazards}%–${est.maxAfterHazards}% after hazards` : ''} (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
                     </span>`;
                 }
             }
@@ -370,7 +495,7 @@ window.getMatchupsUI = function(selected) {
                         return;
                     }
                     if (!mInfo.power) return;
-                    const est = estimateDamagePct(my, mInfo, op, Number((oppSlotData && oppSlotData.level) || 50), oppSlotData);
+                    const est = estimateDamagePct(my, mInfo, op, Number((oppSlotData && oppSlotData.level) || 50), Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
                     if (est) {
                         moveRanks.push({ name: mName, ...est, isStatus: false });
                     } else {
@@ -423,31 +548,24 @@ window.getMatchupsUI = function(selected) {
             if (typeof calcFinalStats === 'function' && typeof BASE_STATS !== 'undefined' && typeof getNatureMultiplier === 'function') {
                 const myBs  = BASE_STATS[my.p.id]  || { spe: 70 };
                 const opBs  = BASE_STATS[op.id]     || { spe: 70 };
-                const mySpIv = my.slot.iv?.SPD === '' || my.slot.iv?.SPD === undefined ? 31 : Number(my.slot.iv?.SPD) || 31;
-                const mySpEv = Number(my.slot.ev?.SPD) || 0;
-                const myLv   = Number(my.slot.level) || 100;
-                const mySpeedRaw = Math.floor(((2 * (Number(myBs.spe) || 70) + mySpIv + Math.floor(mySpEv / 4)) * myLv) / 100) + 5;
-                const mySpeed    = Math.floor(mySpeedRaw * getNatureMultiplier(my.slot.nature, 'SPD'));
-
-                const opLv = Number((oppSlotData && oppSlotData.level) || 50);
-                const opSpEv = (oppSlotData && oppSlotData.ev && oppSlotData.ev.SPD !== '' && oppSlotData.ev.SPD !== undefined) ? Number(oppSlotData.ev.SPD) || 0 : 0;
-                const opSpeedRaw = Math.floor(((2 * (Number(opBs.spe) || 70) + 31 + Math.floor(opSpEv / 4)) * opLv) / 100) + 5;
-                const opSpeed    = Math.floor(opSpeedRaw * getNatureMultiplier(oppSlotData && oppSlotData.nature, 'SPD'));
+                const mySpeed = getEffectiveSpeedStat(Number(myBs.spe) || 70, my.slot, { side: 'me', types: my.p.types });
+                const opSpeed = getEffectiveSpeedStat(Number(opBs.spe) || 70, oppSlotData || { level: 50 }, { side: 'opponent', types: op.types, defaultLevel: 50 });
+                const trickRoomActive = typeof getBattleContext === 'function' ? getBattleContext().trickRoom : false;
 
                 const tips = [];
 
                 // Speed comparison
-                if (mySpeed > opSpeed) {
-                    tips.push(`<span style="color:#63d471;">⚡ You move first (${mySpeed} vs ${opSpeed})</span> — attack immediately.`);
-                } else if (mySpeed < opSpeed) {
-                    tips.push(`<span style="color:#ffc107;">🐢 Opponent is faster (${opSpeed} vs ${mySpeed})</span> — prepare to take a hit first.`);
+                if ((!trickRoomActive && mySpeed > opSpeed) || (trickRoomActive && mySpeed < opSpeed)) {
+                    tips.push(`<span style="color:#63d471;">⚡ You move first (${mySpeed} vs ${opSpeed})</span>${trickRoomActive ? ' under Trick Room' : ''} — attack immediately.`);
+                } else if ((!trickRoomActive && mySpeed < opSpeed) || (trickRoomActive && mySpeed > opSpeed)) {
+                    tips.push(`<span style="color:#ffc107;">🐢 Opponent is faster (${opSpeed} vs ${mySpeed})</span>${trickRoomActive ? ' outside Trick Room order' : ''} — prepare to take a hit first.`);
                 } else {
                     tips.push(`<span style="color:#ffa94d;">🎲 Speed tie (${mySpeed})</span> — 50/50 who moves first.`);
                 }
 
                 // OHKO warning
                 if (typeof getBestDamageEstimate === 'function') {
-                    const myBest = getBestDamageEstimate(my, op, oppSlotData);
+                    const myBest = getBestDamageEstimate(my, op, Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
                     if (myBest && myBest.minPct >= 100) {
                         tips.push(`<span style="color:#ff4d4f;">💥 OHKO guaranteed</span> with <b>${myBest.moveName ? myBest.moveName.replace(/-/g,' ') : '?'}</b> — go for the KO immediately.`);
                     } else if (myBest && myBest.ohkoChance > 0) {
@@ -456,7 +574,7 @@ window.getMatchupsUI = function(selected) {
 
                     if (oppSlotData) {
                         const oppAtkMon = { p: op, slot: oppSlotData };
-                        const opBest = getBestDamageEstimate(oppAtkMon, my.p, my.slot);
+                        const opBest = getBestDamageEstimate(oppAtkMon, my.p, Object.assign({}, my.slot, { __side: 'me' }));
                         if (opBest && opBest.minPct >= 100) {
                             tips.push(`<span style="color:#ff6b6b;">⚠️ Watch out!</span> Opponent can OHKO you with <b>${opBest.moveName ? opBest.moveName.replace(/-/g,' ') : '?'}</b>.`);
                         } else if (opBest && opBest.minPct >= 50) {
@@ -466,6 +584,11 @@ window.getMatchupsUI = function(selected) {
                 }
 
                 if (tips.length) {
+                    const utilityNotes = [];
+                    if (my.slot.moveNames?.some(m => PIVOT_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Pivot option lets you scout without fully committing.');
+                    if (my.slot.moveNames?.some(m => RECOVERY_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Recovery improves repeat switch-ins if the first trade is neutral.');
+                    if (my.slot.moveNames?.some(m => STATUS_PRESSURE_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Status pressure can punish bulky answers even without an immediate KO.');
+                    if (utilityNotes.length) tips.push(...utilityNotes.map(t => `<span style="color:#4dabf7;">🧩 ${t}</span>`));
                     battlePrepHtml = `<div style="margin-top:8px; padding:7px 8px; background:rgba(99,212,113,0.05); border:1px solid rgba(99,212,113,0.2); border-radius:6px;">
                         <span style="font-size:10px; font-weight:900; color:#63d471; display:block; margin-bottom:5px;">⚔️ Battle Prep</span>
                         <ul style="margin:0; padding:0 0 0 14px; display:flex; flex-direction:column; gap:3px;">
@@ -515,6 +638,24 @@ window.calcAssassinScore = function(candidate) {
     if (validMovesCount < 4) oppScore -= (4 - validMovesCount) * 20;
     return oppScore;
 };
+
+// --- Opponent Advanced Setup Modal ---
+(function injectOpponentSetupModal() {
+    const modal = document.createElement('div');
+    modal.id = 'oppSetupModal';
+    modal.style.cssText = 'display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,.82); align-items:center; justify-content:center; padding:16px;';
+    modal.innerHTML = `
+      <div style="width:min(96vw, 560px); max-height:90vh; overflow:auto; background:var(--surf); border:1px solid #ff6b6b55; border-radius:14px; padding:18px; position:relative;">
+        <button onclick="document.getElementById('oppSetupModal').style.display='none'" style="position:absolute; top:12px; right:12px; border:none; background:#ff4d4f; color:#fff; border-radius:6px; padding:4px 10px; cursor:pointer;">✕</button>
+        <h3 style="margin:0 0 10px; color:#ff6b6b; font-size:15px;">Exact Defender Setup</h3>
+        <div id="oppSetupBody"></div>
+        <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+            <button onclick="window.saveOpponentSetup()" style="padding:9px 14px; border:none; background:#4dabf7; color:#fff; border-radius:8px; cursor:pointer; font-weight:900;">Save setup</button>
+        </div>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    document.body.appendChild(modal);
+})();
 
 // --- Opponent Showdown Paste Modal ---
 (function injectOppShowdownModal() {

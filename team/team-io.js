@@ -405,3 +405,168 @@ function copyTeamReport() {
         exportBtn.parentNode.insertBefore(shareBtn, exportBtn);
     });
 })();
+
+function downloadDataBundle() {
+    if (typeof window.getDataOverridesBundle !== 'function') return;
+    const payload = window.getDataOverridesBundle();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pokebuilder-data-bundle-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function sanitizeDataBundle(bundle) {
+    if (!bundle || typeof bundle !== 'object') throw new Error('Invalid data bundle');
+    const clean = {
+        sourceUrl: bundle.sourceUrl ? String(bundle.sourceUrl) : '',
+        heldItems: Array.isArray(bundle.heldItems) ? bundle.heldItems.map(x => String(x).trim()).filter(Boolean) : undefined,
+        metaThreats: Array.isArray(bundle.metaThreats) ? bundle.metaThreats.filter(t => t && Number.isFinite(Number(t.id)) && typeof t.name === 'string' && Array.isArray(t.types)).map(t => ({
+            id: Number(t.id),
+            name: String(t.name),
+            types: t.types.map(x => String(x).toLowerCase()).filter(Boolean),
+            tier: Number(t.tier) || undefined
+        })) : undefined
+    };
+
+    if (bundle.moveInfo && typeof bundle.moveInfo === 'object') {
+        clean.moveInfo = Object.fromEntries(Object.entries(bundle.moveInfo).filter(([key, value]) =>
+            key && value && typeof value === 'object' && typeof value.type === 'string' && typeof value.cat === 'string'
+        ).map(([key, value]) => [key, {
+            type: String(value.type).toLowerCase(),
+            cat: String(value.cat).toLowerCase(),
+            power: Number(value.power) || 0,
+            acc: value.acc === undefined || value.acc === null ? 0 : Number(value.acc) || 0
+        }]));
+    }
+
+    if (bundle.movesByPokemon && typeof bundle.movesByPokemon === 'object') {
+        clean.movesByPokemon = Object.fromEntries(Object.entries(bundle.movesByPokemon).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [
+            key,
+            value.map(x => String(x).trim()).filter(Boolean)
+        ]));
+    }
+
+    if (bundle.abilities && typeof bundle.abilities === 'object') {
+        clean.abilities = Object.fromEntries(Object.entries(bundle.abilities).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [
+            key,
+            value.map(x => String(x).trim()).filter(Boolean)
+        ]));
+    }
+
+    return clean;
+}
+
+function importDataBundleFromText(text, sourceUrl) {
+    let bundle;
+    try {
+        bundle = JSON.parse(text);
+    } catch (err) {
+        throw new Error('Invalid JSON data bundle');
+    }
+    if (typeof window.applyDataOverridesBundle !== 'function') throw new Error('Data bundle import unavailable');
+    window.applyDataOverridesBundle(sanitizeDataBundle(bundle), sourceUrl);
+    showToast('🗂 Data bundle applied.');
+}
+
+function isTrustedPublicDataUrl(rawUrl) {
+    try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.toLowerCase();
+        const isBracketedHost = parsed.host.startsWith('[');
+        const isPrivateIp = /^(10\.|127\.|169\.254\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(host);
+        const isLocalName = host === 'localhost' || host.endsWith('.local');
+        return parsed.protocol === 'https:' && !isPrivateIp && !isLocalName && !isBracketedHost;
+    } catch (err) {
+        return false;
+    }
+}
+
+(function injectDataLab() {
+    const modal = document.createElement('div');
+    modal.id = 'dataLabModal';
+    modal.style.cssText = 'display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,.82); align-items:center; justify-content:center; padding:18px;';
+    modal.innerHTML = `
+      <div style="width:min(96vw, 640px); max-height:90vh; overflow:auto; background:var(--surf); border:1px solid #4dabf755; border-radius:14px; padding:20px; position:relative;">
+        <button id="dataLabClose" style="position:absolute; top:12px; right:12px; border:none; background:#ff4d4f; color:#fff; border-radius:6px; padding:4px 10px; cursor:pointer;">✕</button>
+        <h3 style="margin:0 0 6px; color:#4dabf7; font-size:16px;">Data Refresh Lab</h3>
+        <p style="font-size:11px; color:var(--dim); margin:0 0 12px;">Refresh threats, moves, abilities, and item suggestions locally from a JSON bundle, or point the app to a public JSON URL when you have a stable source.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <button id="dataLabExport" style="padding:8px 12px; border:none; background:#63d471; color:#08120c; border-radius:8px; cursor:pointer; font-weight:900;">⬇ Export bundle</button>
+            <label style="padding:8px 12px; background:#4dabf7; color:#fff; border-radius:8px; cursor:pointer; font-weight:900;">⬆ Import JSON<input id="dataLabFile" type="file" accept="application/json,.json" hidden></label>
+            <button id="dataLabReset" style="padding:8px 12px; border:1px solid #ff6b6b; background:rgba(255,107,107,0.12); color:#ff6b6b; border-radius:8px; cursor:pointer; font-weight:900;">Reset overrides</button>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; font-size:11px; color:var(--txt);">
+            <span>Public JSON URL (optional integration path)</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <input id="dataLabUrl" type="url" placeholder="https://example.com/pokebuilder-meta.json" style="flex:1; min-width:220px; background:var(--bg); border:1px solid var(--brd); border-radius:8px; color:var(--txt); padding:9px 10px; font:800 12px 'Nunito',sans-serif;">
+                <button id="dataLabFetch" style="padding:9px 12px; border:none; background:#b197fc; color:#171015; border-radius:8px; cursor:pointer; font-weight:900;">Fetch & apply</button>
+            </div>
+        </label>
+        <pre id="dataLabPreview" style="margin-top:12px; background:var(--bg); border:1px solid var(--brd); border-radius:10px; padding:12px; color:var(--txt); font:700 11px/1.45 monospace; white-space:pre-wrap;"></pre>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    document.body.appendChild(modal);
+
+    function refreshPreview() {
+        if (typeof window.getDataOverridesBundle !== 'function') return;
+        const bundle = window.getDataOverridesBundle();
+        document.getElementById('dataLabPreview').textContent = JSON.stringify(bundle, null, 2);
+        document.getElementById('dataLabUrl').value = bundle.sourceUrl || '';
+    }
+
+    window.openDataLab = function() {
+        refreshPreview();
+        modal.style.display = 'flex';
+    };
+
+    document.getElementById('dataLabClose').addEventListener('click', () => { modal.style.display = 'none'; });
+    document.getElementById('dataLabExport').addEventListener('click', downloadDataBundle);
+    document.getElementById('dataLabReset').addEventListener('click', () => {
+        if (typeof window.resetDataOverridesBundle === 'function') window.resetDataOverridesBundle();
+        refreshPreview();
+        showToast('♻️ Data overrides reset.');
+    });
+    document.getElementById('dataLabFile').addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                importDataBundleFromText(String(reader.result || ''));
+                refreshPreview();
+            } catch (err) {
+                alert('Could not import this data bundle.');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
+    document.getElementById('dataLabFetch').addEventListener('click', async () => {
+        const url = document.getElementById('dataLabUrl').value.trim();
+        if (!url) return alert('Paste a JSON URL first.');
+        if (!isTrustedPublicDataUrl(url)) return alert('Use a trusted public HTTPS JSON URL only.');
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Fetch failed');
+            importDataBundleFromText(await res.text(), url);
+            refreshPreview();
+        } catch (err) {
+            alert('Could not fetch a valid data bundle from that URL.');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const exportBtn = document.getElementById('teamExport');
+        if (!exportBtn) return;
+        const dataBtn = document.createElement('button');
+        dataBtn.className = 'teamTool';
+        dataBtn.type = 'button';
+        dataBtn.id = 'dataLabBtn';
+        dataBtn.innerHTML = '🗂 Data';
+        dataBtn.style.cssText = 'border-color:#4dabf7; color:#4dabf7; background:rgba(77,171,247,0.1); margin-right: 5px;';
+        dataBtn.addEventListener('click', () => window.openDataLab && window.openDataLab());
+        exportBtn.parentNode.insertBefore(dataBtn, exportBtn);
+    });
+})();

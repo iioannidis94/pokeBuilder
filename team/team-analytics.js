@@ -281,23 +281,38 @@ function getNatureMultiplier(nature, statName) {
     return 1;
 }
 
+function getEffectiveSpeedStat(baseSpeed, slot, options) {
+    options = options || {};
+    const iv = slot?.iv?.SPD === '' || slot?.iv?.SPD === undefined ? 31 : Number(slot?.iv?.SPD) || 31;
+    const ev = slot?.ev?.SPD === '' || slot?.ev?.SPD === undefined ? (options.defaultEv || 0) : Number(slot?.ev?.SPD) || 0;
+    const lv = Number(slot?.level) || options.defaultLevel || 100;
+    const raw = Math.floor(((2 * (Number(baseSpeed) || 70) + iv + Math.floor(ev / 4)) * lv) / 100) + 5;
+    let stat = Math.floor(raw * getNatureMultiplier(slot?.nature, 'SPD'));
+    const item = getSafeItemName(slot?.item);
+    const ability = getSafeAbilityName(slot?.ability);
+    const ctx = getBattleContext();
+    if (ability === 'swift-swim' && ctx.weather === 'rain') stat = Math.floor(stat * 2);
+    if (ability === 'chlorophyll' && ctx.weather === 'sun') stat = Math.floor(stat * 2);
+    if (ability === 'sand-rush' && ctx.weather === 'sand') stat = Math.floor(stat * 2);
+    if (ability === 'slush-rush' && ctx.weather === 'snow') stat = Math.floor(stat * 2);
+    if (item === 'choice scarf') stat = Math.floor(stat * 1.5);
+    return Math.floor(stat);
+}
+
 function getSpeedTierComparisonHTML(selected) {
     if (!selected || !selected.length) return '';
     const threats = (typeof getActiveThreats === 'function') ? getActiveThreats() : META_THREATS_PRO;
+    const ctx = getBattleContext();
 
     const myRows = selected.map(mon => {
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || { spe: 70 };
-        const iv = mon.slot.iv?.SPD === '' || mon.slot.iv?.SPD === undefined ? 31 : Number(mon.slot.iv?.SPD) || 31;
-        const ev = Number(mon.slot.ev?.SPD) || 0;
-        const lv = Number(mon.slot.level) || 100;
-        const raw = Math.floor(((2 * (Number(bs.spe) || 70) + iv + Math.floor(ev / 4)) * lv) / 100) + 5;
-        const real = Math.floor(raw * getNatureMultiplier(mon.slot.nature, 'SPD'));
+        const real = getEffectiveSpeedStat(Number(bs.spe) || 70, mon.slot, { side: 'me', types: mon.p.types, forDisplay: true });
         return { name: mon.p.name, speed: real };
     });
 
     const threatRows = threats.map(threat => {
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[threat.id]) || { spe: 70 };
-        const speed = Math.floor(((2 * (Number(bs.spe) || 70) + 31 + Math.floor(252 / 4)) * 100) / 100) + 5;
+        const speed = getEffectiveSpeedStat(Number(bs.spe) || 70, { level: 100, ev: { SPD: 252 } }, { defaultEv: 252, defaultLevel: 100, forDisplay: true });
         return { name: threat.name, speed };
     });
 
@@ -315,15 +330,131 @@ function getSpeedTierComparisonHTML(selected) {
     return `<div style="margin:10px 0; padding:12px 14px; background:rgba(77,171,247,0.08); border:1px solid #4dabf7; border-radius:8px;">
         <strong style="color:#4dabf7; font-size:13px;">🏁 Speed Tier Comparison</strong>
         <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-            ${myRows.sort((a,b)=>b.speed-a.speed).slice(0, 6).map(r => renderRow(r, true)).join('')}
-            ${threatRows.sort((a,b)=>b.speed-a.speed).slice(0, 5).map(r => renderRow(r, false)).join('')}
+            ${myRows.sort((a,b)=>ctx.trickRoom ? a.speed-b.speed : b.speed-a.speed).slice(0, 6).map(r => renderRow(r, true)).join('')}
+            ${threatRows.sort((a,b)=>ctx.trickRoom ? a.speed-b.speed : b.speed-a.speed).slice(0, 5).map(r => renderRow(r, false)).join('')}
         </div>
+        ${ctx.trickRoom ? `<p style="margin:8px 0 0; font-size:10px; color:#b197fc;">Trick Room is active, so slower Pokémon are shown first.</p>` : ''}
     </div>`;
 }
 
 // ==========================================
 // 4. DAMAGE CALCULATION (Simplified Gen 9 formula)
 // ==========================================
+
+const OFFENSIVE_ITEM_MODS = {
+    'choice band':   { mult: 1.5, cat: 'physical' },
+    'choice specs':  { mult: 1.5, cat: 'special' },
+    'life orb':      { mult: 1.3 },
+    'expert belt':   { mult: 1.2, onlySuperEffective: true },
+    'muscle band':   { mult: 1.1, cat: 'physical' },
+    'wise glasses':  { mult: 1.1, cat: 'special' },
+    'light ball':    { mult: 2, species: 'pikachu' }
+};
+
+const DEFENSIVE_ITEM_MODS = {
+    'assault vest': { mult: 1.5, cat: 'special' },
+    'eviolite':     { mult: 1.5 }
+};
+
+const OFFENSIVE_ABILITY_MODS = {
+    'adaptability': { stab: 2 },
+    'huge-power':   { mult: 2, cat: 'physical' },
+    'pure-power':   { mult: 2, cat: 'physical' },
+    'sheer-force':  { mult: 1.3 },
+    'technician':   { mult: 1.5, powerAtMost: 60 },
+    'transistor':   { mult: 1.3, type: 'electric' },
+    'dragons-maw':  { mult: 1.5, type: 'dragon' },
+    'water-bubble': { mult: 2, type: 'water' }
+};
+
+const RECOVERY_ITEMS = new Set(['leftovers', 'black sludge', 'shell bell', 'sitrus berry']);
+const WEATHER_BONUS_TYPES = {
+    rain: { boost: 'water', weaken: 'fire' },
+    sun:  { boost: 'fire', weaken: 'water' }
+};
+const TERRAIN_BONUS_TYPES = { electric: 'electric', grassy: 'grass', psychic: 'psychic' };
+
+function getBattleContext() {
+    return (typeof window !== 'undefined' && window.battleContext) ? window.battleContext : {
+        weather: 'none',
+        terrain: 'none',
+        doubles: false,
+        trickRoom: false,
+        reflect: false,
+        lightScreen: false,
+        hazardsOnOpponent: { stealthRock: false, spikes: 0 },
+        hazardsOnMe: { stealthRock: false, spikes: 0, stickyWeb: false }
+    };
+}
+
+function getSafeAbilityName(ability) {
+    return String(ability || '').toLowerCase().trim();
+}
+
+function getSafeItemName(item) {
+    return String(item || '').toLowerCase().trim();
+}
+
+function applyAttackItemAndAbilityMods(baseDamage, atkMon, moveInfo, typeMult) {
+    let damage = baseDamage;
+    const item = getSafeItemName(atkMon?.slot?.item);
+    const ability = getSafeAbilityName(atkMon?.slot?.ability);
+    const cleanMoveType = String(moveInfo.type || '').toLowerCase();
+
+    const itemMod = OFFENSIVE_ITEM_MODS[item];
+    if (itemMod && (!itemMod.cat || itemMod.cat === moveInfo.cat) && (!itemMod.species || itemMod.species === String(atkMon.p.name || '').toLowerCase()) && (!itemMod.onlySuperEffective || typeMult > 1)) {
+        damage *= itemMod.mult;
+    }
+
+    const abilityMod = OFFENSIVE_ABILITY_MODS[ability];
+    if (abilityMod && (!abilityMod.cat || abilityMod.cat === moveInfo.cat) && (!abilityMod.type || abilityMod.type === cleanMoveType) && (!abilityMod.powerAtMost || Number(moveInfo.power) <= abilityMod.powerAtMost)) {
+        damage *= abilityMod.mult;
+    }
+
+    return damage;
+}
+
+function getStabMultiplier(atkMon, moveInfo) {
+    const ability = getSafeAbilityName(atkMon?.slot?.ability);
+    const baseStab = (atkMon?.p?.types || []).includes(moveInfo.type) ? 1.5 : 1;
+    if (baseStab === 1) return 1;
+    const abilityMod = OFFENSIVE_ABILITY_MODS[ability];
+    return abilityMod && abilityMod.stab ? abilityMod.stab : baseStab;
+}
+
+function getWeatherMultiplier(moveType) {
+    const weather = String(getBattleContext().weather || 'none');
+    const cfg = WEATHER_BONUS_TYPES[weather];
+    if (!cfg) return 1;
+    if (cfg.boost === moveType) return 1.5;
+    if (cfg.weaken === moveType) return 0.5;
+    return 1;
+}
+
+function getTerrainMultiplier(moveType) {
+    const terrain = String(getBattleContext().terrain || 'none');
+    return TERRAIN_BONUS_TYPES[terrain] === moveType ? 1.3 : 1;
+}
+
+function getHazardChipPct(poke, side) {
+    const ctx = getBattleContext();
+    const hazards = side === 'opponent' ? ctx.hazardsOnOpponent : ctx.hazardsOnMe;
+    let pct = 0;
+    if (hazards.stealthRock) pct += Math.round((12.5 * multAtkVsTypes('rock', poke.types)) * 10) / 10;
+    const grounded = !(poke.types || []).includes('flying');
+    if (grounded && hazards.spikes) {
+        const spikesMap = { 1: 12.5, 2: 16.7, 3: 25 };
+        pct += spikesMap[hazards.spikes] || 0;
+    }
+    return Math.min(99, Math.round(pct * 10) / 10);
+}
+
+function getRecoveryNote(slot) {
+    const item = getSafeItemName(slot?.item);
+    if (!RECOVERY_ITEMS.has(item)) return '';
+    if (item === 'shell bell') return 'Shell Bell recovery can soften recoil trades.';
+    return `${String(slot.item)} recovery improves longer exchanges.`;
+}
 
 /**
  * Returns estimated damage percentage dealt by atkMon using moveInfo against defPoke.
@@ -332,6 +463,7 @@ function getSpeedTierComparisonHTML(selected) {
 function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     if (!atkMon || !moveInfo || !defPoke || !moveInfo.power) return null;
     defLevel = defLevel || 50;
+    const battleContext = getBattleContext();
 
     // Attacker stats
     const atkBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[atkMon.p.id]) || { atk: 80, spa: 80 };
@@ -343,7 +475,7 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
                           : (atkMon.slot.iv?.SPATK === '' || atkMon.slot.iv?.SPATK === undefined ? 31 : Number(atkMon.slot.iv?.SPATK) || 31);
     const atkNature = getNatureMultiplier(atkMon.slot.nature, isPhys ? 'ATK' : 'SPATK');
     const atkRaw = Math.floor(((2 * atkBase + atkIv + Math.floor(atkEv / 4)) * atkLv) / 100) + 5;
-    const atkStat= Math.floor(atkRaw * atkNature);
+    let atkStat= Math.floor(atkRaw * atkNature);
 
     // Defender stats
     const defBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[defPoke.id]) || { hp: 80, def: 80, spd: 80 };
@@ -361,24 +493,40 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     const defEv = defEvRaw === '' || defEvRaw === undefined ? 0 : Number(defEvRaw) || 0;
     const defNature = getNatureMultiplier(defSlotData && defSlotData.nature, isPhys ? 'DEF' : 'SPDEF');
     const defRaw = Math.floor(((2 * defBase + defIv + Math.floor(defEv / 4)) * defLevel) / 100) + 5;
-    const defStat= Math.floor(defRaw * defNature);
+    let defStat= Math.floor(defRaw * defNature);
 
     // Type effectiveness
-    const typeMult = multAtkVsTypes(moveInfo.type, defPoke.types);
+    const typeMult = getDynamicMult(moveInfo.type, defPoke.types, defSlotData && defSlotData.ability);
     if (typeMult === 0) return null; // Immune
 
     // STAB
-    const stab = (atkMon.p.types || []).includes(moveInfo.type) ? 1.5 : 1;
+    const stab = getStabMultiplier(atkMon, moveInfo);
 
+    const offensiveAbility = getSafeAbilityName(atkMon.slot.ability);
+    if ((offensiveAbility === 'orichalcum-pulse' && battleContext.weather === 'sun') || (offensiveAbility === 'hadron-engine' && battleContext.terrain === 'electric')) {
+        atkStat = Math.floor(atkStat * 1.33);
+    }
+
+    const defensiveItem = DEFENSIVE_ITEM_MODS[getSafeItemName(defSlotData && defSlotData.item)];
+    if (defensiveItem && (!defensiveItem.cat || defensiveItem.cat === moveInfo.cat)) {
+        defStat = Math.floor(defStat * defensiveItem.mult);
+    }
     // Damage formula (Gen 5+)
     const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / Math.max(defStat, 1)) / 50) + 2;
+    let preRoll = applyAttackItemAndAbilityMods(base, atkMon, moveInfo, typeMult) * stab * typeMult * getWeatherMultiplier(moveInfo.type) * getTerrainMultiplier(moveInfo.type);
+    if (defSlotData && defSlotData.__side === 'opponent' && ((battleContext.reflect && isPhys) || (battleContext.lightScreen && !isPhys))) {
+        preRoll *= battleContext.doubles ? (2 / 3) : 0.5;
+    }
     const rolls = [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
-        .map(r => Math.floor(base * (r / 100) * stab * typeMult));
+        .map(r => Math.floor(preRoll * (r / 100)));
     const dmgMin = Math.min(...rolls);
     const dmgMax = Math.max(...rolls);
 
     const minPct = Math.min(Math.round(dmgMin / defHP * 100), 999);
     const maxPct = Math.min(Math.round(dmgMax / defHP * 100), 999);
+    const hazardChip = defSlotData && defSlotData.__side ? getHazardChipPct(defPoke, defSlotData.__side) : 0;
+    const minAfterHazards = Math.min(999, Math.round((dmgMin / defHP * 100) + hazardChip));
+    const maxAfterHazards = Math.min(999, Math.round((dmgMax / defHP * 100) + hazardChip));
 
     const ohkoChance = Math.round((rolls.filter(d => d >= defHP).length / rolls.length) * 100);
     let label = '';
@@ -387,7 +535,7 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     else if (minPct >= 34)   label = '3HKO';
     else                     label = `~${minPct}%`;
 
-    return { minPct, maxPct, label, typeMult, ohkoChance };
+    return { minPct, maxPct, label, typeMult, ohkoChance, minAfterHazards, maxAfterHazards, hazardChip };
 }
 
 /**
@@ -526,6 +674,96 @@ function getStatComparisonHTML(selected) {
 // ==========================================
 // 6. UI HELPERS
 // ==========================================
+
+function getBattleContextHTML() {
+    const ctx = getBattleContext();
+    const hazards = [
+        { key: 'hazardsOnOpponent.stealthRock', label: 'SR on Opp', type: 'checkbox', value: ctx.hazardsOnOpponent.stealthRock },
+        { key: 'hazardsOnOpponent.spikes', label: 'Spikes on Opp', type: 'select', value: String(ctx.hazardsOnOpponent.spikes), options: ['0', '1', '2', '3'] },
+        { key: 'hazardsOnMe.stealthRock', label: 'SR on Me', type: 'checkbox', value: ctx.hazardsOnMe.stealthRock },
+        { key: 'hazardsOnMe.spikes', label: 'Spikes on Me', type: 'select', value: String(ctx.hazardsOnMe.spikes), options: ['0', '1', '2', '3'] }
+    ];
+    const weatherOptions = [['none', 'No Weather'], ['rain', 'Rain'], ['sun', 'Sun'], ['sand', 'Sand'], ['snow', 'Snow']];
+    const terrainOptions = [['none', 'No Terrain'], ['electric', 'Electric'], ['grassy', 'Grassy'], ['psychic', 'Psychic'], ['misty', 'Misty']];
+
+    const selectHtml = (path, value, options) => `<select onchange="window.updateBattleContext('${path}', this.value)" style="width:100%; background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); font:800 11px 'Nunito',sans-serif; padding:6px;">
+        ${options.map(([id, label]) => `<option value="${id}" ${String(value) === String(id) ? 'selected' : ''}>${label}</option>`).join('')}
+    </select>`;
+    const toggleHtml = cfg => cfg.type === 'checkbox'
+        ? `<label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+            <span>${cfg.label}</span>
+            <input type="checkbox" ${cfg.value ? 'checked' : ''} onchange="window.updateBattleContext('${cfg.key}', this.checked)">
+        </label>`
+        : `<label style="display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--txt);">
+            <span>${cfg.label}</span>
+            ${selectHtml(cfg.key, cfg.value, cfg.options.map(v => [v, v]))}
+        </label>`;
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:rgba(177,151,252,0.08); border:1px solid #b197fc55; border-radius:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+            <strong style="color:#b197fc; font-size:13px;">🌦 Battle Context</strong>
+            <button onclick="window.resetBattleContext && window.resetBattleContext()" style="padding:4px 10px; border-radius:14px; border:1px solid #555; background:transparent; color:var(--dim); cursor:pointer; font-size:10px; font-weight:900;">Reset</button>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px;">
+            <label style="display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--txt);">
+                <span>Weather</span>
+                ${selectHtml('weather', ctx.weather, weatherOptions)}
+            </label>
+            <label style="display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--txt);">
+                <span>Terrain</span>
+                ${selectHtml('terrain', ctx.terrain, terrainOptions)}
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Reflect on Opponent</span>
+                <input type="checkbox" ${ctx.reflect ? 'checked' : ''} onchange="window.updateBattleContext('reflect', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Light Screen on Opponent</span>
+                <input type="checkbox" ${ctx.lightScreen ? 'checked' : ''} onchange="window.updateBattleContext('lightScreen', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Trick Room active</span>
+                <input type="checkbox" ${ctx.trickRoom ? 'checked' : ''} onchange="window.updateBattleContext('trickRoom', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Doubles screen rules</span>
+                <input type="checkbox" ${ctx.doubles ? 'checked' : ''} onchange="window.updateBattleContext('doubles', this.checked)">
+            </label>
+            ${hazards.map(toggleHtml).join('')}
+        </div>
+    </div>`;
+}
+
+function getMatchupSummaryHTML(selected) {
+    if (!selected || !selected.length) return '';
+    const threats = getActiveThreats();
+    const meta = getMetaThreatAnalysis(selected, threats);
+    const teamWeaknesses = AT.map(t => ({
+        type: t,
+        count: selected.filter(x => getDynamicMult(t, x.p.types, x.slot.ability) > 1).length
+    })).filter(x => x.count >= Math.max(2, Math.ceil(selected.length / 2))).sort((a, b) => b.count - a.count);
+    const notes = [];
+    const uncovered = meta ? meta.results.filter(r => r.coverage < 2).slice(0, 3) : [];
+    if (uncovered.length) notes.push(`Coverage is thin into ${uncovered.map(x => x.name.replace(/-/g, ' ')).join(', ')}.`);
+    if (teamWeaknesses.length) notes.push(`Multiple selected Pokémon still fold to ${teamWeaknesses.slice(0, 3).map(x => x.type).join(', ')} attacks.`);
+    if (selected.filter(x => (x.slot.moveNames || []).some(m => ['recover','roost','slack-off','soft-boiled','moonlight','wish'].includes(String(m).toLowerCase()))).length < 2) {
+        notes.push('Long-game recovery is limited, so bulky pivots can outlast repeated trades.');
+    }
+    if (selected.filter(x => (x.slot.moveNames || []).some(m => ['u-turn','volt-switch','flip-turn','parting-shot'].includes(String(m).toLowerCase()))).length === 0) {
+        notes.push('The team lacks clean pivoting, which makes momentum versus pressure-heavy threats harder to keep.');
+    }
+    if (selected.filter(x => (x.slot.moveNames || []).some(m => ['stealth-rock','spikes','toxic-spikes','sticky-web'].includes(String(m).toLowerCase()))).length === 0) {
+        notes.push('Hazard pressure is light, so forced switches are not punished enough yet.');
+    }
+    if (!notes.length) notes.push('The selected core looks balanced for the current meta snapshot.');
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.35); border-radius:8px;">
+        <strong style="color:#ff8080; font-size:13px;">🧠 Matchup Summary</strong>
+        <ul style="margin:8px 0 0 16px; padding:0; display:flex; flex-direction:column; gap:4px;">
+            ${notes.map(note => `<li style="font-size:11px; color:var(--txt); line-height:1.45;">${note}</li>`).join('')}
+        </ul>
+    </div>`;
+}
 
 function getArchetypeHTML(selected) {
     const arch = detectArchetype(selected);

@@ -126,6 +126,80 @@ function toggleCalc(i) { if (!team[i].pokemonId) return; if (!team[i].calc && ca
 
 let calcExpanded = false;
 function toggleCalcPanel() { calcExpanded = !calcExpanded; renderTeamSlots(); }
+window.compareTeamIndex = Number(localStorage.getItem('tb_compareTeamIndex') || -1);
+window.setCompareTeamIndex = function(idx) {
+    window.compareTeamIndex = Number(idx);
+    localStorage.setItem('tb_compareTeamIndex', String(window.compareTeamIndex));
+    renderTeamSlots();
+};
+
+function ensureCompareTeamIndex() {
+    if (!allData?.teams || allData.teams.length < 2) return;
+    if (!allData.teams[window.compareTeamIndex] || window.compareTeamIndex === currentTeamIndex) {
+        const fallback = allData.teams.findIndex((_, idx) => idx !== currentTeamIndex);
+        window.compareTeamIndex = fallback;
+        localStorage.setItem('tb_compareTeamIndex', String(fallback));
+    }
+}
+
+function getTeamSnapshot(slots) {
+    const filled = (slots || []).filter(s => s && s.pokemonId);
+    const mons = filled.map(slot => ({ slot, p: POKE.find(x => x.id === slot.pokemonId) })).filter(x => x.p);
+    const avgSpeed = mons.length ? Math.round(mons.reduce((sum, x) => {
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[x.p.id]) || { spe: 70 };
+        return sum + getEffectiveSpeedStat(Number(bs.spe) || 70, x.slot, { side: 'me', types: x.p.types });
+    }, 0) / mons.length) : 0;
+    const avgBst = mons.length ? Math.round(mons.reduce((sum, x) => {
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[x.p.id]) || {};
+        return sum + ['hp','atk','def','spa','spd','spe'].reduce((acc, key) => acc + (Number(bs[key]) || 0), 0);
+    }, 0) / mons.length) : 0;
+    const moveNames = mons.flatMap(x => x.slot.moveNames || []).filter(Boolean).map(x => String(x).toLowerCase());
+    const uniqueTypes = new Set(mons.flatMap(x => x.p.types || []));
+    return {
+        count: mons.length,
+        avgSpeed,
+        avgBst,
+        uniqueTypes: uniqueTypes.size,
+        hazards: moveNames.filter(m => ['stealth-rock','spikes','toxic-spikes','sticky-web'].includes(m)).length,
+        pivots: moveNames.filter(m => ['u-turn','volt-switch','flip-turn','parting-shot'].includes(m)).length,
+        recovery: moveNames.filter(m => ['recover','roost','slack-off','soft-boiled','wish','moonlight','morning-sun','shore-up'].includes(m)).length,
+        status: moveNames.filter(m => ['toxic','will-o-wisp','thunder-wave','spore','sleep-powder','glare','leech-seed'].includes(m)).length
+    };
+}
+
+function getTeamComparisonHTML() {
+    if (!allData?.teams || allData.teams.length < 2) return '';
+    const compareIdx = allData.teams[window.compareTeamIndex] && window.compareTeamIndex !== currentTeamIndex ? window.compareTeamIndex : -1;
+    if (compareIdx < 0) return '';
+    const options = allData.teams.map((entry, idx) => idx === currentTeamIndex ? '' : `<option value="${idx}" ${idx === compareIdx ? 'selected' : ''}>${entry.name}</option>`).join('');
+    const activeSnap = getTeamSnapshot(team);
+    const other = allData.teams[compareIdx];
+    const otherSnap = getTeamSnapshot(other.slots);
+    const rows = [
+        ['Filled slots', activeSnap.count, otherSnap.count],
+        ['Avg speed', activeSnap.avgSpeed, otherSnap.avgSpeed],
+        ['Avg BST', activeSnap.avgBst, otherSnap.avgBst],
+        ['Unique types', activeSnap.uniqueTypes, otherSnap.uniqueTypes],
+        ['Pivot tools', activeSnap.pivots, otherSnap.pivots],
+        ['Recovery tools', activeSnap.recovery, otherSnap.recovery],
+        ['Status tools', activeSnap.status, otherSnap.status],
+        ['Hazard tools', activeSnap.hazards, otherSnap.hazards]
+    ];
+    return `<div style="margin:10px 0; padding:12px 14px; background:rgba(77,171,247,0.08); border:1px solid rgba(77,171,247,0.35); border-radius:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <strong style="color:#4dabf7; font-size:13px;">🆚 Saved Team Comparison</strong>
+            <select onchange="window.setCompareTeamIndex(this.value)" style="background:var(--bg); border:1px solid var(--brd); border-radius:6px; color:var(--txt); font:800 11px 'Nunito',sans-serif; padding:6px 8px;">
+                ${options}
+            </select>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(110px,1fr) repeat(2,minmax(70px,1fr)); gap:6px; font-size:11px;">
+            <span style="color:var(--dim); font-weight:900;">Metric</span>
+            <span style="color:#63d471; font-weight:900;">${allData.teams[currentTeamIndex].name}</span>
+            <span style="color:#ff6b6b; font-weight:900;">${other.name}</span>
+            ${rows.map(([label, mine, theirs]) => `<span style="color:var(--txt);">${label}</span><span style="color:${Number(mine) >= Number(theirs) ? '#63d471' : 'var(--txt)'}; font-weight:800;">${mine}</span><span style="color:${Number(theirs) >= Number(mine) ? '#ff6b6b' : 'var(--txt)'}; font-weight:800;">${theirs}</span>`).join('')}
+        </div>
+    </div>`;
+}
 
 function calcPanel() { 
     const selected = calcTeam(); 
@@ -208,9 +282,12 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     // Analytics (Archetype, Speed Control, Meta Threats)
     const archetypeHTML   = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
     const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
+    const battleContextHTML = (typeof getBattleContextHTML === 'function') ? getBattleContextHTML() : '';
     const metaThreatHTML  = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
+    const matchupSummaryHTML = (typeof getMatchupSummaryHTML === 'function') ? getMatchupSummaryHTML(selected) : '';
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
     const teraDefenseHTML = (typeof getTeraDefenseHTML === 'function') ? getTeraDefenseHTML(selected) : '';
+    const teamCompareHTML = getTeamComparisonHTML();
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead" onclick="toggleCalcPanel()" style="${headStyle}"><strong>Battle Calculate</strong><span style="display:flex; align-items:center; gap:8px;"><span>${selected.length}/6 selected</span><span style="font-size:11px;">${arrow}</span></span></div>
@@ -218,6 +295,9 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         <!-- Archetype & Speed Control -->
         ${archetypeHTML}
         ${speedWarnHTML}
+        ${battleContextHTML}
+        ${teamCompareHTML}
+        ${matchupSummaryHTML}
 
         <!-- Stat Comparison (My Team + Opponent Max) -->
         ${statCompareHTML}
@@ -370,6 +450,7 @@ function setView(view) {
     document.getElementById('teamOverlay').setAttribute('aria-hidden', teamView ? 'false' : 'true');
     
     if (teamView) { 
+        ensureCompareTeamIndex();
         renderTeamList(); 
         renderTeamSlots(); 
         updateTeamDropdown(); 
@@ -422,6 +503,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeam() 
 document.getElementById('teamSelect')?.addEventListener('change', e => {
     currentTeamIndex = Number(e.target.value);
     team = allData.teams[currentTeamIndex].slots;
+    ensureCompareTeamIndex();
     saveTeam();
     renderTeamSlots();
 });
@@ -432,6 +514,7 @@ document.getElementById('addTeamBtn')?.addEventListener('click', () => {
         allData.teams.push({ name: name, slots: Array.from({ length: TEAM_SIZE }, () => EMPTY_SLOT()) });
         currentTeamIndex = allData.teams.length - 1;
         team = allData.teams[currentTeamIndex].slots;
+        ensureCompareTeamIndex();
         saveTeam();
         updateTeamDropdown();
         renderTeamSlots();
@@ -484,5 +567,3 @@ window.addEventListener('load', () => {
         renderTeamSlots();
     }
 });
-
-
