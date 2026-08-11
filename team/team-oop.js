@@ -377,8 +377,9 @@ window.getMatchupsUI = function(selected) {
                         moveRanks.push({ name: mName, label: 'No effect', minPct: 0, maxPct: 0, typeMult: 0, isStatus: false, immune: true });
                     }
                 });
-                // Sort: best damage first, status last, immune last
-                moveRanks.sort((a, b) => b.maxPct - a.maxPct);
+                // Sort: best damage first, then immune moves, then status moves last
+                const moveOrder = m => m.isStatus ? 2 : m.immune ? 1 : 0;
+                moveRanks.sort((a, b) => moveOrder(a) - moveOrder(b) || b.maxPct - a.maxPct);
 
                 if (moveRanks.length) {
                     const moveItems = moveRanks.map((m, idx) => {
@@ -429,7 +430,8 @@ window.getMatchupsUI = function(selected) {
                 const mySpeed    = Math.floor(mySpeedRaw * getNatureMultiplier(my.slot.nature, 'SPD'));
 
                 const opLv = Number((oppSlotData && oppSlotData.level) || 50);
-                const opSpeedRaw = Math.floor(((2 * (Number(opBs.spe) || 70) + 31 + Math.floor(0 / 4)) * opLv) / 100) + 5;
+                const opSpEv = (oppSlotData && oppSlotData.ev && oppSlotData.ev.SPD !== '' && oppSlotData.ev.SPD !== undefined) ? Number(oppSlotData.ev.SPD) || 0 : 0;
+                const opSpeedRaw = Math.floor(((2 * (Number(opBs.spe) || 70) + 31 + Math.floor(opSpEv / 4)) * opLv) / 100) + 5;
                 const opSpeed    = Math.floor(opSpeedRaw * getNatureMultiplier(oppSlotData && oppSlotData.nature, 'SPD'));
 
                 const tips = [];
