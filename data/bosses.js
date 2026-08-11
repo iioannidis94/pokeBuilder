@@ -275,10 +275,24 @@ const BOSSES = [
                     { name: 'yanmega',     nature: 'Modest',  ability: 'Tinted Lens',  item: 'Choice Specs', moves: ['Bug Buzz', 'Air Slash', 'Ancient Power', 'Giga Drain'] },
                     { name: 'jellicent',   nature: 'Bold',    ability: 'Cursed Body',  item: 'Leftovers',    moves: ['Scald', 'Shadow Ball', 'Ice Beam', 'Energy Ball'] },
                     { name: 'seviper',     nature: 'Quiet',   ability: 'Shed Skin',    item: 'Assault Vest', moves: ['Sludge Bomb', 'Flamethrower', 'Giga Drain', 'Sucker Punch'] },
+                    // James's team
+                    { name: 'malamar',     nature: 'Careful', ability: 'Contrary',     item: 'Leftovers',    moves: ['Superpower', 'Knock Off', 'Psycho Cut'] },
+                    { name: 'weezing',     nature: 'Modest',  ability: 'Levitate',     item: 'Black Sludge', moves: ['Sludge Bomb', 'Fire Blast', 'Thunderbolt', 'Shadow Ball'] },
+                    { name: 'arcanine',    nature: 'Adamant', ability: 'Intimidate',   item: 'Choice Band',  moves: ['Flare Blitz', 'Wild Charge', 'Close Combat', 'Extreme Speed'] },
+                    { name: 'gyarados',    nature: 'Jolly',   ability: 'Moxie',        item: 'Sitrus Berry', moves: ['Dragon Dance', 'Waterfall', 'Earthquake', 'Ice Fang'] },
+                    { name: 'amoonguss',   nature: 'Calm',    ability: 'Effect Spore', item: 'Black Sludge', moves: ['Giga Drain', 'Clear Smog', 'Spore', 'Foul Play'] },
+                    { name: 'cofagrigus',  nature: 'Quiet',   ability: 'Mummy',        item: 'Leftovers',    moves: ['Nasty Plot', 'Shadow Ball', 'Trick Room', 'Energy Ball'] },
                 ]
             },
             hard: {
                 pokemon: [
+                    // Jessie's team
+                    { name: 'porygon-z',   nature: 'Modest',  ability: 'Adaptability', item: 'Choice Specs', moves: ['Tri Attack', 'Ice Beam', 'Thunderbolt', 'Shadow Ball'] },
+                    { name: 'arbok',       nature: 'Adamant', ability: 'Intimidate',   item: 'Black Sludge', moves: ['Gunk Shot', 'Coil', 'Earthquake', 'Ice Fang'] },
+                    { name: 'gourgeist',   nature: 'Timid',   ability: 'Insomnia',     item: 'Leftovers',    moves: ['Seed Bomb', 'Phantom Force', 'Will-O-Wisp', 'Leech Seed'] },
+                    { name: 'yanmega',     nature: 'Modest',  ability: 'Tinted Lens',  item: 'Choice Specs', moves: ['Bug Buzz', 'Air Slash', 'Ancient Power', 'Giga Drain'] },
+                    { name: 'jellicent',   nature: 'Bold',    ability: 'Cursed Body',  item: 'Leftovers',    moves: ['Scald', 'Shadow Ball', 'Ice Beam', 'Energy Ball'] },
+                    { name: 'seviper',     nature: 'Quiet',   ability: 'Shed Skin',    item: 'Assault Vest', moves: ['Sludge Bomb', 'Flamethrower', 'Giga Drain', 'Sucker Punch'] },
                     // James's team
                     { name: 'malamar',     nature: 'Careful', ability: 'Contrary',     item: 'Leftovers',    moves: ['Superpower', 'Knock Off', 'Psycho Cut'] },
                     { name: 'weezing',     nature: 'Modest',  ability: 'Levitate',     item: 'Black Sludge', moves: ['Sludge Bomb', 'Fire Blast', 'Thunderbolt', 'Shadow Ball'] },

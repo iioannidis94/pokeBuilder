@@ -53,29 +53,54 @@ function getRoleForSlot(slot, p) {
 
 function getRecommendedBuild(slot, p) {
     const role = getRoleForSlot(slot, p);
-    const rec = {
-        role,
-        nature: 'Jolly',
-        item: 'Life Orb',
-        ev: { HP: '4', ATK: '252', DEF: '', SPATK: '', SPDEF: '', SPD: '252' }
-    };
-    if (role === 'special') {
-        rec.nature = 'Timid';
-        rec.item = 'Choice Specs';
-        rec.ev = { HP: '4', ATK: '', DEF: '', SPATK: '252', SPDEF: '', SPD: '252' };
+    const ab   = (slot.ability || '').toLowerCase().replace(/[^a-z]/g, '');
+    const types = p.types || [];
+    const bs   = (typeof BASE_STATS !== 'undefined' && BASE_STATS[p.id]) || {};
+    const spe  = Number(bs.spe) || 70;
+    const def  = Number(bs.def) || 70;
+    const spd  = Number(bs.spd) || 70;
+    const atk  = Number(bs.atk) || 70;
+    const spa  = Number(bs.spa) || 70;
+
+    // --- Item selection (ability-aware first, then type/role defaults) ---
+    let item;
+    if      (ab === 'poisonheal')                                      item = 'Toxic Orb';
+    else if (ab === 'guts')                                            item = 'Flame Orb';
+    else if (ab === 'magicguard')                                      item = role === 'tank' ? 'Leftovers' : 'Life Orb';
+    else if (ab === 'regenerator' || ab === 'multiscale' || ab === 'shadowshield') item = 'Leftovers';
+    else if (ab === 'sturdy')                                          item = 'Leftovers';
+    else if (['swiftswim','chlorophyll','sandrush','slushrush','speedboost','drizzle','drought','sandstream','snowwarning'].includes(ab)) item = 'Life Orb';
+    else if (role === 'physical') item = spe >= 100 ? 'Choice Band'  : 'Life Orb';
+    else if (role === 'special')  item = spe >= 100 ? 'Choice Specs' : 'Life Orb';
+    else if (role === 'tank')     item = types.includes('poison') ? 'Black Sludge' : 'Leftovers';
+    else                          item = 'Heavy-Duty Boots'; // mixed
+
+    // --- Nature selection (speed-aware) ---
+    let nature;
+    if      (role === 'physical') nature = spe >= 100 ? 'Jolly'    : 'Adamant';
+    else if (role === 'special')  nature = spe >= 100 ? 'Timid'    : 'Modest';
+    else if (role === 'tank')     nature = spa > atk  ? 'Calm'     : 'Careful';
+    else                          nature = 'Naive'; // mixed
+
+    // --- EV spread (role + stat-profile aware) ---
+    let ev;
+    if (role === 'physical') {
+        ev = spe >= 100
+            ? { HP: '4',   ATK: '252', DEF: '',    SPATK: '',    SPDEF: '',    SPD: '252' }  // fast physical
+            : { HP: '252', ATK: '252', DEF: '',    SPATK: '',    SPDEF: '4',   SPD: '' };   // bulky physical
+    } else if (role === 'special') {
+        ev = spe >= 100
+            ? { HP: '4',   ATK: '',    DEF: '',    SPATK: '252', SPDEF: '',    SPD: '252' }  // fast special
+            : { HP: '252', ATK: '',    DEF: '4',   SPATK: '252', SPDEF: '',    SPD: '' };   // bulky special
     } else if (role === 'tank') {
-        rec.nature = 'Careful';
-        rec.item = p.types.includes('poison') ? 'Black Sludge' : 'Leftovers';
-        rec.ev = { HP: '252', ATK: '', DEF: '156', SPATK: '', SPDEF: '100', SPD: '' };
-    } else if (role === 'mixed') {
-        rec.nature = 'Naive';
-        rec.item = 'Heavy-Duty Boots';
-        rec.ev = { HP: '4', ATK: '124', DEF: '', SPATK: '128', SPDEF: '', SPD: '252' };
+        ev = def > spd
+            ? { HP: '252', ATK: '',    DEF: '252', SPATK: '',    SPDEF: '4',   SPD: '' }    // physical wall
+            : { HP: '252', ATK: '',    DEF: '4',   SPATK: '',    SPDEF: '252', SPD: '' };   // special wall
     } else {
-        rec.nature = 'Jolly';
-        rec.item = 'Choice Band';
+        ev =  { HP: '4',   ATK: '124', DEF: '',    SPATK: '128', SPDEF: '',    SPD: '252' }; // mixed
     }
-    return rec;
+
+    return { role, nature, item, ev };
 }
 
 function applyRecommendedBuild(slotIndex) {
@@ -185,6 +210,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
     const metaThreatHTML  = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
+    const teraDefenseHTML = (typeof getTeraDefenseHTML === 'function') ? getTeraDefenseHTML(selected) : '';
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead" onclick="toggleCalcPanel()" style="${headStyle}"><strong>Battle Calculate</strong><span style="display:flex; align-items:center; gap:8px;"><span>${selected.length}/6 selected</span><span style="font-size:11px;">${arrow}</span></span></div>
@@ -222,6 +248,9 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
 
         <!-- Meta Threat Check -->
         ${metaThreatHTML}
+
+        <!-- Tera Defense Impact -->
+        ${teraDefenseHTML}
         
         <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
         ${oppUI}

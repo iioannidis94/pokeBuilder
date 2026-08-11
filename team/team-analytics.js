@@ -99,6 +99,25 @@ const META_THREATS = [
     { id: 279,  name: 'Pelipper',        types: ['water',    'flying']   },
 ];
 
+// VGC 2025 Regulation H (Restricted Legends)
+const META_THREATS_VGC_H = [
+    // Tier 1 — Top Restricted
+    { id: 1008, name: 'Miraidon',       types: ['electric', 'dragon'], tier: 1 },
+    { id: 1007, name: 'Koraidon',       types: ['fighting', 'dragon'], tier: 1 },
+    { id: 987,  name: 'Flutter Mane',   types: ['ghost',    'fairy'],  tier: 1 },
+    { id: 992,  name: 'Iron Hands',     types: ['fighting', 'electric'],tier:1 },
+    // Tier 2 — Core Picks
+    { id: 1024, name: 'Terapagos',      types: ['normal'],             tier: 2 },
+    { id: 892,  name: 'Urshifu',        types: ['fighting', 'dark'],   tier: 2 },
+    { id: 1017, name: 'Ogerpon',        types: ['grass'],              tier: 2 },
+    { id: 727,  name: 'Incineroar',     types: ['fire',     'dark'],   tier: 2 },
+    // Tier 3 — Support
+    { id: 812,  name: 'Rillaboom',      types: ['grass'],              tier: 3 },
+    { id: 591,  name: 'Amoonguss',      types: ['grass',    'poison'], tier: 3 },
+    { id: 279,  name: 'Pelipper',       types: ['water',    'flying'], tier: 3 },
+    { id: 898,  name: 'Calyrex-Shadow', types: ['psychic',  'ghost'],  tier: 3 },
+];
+
 // PRO PvP Meta — Pokemon Revolution Online (Gen 7 USUM mechanics) — 18 threats in 3 tiers
 const META_THREATS_PRO = [
     // Tier 1 — Sweepers (heavy offensive threats)
@@ -124,13 +143,95 @@ const META_THREATS_PRO = [
     { id: 80,   name: 'Slowbro',     types: ['water',   'psychic'], tier: 3 },
 ];
 
-// Persist chosen format across page reloads (VGC 2024 removed — PRO PvP only)
-window.metaThreatFormat = 'pro';
+// Persist chosen format across page reloads
+function _loadCustomMeta() {
+    try { return JSON.parse(localStorage.getItem('tb_customMeta') || 'null'); } catch(e) { return null; }
+}
+window._saveCustomMeta = function(threats) {
+    localStorage.setItem('tb_customMeta', JSON.stringify(threats));
+};
 
+const META_FORMAT_REGISTRY = {
+    'pro':    { label: 'PRO PvP',        threats: META_THREATS_PRO,   tiers: [{ tier:1, label:'⚔️ Sweepers' },{ tier:2, label:'🔄 Pivots' },{ tier:3, label:'🛡️ Walls' }] },
+    'vgc-g':  { label: 'VGC 2024 Reg G', threats: META_THREATS,       tiers: null },
+    'vgc-h':  { label: 'VGC 2025 Reg H', threats: META_THREATS_VGC_H, tiers: [{ tier:1, label:'⚔️ Restricted' },{ tier:2, label:'🔄 Core' },{ tier:3, label:'🛡️ Support' }] },
+    'custom': { label: '⚙️ Custom',       threats: null,               tiers: null },
+};
+
+function getActiveThreats() {
+    if (window.metaThreatFormat === 'custom') {
+        const c = _loadCustomMeta();
+        return (c && c.length) ? c : META_THREATS_PRO;
+    }
+    const fmt = META_FORMAT_REGISTRY[window.metaThreatFormat];
+    return (fmt && fmt.threats) ? fmt.threats : META_THREATS_PRO;
+}
+
+window.metaThreatFormat = localStorage.getItem('tb_metaFormat') || 'pro';
 window.setMetaFormat = function(fmt) {
     window.metaThreatFormat = fmt;
     localStorage.setItem('tb_metaFormat', fmt);
     if (typeof renderTeamSlots === 'function') renderTeamSlots();
+};
+
+// Meta-data refresh workflow — edit the custom threat list
+window.openMetaEditorModal = function() {
+    const activeThreats = getActiveThreats();
+    let customThreats = _loadCustomMeta() || JSON.parse(JSON.stringify(activeThreats));
+
+    let existing = document.getElementById('metaEditorModal');
+    if (existing) existing.remove();
+
+    const renderThreatList = () => {
+        const el = document.getElementById('metaEditorList');
+        if (!el) return;
+        el.innerHTML = customThreats.map((t, i) => `
+            <div style="display:flex; align-items:center; gap:8px; padding:6px; border:1px solid var(--brd); border-radius:6px; background:var(--bg);">
+                <span style="flex:1; font-size:13px; font-weight:bold; text-transform:capitalize;">${t.name.replace(/-/g,' ')}</span>
+                <span style="font-size:11px; color:var(--dim);">${t.types.join(' / ')}</span>
+                <button onclick="window._removeCustomThreat(${i})" style="background:#ff4d4f; color:white; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; font-size:11px;">✕</button>
+            </div>`).join('') || '<div style="color:var(--dim); font-size:12px; text-align:center; padding:10px;">No threats. Add Pokémon below.</div>';
+    };
+
+    window._removeCustomThreat = function(i) { customThreats.splice(i, 1); renderThreatList(); };
+    window._addCustomThreat = function() {
+        const input = document.getElementById('metaEditorInput').value.trim();
+        if (!input) return;
+        const q = input.toLowerCase().replace(/\s+/g, '-');
+        const p = typeof POKE !== 'undefined' ? POKE.find(x => x.name.toLowerCase() === q || x.name.toLowerCase().replace(/-/g,' ') === input.toLowerCase() || String(x.id) === input) : null;
+        if (!p) { alert('Pokémon not found! Try English name or ID.'); return; }
+        if (customThreats.find(t => t.id === p.id)) { alert('Already in list!'); return; }
+        const tier = customThreats.length < 4 ? 1 : customThreats.length < 8 ? 2 : 3;
+        customThreats.push({ id: p.id, name: p.name, types: p.types, tier });
+        document.getElementById('metaEditorInput').value = '';
+        renderThreatList();
+    };
+    window._saveCustomMetaAndClose = function() {
+        window._saveCustomMeta(customThreats);
+        window.metaThreatFormat = 'custom';
+        localStorage.setItem('tb_metaFormat', 'custom');
+        document.getElementById('metaEditorModal').remove();
+        if (typeof renderTeamSlots === 'function') renderTeamSlots();
+    };
+
+    const modal = document.createElement('div');
+    modal.id = 'metaEditorModal';
+    modal.style.cssText = 'position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; padding:20px;';
+    modal.innerHTML = `
+        <div style="background:var(--bg); border:2px solid #f5a623; border-radius:12px; max-width:480px; width:100%; max-height:80vh; overflow-y:auto; padding:24px; position:relative;">
+            <button onclick="document.getElementById('metaEditorModal').remove()" style="position:absolute; top:12px; right:12px; background:#ff4d4f; color:white; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">✕</button>
+            <h3 style="color:#f5a623; margin:0 0 6px; font-size:16px;">⚙️ Edit Custom Meta Threats</h3>
+            <p style="font-size:12px; color:var(--dim); margin:0 0 14px;">Build your own threat list. Click Save to switch to Custom format.</p>
+            <div id="metaEditorList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;"></div>
+            <div style="display:flex; gap:8px; margin-bottom:14px;">
+                <input id="metaEditorInput" placeholder="Pokémon name or ID..." style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); font-size:13px;">
+                <button onclick="window._addCustomThreat()" style="padding:8px 14px; background:#4dabf7; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Add</button>
+            </div>
+            <button onclick="window._saveCustomMetaAndClose()" style="width:100%; padding:10px; background:#f5a623; color:black; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">💾 Save as Custom Format</button>
+        </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    document.body.appendChild(modal);
+    renderThreatList();
 };
 
 function getMetaThreatAnalysis(selected, threats) {
@@ -459,11 +560,14 @@ function getSpeedWarningHTML(selected) {
 }
 
 function getMetaThreatHTML(selected) {
-    const threats = META_THREATS_PRO;
+    const fmt = window.metaThreatFormat || 'pro';
+    const fmtInfo = META_FORMAT_REGISTRY[fmt] || META_FORMAT_REGISTRY['pro'];
+    const threats = (fmt === 'custom') ? (_loadCustomMeta() || META_THREATS_PRO) : (fmtInfo.threats || META_THREATS_PRO);
+    const tiers = fmtInfo.tiers;
+
     const analysis = getMetaThreatAnalysis(selected, threats);
     if (!analysis) return '';
 
-    const fmtLabel    = 'PRO PvP Meta (3 Tiers · 18)';
     const accentColor = '#f5a623';
     const scoreColor  = analysis.score >= 70 ? '#63d471' : analysis.score >= 50 ? '#ffc107' : '#ff6b6b';
     const uncovered   = analysis.results.filter(r => r.coverage < 2);
@@ -482,28 +586,73 @@ function getMetaThreatHTML(selected) {
     };
 
     let threatBadgesHTML = '';
-    const tierMeta = [
-        { tier: 1, label: '⚔️ Sweepers' },
-        { tier: 2, label: '🔄 Pivots' },
-        { tier: 3, label: '🛡️ Walls' },
-    ];
-    tierMeta.forEach(({ tier, label: tLabel }) => {
-        const group = analysis.results.filter(r => r.tier === tier);
-        if (!group.length) return;
-        threatBadgesHTML += `<div style="width:100%; margin-bottom:2px;">
-            <span style="font-size:10px; font-weight:900; color:${accentColor}; letter-spacing:.5px;">${tLabel}</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            ${group.map(makeBadge).join('')}
-        </div>`;
-    });
+    if (tiers) {
+        tiers.forEach(({ tier, label: tLabel }) => {
+            const group = analysis.results.filter(r => r.tier === tier);
+            if (!group.length) return;
+            threatBadgesHTML += `<div style="width:100%; margin-bottom:2px;"><span style="font-size:10px; font-weight:900; color:${accentColor}; letter-spacing:.5px;">${tLabel}</span></div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">${group.map(makeBadge).join('')}</div>`;
+        });
+    } else {
+        threatBadgesHTML = `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">${analysis.results.map(makeBadge).join('')}</div>`;
+    }
+
+    // Format selector pills
+    const formatPills = Object.entries(META_FORMAT_REGISTRY).map(([id, info]) => {
+        const active = id === fmt;
+        if (id === 'custom' && !_loadCustomMeta()) return '';
+        return `<button onclick="window.setMetaFormat('${id}')" style="padding:3px 9px; border-radius:12px; border:1px solid ${active ? accentColor : '#555'}; background:${active ? accentColor + '28' : 'transparent'}; color:${active ? accentColor : 'var(--dim)'}; cursor:pointer; font-size:10px; font-weight:bold; transition:.15s;">${info.label}</button>`;
+    }).join('');
 
     return `<div style="margin:10px 0; padding:12px 14px; background:${accentColor}0d; border:1px solid ${accentColor}; border-radius:8px;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-            <strong style="color:${accentColor}; font-size:13px;">🏆 Meta Threat Check (${fmtLabel})</strong>
-            <span style="font-size:13px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; padding:4px 10px; border-radius:20px; border:1px solid ${scoreColor};">${analysis.score}% Win Rate</span>
+            <strong style="color:${accentColor}; font-size:13px;">🏆 Meta Threat Check</strong>
+            <span style="font-size:13px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; padding:4px 10px; border-radius:20px; border:1px solid ${scoreColor};">${analysis.score}% Coverage</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; align-items:center;">
+            ${formatPills}
+            <button onclick="window.openMetaEditorModal()" style="padding:3px 9px; border-radius:12px; border:1px solid #555; background:transparent; color:var(--dim); cursor:pointer; font-size:10px; font-weight:bold; margin-left:auto;">✏️ Edit</button>
         </div>
         ${threatBadgesHTML}
         ${uncovered.length ? `<p style="margin:6px 0 0; font-size:11px; color:#ff6b6b;">⚠️ No super-effective coverage vs: <b>${uncovered.map(r => r.name).join(', ')}</b></p>` : ''}
+    </div>`;
+}
+
+// ==========================================
+// 7. TERA DEFENSE IMPACT
+// ==========================================
+
+function getTeraDefenseHTML(selected) {
+    if (!selected || !selected.length) return '';
+    const teraMons = selected.filter(x => x.slot.teraType);
+    if (!teraMons.length) return '';
+
+    const tips = teraMons.map(x => {
+        const teraType = x.slot.teraType.toLowerCase();
+        // Normal weaknesses (any type hitting any of the Pokémon's types for ≥2×)
+        const normalWeaks = [...new Set(x.p.types.flatMap(t => AT.filter(a => (EFF[a][t] ?? 1) >= 2)))];
+        // Weaknesses under Tera (single teraType)
+        const teraWeaks   = AT.filter(a => (EFF[a][teraType] ?? 1) >= 2);
+
+        const improved = normalWeaks.filter(w => (EFF[w][teraType] ?? 1) < 2);
+        const newWeaks  = teraWeaks.filter(w => !normalWeaks.includes(w));
+
+        if (!improved.length && !newWeaks.length) return '';
+
+        const improvedHtml = improved.length ? `<span style="color:#63d471; font-size:11px;">✓ Removes weakness to: <b>${improved.join(', ')}</b></span>` : '';
+        const newWeaksHtml  = newWeaks.length  ? `<span style="color:#ffc107; font-size:11px;">⚠ New weakness: <b>${newWeaks.join(', ')}</b></span>` : '';
+
+        return `<div style="display:flex; flex-direction:column; gap:2px; padding:6px 8px; background:var(--bg); border:1px solid #cc5de855; border-radius:6px;">
+            <span style="font-size:12px; font-weight:bold; color:var(--txt); text-transform:capitalize;">${x.p.name.replace(/-/g,' ')} → <span style="color:#cc5de8;">Tera ${x.slot.teraType}</span></span>
+            ${improvedHtml}
+            ${newWeaksHtml}
+        </div>`;
+    }).filter(Boolean);
+
+    if (!tips.length) return '';
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:#cc5de80d; border:1px solid #cc5de855; border-radius:8px;">
+        <strong style="color:#cc5de8; font-size:13px;">⬡ Tera Defense Impact</strong>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">${tips.join('')}</div>
     </div>`;
 }

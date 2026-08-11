@@ -2,11 +2,53 @@
 
 function autoRecommendTeam() {
     const pool = team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) })).filter(x => x.slot.pokemonId && x.p);
-    
+
     if (pool.length === 0) { alert('Πρόσθεσε μερικά Pokémon στο ρόστερ σου πρώτα!'); return; }
     if (pool.length <= 6) { pool.forEach(x => x.slot.calc = true); saveTeam(); if (typeof renderTeamSlots === 'function') renderTeamSlots(); return; }
 
-    if (!confirm(`Master Mode: Το AI θα σαρώσει Speed Tiers, 4x Weaknesses, Roles και Offensive Coverage. Ξεκινάμε;`)) return;
+    // Store the pool for async access by the preset modal
+    window._pendingPool = pool;
+
+    const PRESETS = [
+        { id: 'balance',      label: '⚖️ Balance',      desc: 'Mixed offense and defense',      color: '#4dabf7' },
+        { id: 'hyper-offense',label: '⚡ Hyper Offense', desc: 'Fast sweepers, minimal bulk',    color: '#ff6b6b' },
+        { id: 'rain',         label: '🌧️ Rain',          desc: 'Drizzle + Swift Swim core',      color: '#74c0fc' },
+        { id: 'sun',          label: '☀️ Sun',           desc: 'Drought + Chlorophyll core',     color: '#ff6b35' },
+        { id: 'sand',         label: '🌪️ Sand',          desc: 'Sand Stream + Rock/Ground core', color: '#d4a76a' },
+        { id: 'trick-room',   label: '🔄 Trick Room',    desc: 'Slow + bulky Pokémon under TR',  color: '#cc5de8' },
+    ];
+
+    let existing = document.getElementById('presetPickerModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'presetPickerModal';
+    modal.style.cssText = 'position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; padding:20px;';
+    modal.innerHTML = `
+        <div style="background:var(--bg); border:2px solid #38d878; border-radius:12px; max-width:460px; width:100%; padding:24px; position:relative;">
+            <button onclick="document.getElementById('presetPickerModal').remove(); window._pendingPool=null;"
+                style="position:absolute; top:12px; right:12px; background:#ff4d4f; color:white; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">✕</button>
+            <h3 style="color:#38d878; margin:0 0 6px; font-size:16px;">✨ Auto-Build 6 — Team Preset</h3>
+            <p style="font-size:12px; color:var(--dim); margin:0 0 16px;">Επίλεξε στυλ ομάδας. Το AI θα προτιμά Pokémon που ταιριάζουν με το preset.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                ${PRESETS.map(pr => `
+                    <button onclick="document.getElementById('presetPickerModal').remove(); window._runAutoRecommend('${pr.id}')"
+                        style="padding:12px; background:${pr.color}18; border:1.5px solid ${pr.color}; border-radius:8px; cursor:pointer; text-align:left; transition:0.2s; color:var(--txt);">
+                        <div style="font-weight:900; font-size:13px; color:${pr.color};">${pr.label}</div>
+                        <div style="font-size:11px; color:var(--dim); margin-top:3px;">${pr.desc}</div>
+                    </button>`).join('')}
+            </div>
+        </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) { modal.remove(); window._pendingPool = null; } });
+    document.body.appendChild(modal);
+}
+
+window._runAutoRecommend = function(preset) {
+    const pool = window._pendingPool;
+    window._pendingPool = null;
+    if (!pool) return;
+
+    if (!confirm(`Master Mode (${preset}): Το AI θα σαρώσει Speed Tiers, 4x Weaknesses, Roles και Offensive Coverage. Ξεκινάμε;`)) return;
 
     const getNatureMultiplier = (nature, statName) => {
         if (!nature) return 1;
@@ -177,6 +219,42 @@ function autoRecommendTeam() {
         }
 
         candidate.baseScore = baseScore;
+    });
+
+    // ==========================================
+    // PHASE 1B: Preset Score Modifiers
+    // ==========================================
+    pool.forEach(candidate => {
+        const candAb = (candidate.slot.ability || '').toLowerCase().replace(/[^a-z]/g, '');
+        const types  = candidate.p.types || [];
+        const details = candidate.details;
+
+        if (preset === 'hyper-offense') {
+            if (details.role === 'tank')                            candidate.baseScore -= 300;
+            if (details.rSpe >= 110)                               candidate.baseScore += 200;
+            if (details.bulk < 280 && details.rSpe >= 100)         candidate.baseScore += 150;
+        } else if (preset === 'rain') {
+            if (candAb === 'drizzle')                              candidate.baseScore += 500;
+            if (candAb === 'swiftswim')                            candidate.baseScore += 300;
+            if (types.includes('water'))                           candidate.baseScore += 150;
+        } else if (preset === 'sun') {
+            if (candAb === 'drought')                              candidate.baseScore += 500;
+            if (candAb === 'chlorophyll' || candAb === 'solarpower') candidate.baseScore += 300;
+            if (types.includes('fire'))                            candidate.baseScore += 150;
+        } else if (preset === 'sand') {
+            if (candAb === 'sandstream')                           candidate.baseScore += 500;
+            if (candAb === 'sandrush' || candAb === 'sandforce')   candidate.baseScore += 300;
+            if (types.includes('rock') || types.includes('ground') || types.includes('steel')) candidate.baseScore += 100;
+        } else if (preset === 'trick-room') {
+            if (details.rSpe < 60)                                 candidate.baseScore += 250;
+            if (details.rSpe >= 90 && details.role !== 'tank')     candidate.baseScore -= 200;
+            const hasTR = (candidate.slot.moveNames || []).some(mn => {
+                const md = typeof MOVE_INFO !== 'undefined' ? (MOVE_INFO[mn] || MOVE_INFO[(mn || '').toLowerCase().replace(/\s+/g, '-')]) : null;
+                return md && md.name && md.name.toLowerCase().includes('trick room');
+            });
+            if (hasTR) candidate.baseScore += 400;
+        }
+        // 'balance' = no modifier (default AI weights)
     });
 
     // ==========================================
