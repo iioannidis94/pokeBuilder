@@ -283,7 +283,7 @@ function getNatureMultiplier(nature, statName) {
 
 function getSpeedTierComparisonHTML(selected) {
     if (!selected || !selected.length) return '';
-    const threats = META_THREATS_PRO;
+    const threats = (typeof getActiveThreats === 'function') ? getActiveThreats() : META_THREATS_PRO;
 
     const myRows = selected.map(mon => {
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || { spe: 70 };
