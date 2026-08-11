@@ -405,3 +405,108 @@ function copyTeamReport() {
         exportBtn.parentNode.insertBefore(shareBtn, exportBtn);
     });
 })();
+
+function downloadDataBundle() {
+    if (typeof window.getDataOverridesBundle !== 'function') return;
+    const payload = window.getDataOverridesBundle();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pokebuilder-data-bundle-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function importDataBundleFromText(text, sourceUrl) {
+    const bundle = JSON.parse(text);
+    if (typeof window.applyDataOverridesBundle !== 'function') throw new Error('Data bundle import unavailable');
+    window.applyDataOverridesBundle(bundle, sourceUrl);
+    showToast('🗂 Data bundle applied.');
+}
+
+(function injectDataLab() {
+    const modal = document.createElement('div');
+    modal.id = 'dataLabModal';
+    modal.style.cssText = 'display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,.82); align-items:center; justify-content:center; padding:18px;';
+    modal.innerHTML = `
+      <div style="width:min(96vw, 640px); max-height:90vh; overflow:auto; background:var(--surf); border:1px solid #4dabf755; border-radius:14px; padding:20px; position:relative;">
+        <button id="dataLabClose" style="position:absolute; top:12px; right:12px; border:none; background:#ff4d4f; color:#fff; border-radius:6px; padding:4px 10px; cursor:pointer;">✕</button>
+        <h3 style="margin:0 0 6px; color:#4dabf7; font-size:16px;">Data Refresh Lab</h3>
+        <p style="font-size:11px; color:var(--dim); margin:0 0 12px;">Refresh threats, moves, abilities, and item suggestions locally from a JSON bundle, or point the app to a public JSON URL when you have a stable source.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <button id="dataLabExport" style="padding:8px 12px; border:none; background:#63d471; color:#08120c; border-radius:8px; cursor:pointer; font-weight:900;">⬇ Export bundle</button>
+            <label style="padding:8px 12px; background:#4dabf7; color:#fff; border-radius:8px; cursor:pointer; font-weight:900;">⬆ Import JSON<input id="dataLabFile" type="file" accept="application/json,.json" hidden></label>
+            <button id="dataLabReset" style="padding:8px 12px; border:1px solid #ff6b6b; background:rgba(255,107,107,0.12); color:#ff6b6b; border-radius:8px; cursor:pointer; font-weight:900;">Reset overrides</button>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; font-size:11px; color:var(--txt);">
+            <span>Public JSON URL (optional integration path)</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <input id="dataLabUrl" type="url" placeholder="https://example.com/pokebuilder-meta.json" style="flex:1; min-width:220px; background:var(--bg); border:1px solid var(--brd); border-radius:8px; color:var(--txt); padding:9px 10px; font:800 12px 'Nunito',sans-serif;">
+                <button id="dataLabFetch" style="padding:9px 12px; border:none; background:#b197fc; color:#171015; border-radius:8px; cursor:pointer; font-weight:900;">Fetch & apply</button>
+            </div>
+        </label>
+        <pre id="dataLabPreview" style="margin-top:12px; background:var(--bg); border:1px solid var(--brd); border-radius:10px; padding:12px; color:var(--txt); font:700 11px/1.45 monospace; white-space:pre-wrap;"></pre>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    document.body.appendChild(modal);
+
+    function refreshPreview() {
+        if (typeof window.getDataOverridesBundle !== 'function') return;
+        const bundle = window.getDataOverridesBundle();
+        document.getElementById('dataLabPreview').textContent = JSON.stringify(bundle, null, 2);
+        document.getElementById('dataLabUrl').value = bundle.sourceUrl || '';
+    }
+
+    window.openDataLab = function() {
+        refreshPreview();
+        modal.style.display = 'flex';
+    };
+
+    document.getElementById('dataLabClose').addEventListener('click', () => { modal.style.display = 'none'; });
+    document.getElementById('dataLabExport').addEventListener('click', downloadDataBundle);
+    document.getElementById('dataLabReset').addEventListener('click', () => {
+        if (typeof window.resetDataOverridesBundle === 'function') window.resetDataOverridesBundle();
+        refreshPreview();
+        showToast('♻️ Data overrides reset.');
+    });
+    document.getElementById('dataLabFile').addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                importDataBundleFromText(String(reader.result || ''));
+                refreshPreview();
+            } catch (err) {
+                alert('Could not import this data bundle.');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
+    document.getElementById('dataLabFetch').addEventListener('click', async () => {
+        const url = document.getElementById('dataLabUrl').value.trim();
+        if (!url) return alert('Paste a JSON URL first.');
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Fetch failed');
+            importDataBundleFromText(await res.text(), url);
+            refreshPreview();
+        } catch (err) {
+            alert('Could not fetch a valid data bundle from that URL.');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const exportBtn = document.getElementById('teamExport');
+        if (!exportBtn) return;
+        const dataBtn = document.createElement('button');
+        dataBtn.className = 'teamTool';
+        dataBtn.type = 'button';
+        dataBtn.id = 'dataLabBtn';
+        dataBtn.innerHTML = '🗂 Data';
+        dataBtn.style.cssText = 'border-color:#4dabf7; color:#4dabf7; background:rgba(77,171,247,0.1); margin-right: 5px;';
+        dataBtn.addEventListener('click', () => window.openDataLab && window.openDataLab());
+        exportBtn.parentNode.insertBefore(dataBtn, exportBtn);
+    });
+})();

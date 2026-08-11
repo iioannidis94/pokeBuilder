@@ -49,18 +49,28 @@ The goal is not just to list Pokémon, but to help the user:
 - Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
 - Speed-control warnings when a team is too slow
 - Meta Threat Check against the **PRO PvP** 3-tier threat model (Sweepers / Pivots / Walls)
+- Battle context controls for weather, terrain, screens, and hazard chip during damage analysis
 - **Speed Tier Comparison** versus current meta threats
 - **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel, right next to Speed Tier — my team shown in **green** using actual EV/IV/level/nature, opponent shown in **red** at maximum potential (31 IV · 252 EV · Lv 100); switch between stats with pill buttons
 - Assassin / Target Mode with editable opponent team
+- Exact defender setup editor for imported threats (level, nature, IVs, EVs)
 - Opponent Showdown paste support
 - Best-counter suggestions using moves, typings, and context
+- Lead recommendation and safer switch-in guidance versus imported threats
 - Estimated damage ranges with **OHKO / 2HKO / 3HKO** labels
 - Priority move awareness in matchup scoring
+- Counter scoring upgraded for pivots, recovery loops, status pressure, and hazard pressure
+- Matchup summaries that explain why a selected core still struggles against specific threats
 
 ### Competitive Data Upgrades
 - Dynamic defensive logic for abilities such as Levitate, Thick Fat, Flash Fire, Volt Absorb, Water Absorb and more
 - Therian formes added with correct stats and competitive abilities
 - Expanded held item pool for better build flexibility
+- Optional local/external JSON data bundle refresh flow for threats, abilities, moves, and recommended items
+
+### Team Workflow & Sharing
+- Better comparison view for multiple saved teams with side-by-side summary metrics
+- Offline-ready PWA shell with manifest + service worker caching for the core app
 
 ---
 
@@ -94,22 +104,16 @@ If the app grows further, the next clean split should be **inside analytics/AI b
 - [x] Move Suggestions in Counter Intelligence — rank all equipped moves by calculated damage vs each opponent, with type effectiveness badges and "USE FIRST" label
 - [x] Battle Prep tips per counter — speed comparison, guaranteed OHKO detection, and incoming damage warning using real IV/EV/nature/level data
 
-### Battle / Counter Intelligence
-- [ ] Extend the damage calculator with better context for abilities, items, weather, terrain, and exact defender setup
-- [ ] Add clearer lead recommendations and safer switch-in suggestions versus selected threats
-- [ ] Improve counter scoring for pivots, recovery loops, status pressure, and hazard pressure
-- [ ] Add matchup summaries that explain **why** a team struggles against specific meta threats
-
 ### UX / Product Polish
 - [x] Mobile-first responsive upgrade for the Team Builder and analysis panels
 - [x] One-click export/share package for team + matchup report
 - [x] Cleaner card/details view for each Pokémon with more competitive context
-- [ ] Better comparison views for multiple saved teams
+- [x] Better comparison views for multiple saved teams
 
 ### Data & Automation
-- [ ] Optional integration path for external meta sources when stable/public data is available
-- [ ] Easier data refresh process for threats, abilities, moves, and recommended items
-- [ ] Offline/PWA support once the competitive analysis flow is stable
+- [x] Optional integration path for external meta sources when stable/public data is available
+- [x] Easier data refresh process for threats, abilities, moves, and recommended items
+- [x] Offline/PWA support once the competitive analysis flow is stable
 
 ---
 
