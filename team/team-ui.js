@@ -338,6 +338,15 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     </div>`;
 }
 
+function renderCalculatorView() {
+    const el = document.getElementById('calcViewContent');
+    if (!el) return;
+    el.innerHTML = `<div style="border:1px solid var(--brd); background:var(--surf2); border-radius:8px; padding:10px 12px; font-size:12px; color:var(--dim); font-weight:800;">
+        Battle Calculator reads your current Team Builder data live. Use <b style="color:var(--yel);">Add to calc</b> in Team Builder, then review all calculator insights here.
+        <button type="button" onclick="openTeam()" style="margin-left:10px; border:1px solid var(--yel); background:rgba(255,204,0,.1); color:var(--yel); border-radius:50px; padding:5px 10px; font:900 11px 'Nunito',sans-serif; cursor:pointer;">Open Team Builder</button>
+    </div>${calcPanel()}`;
+}
+
 function renderTeamList() { 
     const el = document.getElementById('teamList'), q = teamQuery.toLowerCase().trim(); 
     const list = POKE.filter(p => !q || p.name.replace(/-/g, ' ').includes(q) || String(p.id).includes(q) || p.types.some(t => t.includes(q))).slice(0, 160); 
@@ -347,7 +356,8 @@ function renderTeamList() {
 function renderTeamSlots() { 
     const el = document.getElementById('teamSlots'), filled = team.map((slot, i) => ({ slot, i })).filter(x => x.slot.pokemonId); 
     if (!filled.length) { 
-        el.innerHTML = calcPanel() + '<div class="emptyTeam">No Pokémon in your team yet.</div>'; 
+        el.innerHTML = '<div class="emptyTeam">No Pokémon in your team yet.</div>'; 
+        if (document.body.classList.contains('calc-view')) renderCalculatorView();
         return;
     } 
     
@@ -357,7 +367,7 @@ function renderTeamSlots() {
         status: '<img src="https://play.pokemonshowdown.com/sprites/categories/Status.png" title="Status Move" alt="Status" style="height:14px; image-rendering:pixelated; box-shadow:0 1px 2px rgba(0,0,0,0.4); border-radius:2px; cursor:help;">'
     };
 
-    el.innerHTML = calcPanel() + filled.map(({ slot, i }, displayIndex) => { 
+    el.innerHTML = filled.map(({ slot, i }, displayIndex) => { 
         const p = POKE.find(x => x.id === slot.pokemonId); 
         if (!p) return ''; 
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[p.id]) || {};
@@ -439,15 +449,21 @@ function renderTeamSlots() {
         // Το μυστικό είναι το `style="height: auto; min-height: max-content; padding-bottom: 20px;"` στην κάρτα!
         return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${recHint}${stats}${moves}</article>` 
     }).join('');
+    if (document.body.classList.contains('calc-view')) renderCalculatorView();
 }
 
 function setView(view) { 
-    const teamView = view === 'team'; 
+    const teamView = view === 'team';
+    const calcView = view === 'calc';
+    const dexView = !teamView && !calcView;
     document.body.classList.toggle('team-view', teamView); 
-    document.body.classList.toggle('dex-view', !teamView); 
+    document.body.classList.toggle('calc-view', calcView);
+    document.body.classList.toggle('dex-view', dexView); 
     document.getElementById('myTeamBtn').classList.toggle('on', teamView); 
-    document.getElementById('dexViewBtn').classList.toggle('on', !teamView); 
+    document.getElementById('dexViewBtn').classList.toggle('on', dexView);
+    document.getElementById('calcViewBtn').classList.toggle('on', calcView);
     document.getElementById('teamOverlay').setAttribute('aria-hidden', teamView ? 'false' : 'true');
+    document.getElementById('calcOverlay').setAttribute('aria-hidden', calcView ? 'false' : 'true');
     
     if (teamView) { 
         ensureCompareTeamIndex();
@@ -455,19 +471,25 @@ function setView(view) {
         renderTeamSlots(); 
         updateTeamDropdown(); 
     }
+    if (calcView) renderCalculatorView();
 }
 
 function openTeam() { setView('team') }
 function closeTeam() { setView('dex') }
 function openDex() { setView('dex'); if(typeof renderDex === 'function') renderDex() }
+function openCalc() { setView('calc') }
+function closeCalc() { setView('dex') }
 
 // --- Event Listeners Setup ---
 document.getElementById('myTeamBtn').addEventListener('click', openTeam); 
 document.getElementById('dexViewBtn').addEventListener('click', openDex); 
+document.getElementById('calcViewBtn').addEventListener('click', openCalc);
 document.getElementById('teamExport').addEventListener('click', exportTeam); 
 document.getElementById('teamImport').addEventListener('change', e => { importTeamFile(e.target.files[0]); e.target.value = '' }); 
 document.getElementById('teamClose').addEventListener('click', closeTeam); 
-document.getElementById('teamOverlay').addEventListener('click', e => { if (e.target.id === 'teamOverlay' && document.body.classList.contains('dex-view')) closeTeam() }); 
+document.getElementById('calcClose')?.addEventListener('click', closeCalc);
+document.getElementById('teamOverlay').addEventListener('click', e => { if (e.target.id === 'teamOverlay' && document.body.classList.contains('team-view')) closeTeam() }); 
+document.getElementById('calcOverlay')?.addEventListener('click', e => { if (e.target.id === 'calcOverlay' && document.body.classList.contains('calc-view')) closeCalc() });
 document.getElementById('teamSearch').addEventListener('input', e => { teamQuery = e.target.value; renderTeamList() }); 
 document.getElementById('teamList').addEventListener('click', e => { const btn = e.target.closest('.pickMon'); if (btn) addToTeam(Number(btn.dataset.id)) }); 
 
@@ -498,7 +520,7 @@ document.getElementById('teamSlots').addEventListener('click', e => {
     if (build) applyRecommendedBuild(Number(build.dataset.autoBuild));
 }); 
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeam() });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.body.classList.contains('dex-view')) setView('dex') });
 
 document.getElementById('teamSelect')?.addEventListener('change', e => {
     currentTeamIndex = Number(e.target.value);
