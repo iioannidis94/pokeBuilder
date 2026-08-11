@@ -192,17 +192,17 @@
                     ${boss.title ? `<div style="font-size:12px; color:var(--dim); margin-top:2px;">${boss.title}</div>` : ''}
                     ${boss.region ? `<div style="font-size:11px; margin-top:4px;"><span style="color:${REGION_COLORS[boss.region] || '#aaa'}; font-weight:700;">${boss.region}</span>${boss.location ? ` <span style="color:var(--dim);">— ${boss.location}</span>` : ''}</div>` : ''}
                 </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;" id="bossDiffTabs">${tabsHtml}</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between;" id="bossDiffTabs">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">${tabsHtml}</div>
+                    <button type="button" id="bossLoadOppBtn" ${loadBtnDisabled} style="
+                        padding:6px 14px; border-radius:20px; border:1px solid #ff6b6b;
+                        background:rgba(255,107,107,0.12); color:#ff6b6b; font-size:12px; font-weight:bold;
+                        cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s; white-space:nowrap;
+                    ">⚔️ Φόρτωσε ως Αντίπαλος</button>
+                </div>
                 ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}</div>` : ''}
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     ${teamData.length ? pokemonHtml : '<div style="color:var(--dim); font-size:13px;">Δεν υπάρχουν Pokémon για αυτή τη δυσκολία.</div>'}
-                </div>
-                <div style="margin-top:auto; padding-top:10px;">
-                    <button type="button" id="bossLoadOppBtn" ${loadBtnDisabled} style="
-                        width:100%; padding:10px; border-radius:8px; border:1px solid #ff6b6b;
-                        background:rgba(255,107,107,0.12); color:#ff6b6b; font-size:14px; font-weight:bold;
-                        cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s;
-                    ">⚔️ Φόρτωσε ως Αντίπαλος</button>
                 </div>
             </div>`;
 
