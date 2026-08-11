@@ -99,9 +99,24 @@ function calcTeam() {
 
 function toggleCalc(i) { if (!team[i].pokemonId) return; if (!team[i].calc && calcTeam().length >= 6) { alert('You can calculate up to 6 Pokémon at a time.'); return } team[i].calc = !team[i].calc; saveTeam(); renderTeamSlots() }
 
+let calcExpanded = false;
+function toggleCalcPanel() { calcExpanded = !calcExpanded; renderTeamSlots(); }
+
 function calcPanel() { 
     const selected = calcTeam(); 
-    
+    const arrow = calcExpanded ? '▲' : '▼';
+    const headStyle = 'cursor:pointer; user-select:none;';
+
+    // --- COLLAPSED STATE ---
+    if (!calcExpanded) {
+        return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 4px;">
+            <div class="calcHead" onclick="toggleCalcPanel()" style="${headStyle}">
+                <strong>Battle Calculate</strong>
+                <span style="display:flex; align-items:center; gap:8px;"><span>${selected.length}/6 selected</span><span style="font-size:11px;">${arrow}</span></span>
+            </div>
+        </div>`;
+    }
+
     // Ασφαλής κλήση των UI Αντιπάλου
     const oppUI = window.getOpponentUI ? window.getOpponentUI() : '';
     const matchupsUI = window.getMatchupsUI ? window.getMatchupsUI(selected) : '';
@@ -109,7 +124,7 @@ function calcPanel() {
     // --- EMPTY STATE (Όταν δεν έχεις διαλέξει κανένα Pokemon για Calculate) ---
     if (!selected.length) { 
         return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
-            <div class="calcHead"><strong>Battle Calculate</strong><span>0/6 selected</span></div>
+            <div class="calcHead" onclick="toggleCalcPanel()" style="${headStyle}"><strong>Battle Calculate</strong><span style="display:flex; align-items:center; gap:8px;"><span>0/6 selected</span><span style="font-size:11px;">${arrow}</span></span></div>
             <div class="calcEmpty" style="margin-bottom: 15px;">Use "Add to calculate" on up to 6 Pokémon from your slots.</div>
             <!-- Το Κόκκινο Κουμπί στο ΚΑΤΩ μέρος -->
             ${oppUI}
@@ -172,7 +187,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
-        <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
+        <div class="calcHead" onclick="toggleCalcPanel()" style="${headStyle}"><strong>Battle Calculate</strong><span style="display:flex; align-items:center; gap:8px;"><span>${selected.length}/6 selected</span><span style="font-size:11px;">${arrow}</span></span></div>
         
         <!-- Archetype & Speed Control -->
         ${archetypeHTML}
