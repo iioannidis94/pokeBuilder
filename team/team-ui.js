@@ -124,7 +124,6 @@ function calcTeam() {
 
 function toggleCalc(i) { if (!team[i].pokemonId) return; if (!team[i].calc && calcTeam().length >= 6) { alert('You can calculate up to 6 Pokémon at a time.'); return } team[i].calc = !team[i].calc; saveTeam(); renderTeamSlots() }
 
-const calcExpanded = true;
 window.compareTeamIndex = Number(localStorage.getItem('tb_compareTeamIndex') || -1);
 window.setCompareTeamIndex = function(idx) {
     window.compareTeamIndex = Number(idx);

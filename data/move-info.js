@@ -844,7 +844,7 @@ const MOVE_FLAGS = {
     'aqua-jet':       { priority: 1, contact: true },
     'sucker-punch':   { priority: 1, contact: true },
     'vacuum-wave':    { priority: 1 },
-    'water-shuriken': { priority: 1 },
+    'water-shuriken': { priority: 1, multiHit: { min: 2, max: 5 } },
     'accelerock':     { priority: 1, contact: true },
     'first-impression': { priority: 2, contact: true },
     'grassy-glide':   { priority: 1, contact: true },
@@ -882,7 +882,6 @@ const MOVE_FLAGS = {
     'pin-missile':       { multiHit: { min: 2, max: 5 } },
     'tail-slap':         { multiHit: { min: 2, max: 5 } },
     'scale-shot':        { multiHit: { min: 2, max: 5 }, contact: true },
-    'water-shuriken':    { multiHit: { min: 2, max: 5 } },
     'arm-thrust':        { multiHit: { min: 2, max: 5 }, contact: true },
     'fury-attack':       { multiHit: { min: 2, max: 5 }, contact: true },
     'fury-swipes':       { multiHit: { min: 2, max: 5 }, contact: true },
@@ -914,8 +913,6 @@ const MOVE_FLAGS = {
     'head-charge':    { recoil: 0.25, contact: true },
     'chloroblast':    { recoil: 0 }, // costs half user HP
     'steel-beam':     { recoil: 0 }, // costs half user HP
-    'life-dew':       { recoil: 0 },
-    'recoil':         { recoil: 0.25, contact: true },
     // ---- Drain moves (fraction of damage dealt healed) ----
     'absorb':         { drain: 0.5 },
     'mega-drain':     { drain: 0.5 },
@@ -1003,7 +1000,6 @@ const MOVE_FLAGS = {
     'rapid-spin':     { contact: true },
     'spin-out':       { contact: true },
     'high-horsepower': { contact: true },
-    'grassy-glide':   { contact: true },
     'psychic-fangs':  { contact: true },
     'ice-spinner':    { contact: true },
     'last-respects':  { contact: true },
@@ -1017,7 +1013,7 @@ const SPREAD_MOVES = new Set([
     'petal-blizzard','noble-roar','snarl','breaking-swipe','glacial-lance','astral-barrage',
     'springtide-storm','bleakwind-storm','sandsear-storm','wildbolt-storm','alluring-voice',
     'burning-jealousy','overdrive','expanding-force','mystical-fire','sparkling-aria',
-    'electroweb','acid-spray','razor-wind','mirror-coat','feint-attack','icicle-crash',
+    'electroweb','acid-spray','razor-wind','icicle-crash',
 ]);
 
 // Abilities with contact proc chance (ability name → { chance: %, effect: description })
@@ -1038,7 +1034,7 @@ const CONTACT_PROC_ABILITIES = {
 };
 
 // Survival abilities/items that block an OHKO
-const OHKO_BLOCKERS = new Set(['sturdy', 'multiscale', 'shadow-shield', 'disguise', 'wonder-guard']);
+const OHKO_BLOCKERS = new Set(['sturdy', 'multiscale', 'shadow-shield', 'disguise']);
 const OHKO_BLOCKER_ITEMS = new Set(['focus-sash', 'focus-band']);
 
 // Extended type immunity / modifier abilities (supplement to getDynamicMult)

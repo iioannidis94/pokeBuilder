@@ -296,8 +296,13 @@ function getEffectiveSpeedStat(baseSpeed, slot, options) {
     if (ability === 'sand-rush' && ctx.weather === 'sand') stat = Math.floor(stat * 2);
     if (ability === 'slush-rush' && ctx.weather === 'snow') stat = Math.floor(stat * 2);
     if (item === 'choice scarf') stat = Math.floor(stat * 1.5);
-    if (ctx.tailwindOnMe) stat = Math.floor(stat * 2);
-    if (ctx.paralysisOnMe) stat = Math.floor(stat * 0.5);
+    const side = options && options.side;
+    if (side === 'opponent') {
+        if (ctx.tailwindOnOpponent) stat = Math.floor(stat * 2);
+    } else {
+        if (ctx.tailwindOnMe) stat = Math.floor(stat * 2);
+        if (ctx.paralysisOnMe) stat = Math.floor(stat * 0.5);
+    }
     return Math.floor(stat);
 }
 
@@ -590,10 +595,8 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
                             (typeof OHKO_BLOCKER_ITEMS !== 'undefined' && OHKO_BLOCKER_ITEMS.has(defItem));
 
     // Leftovers / Black Sludge: heals 1/16 HP per turn
-    // Shell Bell: heals 1/8 of damage dealt (rough estimate)
     let recoveryPerTurn = 0;
-    const defItemSafe = getSafeItemName(defSlotData && defSlotData.item);
-    if (defItemSafe === 'leftovers' || defItemSafe === 'black sludge') recoveryPerTurn = Math.floor(defHP / 16);
+    if (defItem === 'leftovers' || defItem === 'black sludge') recoveryPerTurn = Math.floor(defHP / 16);
     // Express recovery-adjusted number of hits to KO
     let hitsToKO = minPct > 0 ? Math.ceil(100 / minPct) : null;
     if (recoveryPerTurn > 0 && hitsToKO && hitsToKO > 1) {
