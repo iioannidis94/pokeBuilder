@@ -341,11 +341,10 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
 function renderCalculatorView() {
     const el = document.getElementById('calcViewContent');
     if (!el) return;
-    const hasTeam = team.some(slot => slot && slot.pokemonId);
     el.innerHTML = `<div style="border:1px solid var(--brd); background:var(--surf2); border-radius:8px; padding:10px 12px; font-size:12px; color:var(--dim); font-weight:800;">
         Battle Calculator reads your current Team Builder data live. Use <b style="color:var(--yel);">Add to calc</b> in Team Builder, then review all calculator insights here.
         <button type="button" onclick="openTeam()" style="margin-left:10px; border:1px solid var(--yel); background:rgba(255,204,0,.1); color:var(--yel); border-radius:50px; padding:5px 10px; font:900 11px 'Nunito',sans-serif; cursor:pointer;">Open Team Builder</button>
-    </div>${calcPanel()}${hasTeam ? '' : '<div class="emptyTeam">No Pokémon in your team yet.</div>'}`;
+    </div>${calcPanel()}`;
 }
 
 function renderTeamList() { 
@@ -358,7 +357,7 @@ function renderTeamSlots() {
     const el = document.getElementById('teamSlots'), filled = team.map((slot, i) => ({ slot, i })).filter(x => x.slot.pokemonId); 
     if (!filled.length) { 
         el.innerHTML = '<div class="emptyTeam">No Pokémon in your team yet.</div>'; 
-        renderCalculatorView();
+        if (document.body.classList.contains('calc-view')) renderCalculatorView();
         return;
     } 
     
@@ -450,7 +449,7 @@ function renderTeamSlots() {
         // Το μυστικό είναι το `style="height: auto; min-height: max-content; padding-bottom: 20px;"` στην κάρτα!
         return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${recHint}${stats}${moves}</article>` 
     }).join('');
-    renderCalculatorView();
+    if (document.body.classList.contains('calc-view')) renderCalculatorView();
 }
 
 function setView(view) { 
@@ -479,6 +478,7 @@ function openTeam() { setView('team') }
 function closeTeam() { setView('dex') }
 function openDex() { setView('dex'); if(typeof renderDex === 'function') renderDex() }
 function openCalc() { setView('calc') }
+function closeCalc() { setView('dex') }
 
 // --- Event Listeners Setup ---
 document.getElementById('myTeamBtn').addEventListener('click', openTeam); 
@@ -487,9 +487,9 @@ document.getElementById('calcViewBtn').addEventListener('click', openCalc);
 document.getElementById('teamExport').addEventListener('click', exportTeam); 
 document.getElementById('teamImport').addEventListener('change', e => { importTeamFile(e.target.files[0]); e.target.value = '' }); 
 document.getElementById('teamClose').addEventListener('click', closeTeam); 
-document.getElementById('calcClose')?.addEventListener('click', closeTeam);
-document.getElementById('teamOverlay').addEventListener('click', e => { if (e.target.id === 'teamOverlay' && document.body.classList.contains('dex-view')) closeTeam() }); 
-document.getElementById('calcOverlay')?.addEventListener('click', e => { if (e.target.id === 'calcOverlay' && document.body.classList.contains('calc-view')) closeTeam() });
+document.getElementById('calcClose')?.addEventListener('click', closeCalc);
+document.getElementById('teamOverlay').addEventListener('click', e => { if (e.target.id === 'teamOverlay' && document.body.classList.contains('team-view')) closeTeam() }); 
+document.getElementById('calcOverlay')?.addEventListener('click', e => { if (e.target.id === 'calcOverlay' && document.body.classList.contains('calc-view')) closeCalc() });
 document.getElementById('teamSearch').addEventListener('input', e => { teamQuery = e.target.value; renderTeamList() }); 
 document.getElementById('teamList').addEventListener('click', e => { const btn = e.target.closest('.pickMon'); if (btn) addToTeam(Number(btn.dataset.id)) }); 
 
@@ -520,7 +520,7 @@ document.getElementById('teamSlots').addEventListener('click', e => {
     if (build) applyRecommendedBuild(Number(build.dataset.autoBuild));
 }); 
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeam() });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.body.classList.contains('dex-view')) setView('dex') });
 
 document.getElementById('teamSelect')?.addEventListener('change', e => {
     currentTeamIndex = Number(e.target.value);
