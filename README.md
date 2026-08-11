@@ -86,11 +86,11 @@ If the app grows further, the next clean split should be **inside analytics/AI b
 ## Roadmap
 
 ### Next High-Value Updates
-- [ ] Expand the meta selector with newer regulations and additional ranked formats
-- [ ] Add a **meta-data refresh workflow** so threat lists can be updated faster without manual deep edits
-- [ ] Improve the AI builder with **team-style presets** (balance, hyper offense, rain, sand, Trick Room)
-- [ ] Upgrade the build helper to suggest **EV spreads, natures, and items together** with stronger competitive logic
-- [ ] Add **Tera-aware offensive and defensive scoring** across team analysis and threat checks
+- [x] Expand the meta selector with newer regulations and additional ranked formats
+- [x] Add a **meta-data refresh workflow** so threat lists can be updated faster without manual deep edits
+- [x] Improve the AI builder with **team-style presets** (balance, hyper offense, rain, sand, Trick Room)
+- [x] Upgrade the build helper to suggest **EV spreads, natures, and items together** with stronger competitive logic
+- [x] Add **Tera-aware offensive and defensive scoring** across team analysis and threat checks
 
 ### Battle / Counter Intelligence
 - [ ] Extend the damage calculator with better context for abilities, items, weather, terrain, and exact defender setup
