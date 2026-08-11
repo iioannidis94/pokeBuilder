@@ -106,7 +106,23 @@ function showTypeChart(type) {
     overlay.style.display = 'flex';
 }
 
-// --- ΠΡΟΣΘΗΚΗ ΣΤΟ ΤΕΛΟΣ ΤΟΥ utils.js ---
+
+// --- TOAST NOTIFICATION ---
+let _toastTimer = null;
+function showToast(message, duration) {
+    duration = duration || 2800;
+    let toast = document.getElementById('pkToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pkToast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.className = 'pk-toast pk-toast-show';
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { toast.className = 'pk-toast'; }, duration);
+}
+
 
 // Λεξικό: Πώς τα Abilities αλλάζουν το Damage (0 = Immune, 0.5 = Resist, 2 = Weak)
 const ABILITY_TYPE_MODS = {

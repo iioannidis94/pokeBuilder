@@ -283,7 +283,13 @@ function renderTeamSlots() {
         const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[p.id]) || {};
         const bst = ['hp','atk','def','spa','spd','spe'].reduce((s, k) => s + (Number(bs[k]) || 0), 0);
         const bstColor = bst >= 600 ? '#ffd43b' : bst >= 500 ? '#63d471' : bst >= 400 ? '#4dabf7' : 'var(--dim)';
-        const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}${bst ? ` · <span title="Base Stat Total" style="color:${bstColor}; font-weight:900;">BST ${bst}</span>` : ''}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;"><button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
+        const assassinScore = (window.oppTeam && window.oppTeam.length > 0 && typeof window.calcAssassinScore === 'function')
+            ? window.calcAssassinScore({ slot, p })
+            : null;
+        const scoreBadge = assassinScore !== null
+            ? `<span title="Counter Score vs Opponent Team" style="font-size:9px; font-weight:900; color:${assassinScore > 100 ? '#63d471' : assassinScore > 0 ? '#ffc107' : '#ff6b6b'}; background:${assassinScore > 100 ? '#63d47122' : assassinScore > 0 ? '#ffc10722' : '#ff6b6b22'}; border:1px solid ${assassinScore > 100 ? '#63d47155' : assassinScore > 0 ? '#ffc10755' : '#ff6b6b55'}; border-radius:8px; padding:2px 5px; flex-shrink:0;">⚔️ ${assassinScore}</span>`
+            : '';
+        const head = `<div class="slotHead">${spriteImg(p)}<div><div class="slotNum">Team ${displayIndex + 1}/${TEAM_SIZE} · #${String(p.id).padStart(4, '0')}${bst ? ` · <span title="Base Stat Total" style="color:${bstColor}; font-weight:900;">BST ${bst}</span>` : ''}</div><div class="slotName">${p.name.replace(/-/g, ' ')}</div><div class="slotTypes">${p.types.map(t => tb(t)).join('')}</div></div><div class="slotActions" style="margin-left:auto;">${scoreBadge}<button class="calcToggle ${slot.calc ? 'on' : ''}" type="button" data-calc="${i}">${slot.calc ? 'In calculate' : 'Add to calc'}</button><button class="clearSlot" type="button" data-clear="${i}" title="Clear slot">×</button></div></div>`; 
         
         const rec = getRecommendedBuild(slot, p);
         const teraOptions = (typeof AT !== 'undefined' ? AT : []);

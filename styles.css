@@ -330,6 +330,32 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
   white-space: nowrap;
 }
 
+/* Toast notification */
+.pk-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surf2);
+    border: 1px solid var(--brd);
+    color: var(--txt);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    z-index: 99999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    white-space: nowrap;
+}
+.pk-toast.pk-toast-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* Bosses Modal */
 #bossesOverlay[aria-hidden="true"] { display: none; }
 #bossesOverlay[aria-hidden="false"] { display: flex; }

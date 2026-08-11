@@ -45,7 +45,7 @@ function exportTeamShowdown() {
     if (!lines.length) { alert('No valid Pokémon found to export.'); return; }
     const text = lines.join('\n\n');
     navigator.clipboard.writeText(text).then(() => {
-        alert(`Copied ${lines.length} Pokémon in Showdown format.`);
+        showToast(`📄 Copied ${lines.length} Pokémon in Showdown format.`);
     }).catch(() => {
         prompt('Copy your Showdown export:', text);
     });
@@ -280,7 +280,7 @@ function generateShareLink() {
         const url = window.location.origin + window.location.pathname + '#team=' + b64;
         
         navigator.clipboard.writeText(url).then(() => {
-            alert('🔗 Share Link copied to clipboard!\n\nSend this link to your friends, and they will instantly see your exact team setup.');
+            showToast('🔗 Share Link copied to clipboard!');
         }).catch(() => {
             // Αν ο browser μπλοκάρει το clipboard
             prompt('Copy this link to share your team:', url);
@@ -371,7 +371,7 @@ function copyTeamReport() {
     const report = parts.join('\n').trim();
 
     navigator.clipboard.writeText(report).then(() => {
-        alert(`📋 Team report copied!\n\nIncludes Showdown format for ${showdownLines.length} Pokémon + share link.`);
+        showToast(`📋 Team report copied! (${showdownLines.length} Pokémon + share link)`);
     }).catch(() => {
         prompt('Copy your team report:', report);
     });

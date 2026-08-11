@@ -277,78 +277,106 @@ window.getOpponentUI = function() {
 window.getMatchupsUI = function(selected) {
     if(!window.showOppPanel || window.oppTeam.length === 0 || !selected || selected.length === 0) return '';
 
-    let html = `<div style="margin-top:20px; padding:12px; background:rgba(77, 171, 247, 0.05); border:1px solid #4dabf7; border-radius:8px;">
-        <strong style="color:#4dabf7; font-size:14px;">🔥 Τα Καλύτερα Counters (Από την ομάδα σου):</strong>
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px;">`;
+    const MEDALS = ['🥇', '🥈', '🥉'];
+    const PRIORITY_MOVES = new Set(['fake-out', 'sucker-punch', 'bullet-punch', 'ice-shard', 'extreme-speed', 'mach-punch', 'aqua-jet', 'shadow-sneak']);
+
+    let html = `<div style="margin-top:20px; padding:12px; background:rgba(77,171,247,0.05); border:1px solid #4dabf7; border-radius:8px;">
+        <strong style="color:#4dabf7; font-size:14px;">🔥 Counter Intelligence</strong>
+        <p style="font-size:11px; color:var(--dim); margin:4px 0 12px;">Top counters from your team vs each opponent. Outgoing ⚔️ and incoming 🛡️ damage estimates included.</p>
+        <div style="display:flex; flex-direction:column; gap:14px;">`;
 
     window.oppTeam.forEach(opp => {
         const opId = typeof opp === 'number' ? opp : opp.id;
         const oppSlotData = typeof opp === 'object' ? opp : null;
         const op = POKE.find(p => p.id === opId);
         if (!op) return;
-        let bestCounter = null; let bestScore = -9999;
 
-        selected.forEach(my => {
-            let score = window.getCombatScore(my, op, oppSlotData);
-            if(score > bestScore) { bestScore = score; bestCounter = my; }
-        });
+        // Rank ALL team members by combat score (descending)
+        const ranked = selected
+            .map(my => ({ my, score: window.getCombatScore(my, op, oppSlotData) }))
+            .sort((a, b) => b.score - a.score);
 
-        // Show opponent move badges, ability, and item if available
+        const top3 = ranked.slice(0, 3);
+
+        // Opponent info badges
         const oppMoveNames = oppSlotData && oppSlotData.moveNames ? oppSlotData.moveNames : [];
         const oppMoveTypes = oppSlotData && oppSlotData.moves ? oppSlotData.moves : [];
         const oppAbility   = oppSlotData && oppSlotData.ability ? oppSlotData.ability : '';
         const oppItem      = oppSlotData && oppSlotData.item    ? oppSlotData.item    : '';
 
-        const abilityBadge = oppAbility ? `<span style="font-size:10px; background:rgba(99,212,113,0.15); border:1px solid #63d471; color:#63d471; border-radius:3px; padding:1px 6px; font-weight:bold;" title="Ability">⚙ ${oppAbility.replace(/-/g,' ')}</span>` : '';
-        const itemBadge    = oppItem    ? `<span style="font-size:10px; background:rgba(255,193,7,0.15); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 6px; font-weight:bold;" title="Held Item">🎒 ${oppItem}</span>` : '';
+        const abilityBadge = oppAbility ? `<span style="font-size:10px; background:rgba(99,212,113,0.15); border:1px solid #63d471; color:#63d471; border-radius:3px; padding:1px 6px; font-weight:bold;">⚙ ${oppAbility.replace(/-/g,' ')}</span>` : '';
+        const itemBadge    = oppItem    ? `<span style="font-size:10px; background:rgba(255,193,7,0.15); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 6px; font-weight:bold;">🎒 ${oppItem}</span>` : '';
 
         const movesHtml = oppMoveNames.some(Boolean)
-            ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:3px;">
-                ${abilityBadge}${itemBadge}
-                ${oppMoveNames.map((mn, i) => {
-                    if (!mn) return '';
-                    const mType = oppMoveTypes[i] || '';
-                    const color = (typeof TC !== 'undefined' && TC[mType]) ? TC[mType] : '#555';
-                    const clean = String(mn).toLowerCase();
-                    const prio = ['fake-out', 'sucker-punch', 'bullet-punch', 'ice-shard', 'extreme-speed', 'mach-punch', 'aqua-jet', 'shadow-sneak'].includes(clean)
-                        ? `<span style="font-size:10px; background:rgba(255,193,7,0.18); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:1px 4px; font-weight:900;">⚡ Priority</span>`
-                        : '';
-                    return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold;" title="${mType}">${mn.replace(/-/g, ' ')}</span>${prio}`;
-                }).join('')}
-               </div>`
-            : (abilityBadge || itemBadge)
-                ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:3px;">${abilityBadge}${itemBadge}</div>`
-                : '';
+            ? oppMoveNames.map((mn, i) => {
+                if (!mn) return '';
+                const mType = oppMoveTypes[i] || '';
+                const color = (typeof TC !== 'undefined' && TC[mType]) ? TC[mType] : '#555';
+                const prio  = PRIORITY_MOVES.has(String(mn).toLowerCase())
+                    ? `<span style="font-size:9px; background:rgba(255,193,7,0.18); border:1px solid #ffc107; color:#ffc107; border-radius:3px; padding:0 3px;">⚡</span>`
+                    : '';
+                return `<span style="font-size:10px; background:${color}; color:white; border-radius:3px; padding:1px 5px; font-weight:bold;">${mn.replace(/-/g,' ')}</span>${prio}`;
+            }).join('')
+            : '';
 
-        if(bestCounter) {
-            // Damage estimate (best move vs opponent)
-            let dmgHTML = '';
+        const oppInfoBar = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 10px; align-items:center;">
+            ${abilityBadge}${itemBadge}${movesHtml}
+        </div>`;
+
+        // Counter rows
+        const counterRows = top3.map(({ my, score }, rank) => {
+            const medal = MEDALS[rank] || `#${rank + 1}`;
+            const scoreColor = score > 150 ? '#63d471' : score > 0 ? '#ffc107' : '#ff6b6b';
+
+            // Outgoing damage: my best move vs opponent
+            let outHtml = '';
             if (typeof getBestDamageEstimate === 'function') {
-                const est = getBestDamageEstimate(bestCounter, op, oppSlotData);
+                const est = getBestDamageEstimate(my, op, oppSlotData);
                 if (est) {
-                    const dmgColor = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#63d471';
-                    const moveName = est.moveName ? est.moveName.replace(/-/g, ' ') : '';
-                    dmgHTML = `<div style="margin-top:6px; font-size:11px; font-weight:bold; color:${dmgColor}; background:${dmgColor}18; padding:3px 8px; border-radius:4px; display:inline-block;">
-                        ${est.label} · ${est.minPct}%–${est.maxPct}% via <i>${moveName}</i> · OHKO: ${est.ohkoChance || 0}%
-                    </div>`;
+                    const c = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#4dabf7';
+                    outHtml = `<span style="font-size:10px; font-weight:bold; color:${c}; background:${c}18; padding:2px 6px; border-radius:3px;">
+                        ⚔️ ${est.label} ${est.minPct}%–${est.maxPct}% (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
+                    </span>`;
                 }
             }
 
-            html += `<div style="display:flex; flex-direction:column; background:var(--bg); padding:10px 12px; border-radius:6px; border-left:4px solid #ff4d4f; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <div style="display:flex; align-items:center; gap:8px; width:45%;">
-                        ${spriteImg(op)} <span style="font-size:12px; font-weight:bold;">${op.name}</span>
-                    </div>
-                    <span style="font-size:16px;">⚔️</span>
-                    <div style="display:flex; align-items:center; gap:8px; width:45%; justify-content:flex-end;">
-                        <span style="font-size:12px; color:#4dabf7; font-weight:bold; text-align:right;">${bestCounter.p.name}</span> ${spriteImg(bestCounter.p)}
-                    </div>
-                </div>
-                ${dmgHTML}
-                ${movesHtml}
+            // Incoming damage: opponent's best move vs my counter
+            let inHtml = '';
+            if (typeof getBestDamageEstimate === 'function' && oppSlotData) {
+                const oppAtkMon = { p: op, slot: oppSlotData };
+                const est = getBestDamageEstimate(oppAtkMon, my.p, my.slot);
+                if (est) {
+                    const c = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#63d471';
+                    inHtml = `<span style="font-size:10px; font-weight:bold; color:${c}; background:${c}18; padding:2px 6px; border-radius:3px;">
+                        🛡️ Takes ${est.label} ${est.minPct}%–${est.maxPct}% (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
+                    </span>`;
+                }
+            }
+
+            const dmgRow = (outHtml || inHtml)
+                ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">${outHtml}${inHtml}</div>`
+                : '';
+
+            return `<div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--surf2); border-radius:6px; flex-wrap:wrap;">
+                <span style="font-size:14px; flex-shrink:0;">${medal}</span>
+                ${spriteImg(my.p)}
+                <span style="font-size:12px; font-weight:900; text-transform:capitalize; color:var(--txt); flex:1; min-width:80px;">${my.p.name.replace(/-/g,' ')}</span>
+                <span style="font-size:10px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; border:1px solid ${scoreColor}44; border-radius:12px; padding:2px 8px; flex-shrink:0;">Score: ${score}</span>
+                ${dmgRow ? `<div style="width:100%;">${dmgRow}</div>` : ''}
             </div>`;
-        }
+        }).join('');
+
+        html += `<div style="background:var(--bg); border:1px solid #ff4d4f44; border-radius:8px; padding:10px 12px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                ${spriteImg(op)}
+                <span style="font-size:13px; font-weight:900; text-transform:capitalize; color:#ff6b6b;">${op.name.replace(/-/g,' ')}</span>
+                <div style="display:flex; gap:3px; flex-wrap:wrap;">${op.types.map(t => `<span style="font-size:10px; background:${(typeof TC!=='undefined'&&TC[t])||'#888'}; color:#fff; border-radius:3px; padding:1px 6px; font-weight:bold;">${t}</span>`).join('')}</div>
+            </div>
+            ${oppInfoBar}
+            <div style="display:flex; flex-direction:column; gap:6px;">${counterRows}</div>
+        </div>`;
     });
+
     return html + `</div></div>`;
 };
 
