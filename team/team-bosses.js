@@ -1,5 +1,5 @@
 // --- team-bosses.js : Boss Modal UI ---
-// Διαχείριση modal Boss Trainers: λίστα, επιλογή δυσκολίας, προβολή ομάδας, φόρτωση ως αντίπαλος.
+// Boss Trainers modal management: list, difficulty selection, team view, load as opponent.
 
 (function () {
     'use strict';
@@ -21,9 +21,9 @@
 
     // Human-readable rules shown in the detail panel per difficulty
     const DIFFICULTY_RULES = {
-        easy:   'Κανένα EV · Κανένο item · Εξασθενημένα moves · Χωρίς bonus συνεχόμενων νικών',
-        medium: '252 EVs σε κάθε stat · Items',
-        hard:   '400 EVs σε κάθε stat · Items · Απαγορεύονται τα items μάχης (Revives κ.λπ.)',
+        easy:   'No EVs · No items · Weakened moves · No win-streak bonus',
+        medium: '252 EVs per stat · Items',
+        hard:   '400 EVs per stat · Items · Battle items are banned (Revives etc.)',
     };
 
     // ─── Open / Close ─────────────────────────────────────────────────────
@@ -49,7 +49,7 @@
         if (!listEl) return;
 
         if (typeof BOSSES === 'undefined' || !BOSSES.length) {
-            listEl.innerHTML = '<div style="padding:16px; color:var(--dim); font-size:13px;">Δεν βρέθηκαν bosses.</div>';
+            listEl.innerHTML = '<div style="padding:16px; color:var(--dim); font-size:13px;">No bosses found.</div>';
             return;
         }
 
@@ -104,7 +104,7 @@
             detailEl.innerHTML = `
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:200px; color:var(--dim); gap:12px;">
                     <span style="font-size:40px;">🏆</span>
-                    <span style="font-size:14px;">Επίλεξε έναν Boss από τη λίστα.</span>
+                    <span style="font-size:14px;">Select a Boss from the list.</span>
                 </div>`;
             return;
         }
@@ -130,7 +130,7 @@
             : [];
 
         const pokemonHtml = teamData.map((mon, idx) => {
-            // Βρίσκουμε το ID από το POKE array αν υπάρχει
+            // Find the ID from the POKE array if it exists
             const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p =>
                     p.name.toLowerCase() === (mon.name || '').toLowerCase() ||
@@ -198,11 +198,11 @@
                         padding:6px 14px; border-radius:20px; border:1px solid #ff6b6b;
                         background:rgba(255,107,107,0.12); color:#ff6b6b; font-size:12px; font-weight:bold;
                         cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s; white-space:nowrap;
-                    ">⚔️ Φόρτωσε ως Αντίπαλος</button>
+                    ">⚔️ Load as Opponent</button>
                 </div>
                 ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}</div>` : ''}
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    ${teamData.length ? pokemonHtml : '<div style="color:var(--dim); font-size:13px;">Δεν υπάρχουν Pokémon για αυτή τη δυσκολία.</div>'}
+                    ${teamData.length ? pokemonHtml : '<div style="color:var(--dim); font-size:13px;">No Pokémon available for this difficulty.</div>'}
                 </div>
             </div>`;
 
@@ -228,7 +228,7 @@
         const teamData = boss.difficulties[difficulty] && boss.difficulties[difficulty].pokemon;
         if (!teamData || !teamData.length) return;
         if (typeof window.clearOpponents !== 'function' || typeof window.oppTeam === 'undefined') {
-            alert('Η λειτουργία αντιπάλου δεν είναι διαθέσιμη.');
+            alert('Opponent feature is not available.');
             return;
         }
 
@@ -273,7 +273,7 @@
 
         window.saveOpponents();
 
-        // Εμφανίζουμε το panel αντιπάλου αν είναι κρυφό και ορίζουμε mode σε 'bosses'
+        // Show the opponent panel if hidden and set mode to 'bosses'
         if (!window.showOppPanel) {
             window.showOppPanel = true;
         }

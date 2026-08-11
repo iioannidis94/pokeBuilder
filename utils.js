@@ -1,4 +1,4 @@
-// --- utils.js : Κοινές Βοηθητικές Συναρτήσεις ---
+// --- utils.js : Common Utility Functions ---
 
 function dmgR(types) {
     const x4 = [], x2 = [], half = [], qtr = [], imm = [];
@@ -14,7 +14,7 @@ function dmgR(types) {
     return { x4, x2, half, qtr, imm };
 }
 
-// Τροποποίηση: Το tb (Type Badge) είναι πλέον clickable και ανοίγει το Type Chart
+// Change: The tb (Type Badge) is now clickable and opens the Type Chart
 const tb = (t, c = 'tb') => `<span class="${c}" style="background:${TC[t] || '#888'}; cursor:pointer; transition:transform 0.1s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="showTypeChart('${t}')" title="Click to view Type Chart">${t}</span>`;
 const dbw = (t, l) => `<span class="dbw" style="background:${TC[t] || '#888'}; cursor:pointer;" onclick="showTypeChart('${t}')">${t}<span class="mx">${l}</span></span>`;
 const dbs = t => `<span class="dbs" style="background:${TC[t] || '#888'}; cursor:pointer;" onclick="showTypeChart('${t}')">${t}</span>`;
@@ -57,7 +57,7 @@ function spriteImg(p, cls = '') {
     return `<img class="${cls}" src="${spriteUrl}" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
 }
 
-// --- ΝΕΟ: TYPE CHART MODAL ---
+// --- NEW: TYPE CHART MODAL ---
 function showTypeChart(type) {
     let overlay = document.getElementById('typeModalOverlay');
     if (!overlay) {
@@ -68,12 +68,12 @@ function showTypeChart(type) {
         document.body.appendChild(overlay);
     }
 
-    // Υπολογισμός Επιθετικών (Offense)
+    // Calculate Offensive matchups (Offense)
     const offDouble = AT.filter(t => (EFF[type][t] ?? 1) === 2);
     const offHalf = AT.filter(t => (EFF[type][t] ?? 1) === 0.5);
     const offZero = AT.filter(t => (EFF[type][t] ?? 1) === 0);
 
-    // Υπολογισμός Αμυντικών (Defense)
+    // Calculate Defensive matchups (Defense)
     const defDouble = AT.filter(t => (EFF[t][type] ?? 1) === 2);
     const defHalf = AT.filter(t => (EFF[t][type] ?? 1) === 0.5);
     const defZero = AT.filter(t => (EFF[t][type] ?? 1) === 0);
@@ -124,7 +124,7 @@ function showToast(message, duration) {
 }
 
 
-// Λεξικό: Πώς τα Abilities αλλάζουν το Damage (0 = Immune, 0.5 = Resist, 2 = Weak)
+// Dictionary: How Abilities modify Damage (0 = Immune, 0.5 = Resist, 2 = Weak)
 const ABILITY_TYPE_MODS = {
     "levitate": { "ground": 0 },
     "water absorb": { "water": 0 },
@@ -144,19 +144,19 @@ const ABILITY_TYPE_MODS = {
     "fluffy": { "fire": 2 }
 };
 
-// Η νέα, Έξυπνη Συνάρτηση Υπολογισμού
+// The new, Smart Damage Calculation Function
 function getDynamicMult(atkType, defTypes, ability) {
-    // 1. Παίρνουμε το κανονικό multiplier από τους τύπους
+    // 1. Get the normal type multiplier
     let mult = multAtkVsTypes(atkType, defTypes);
     
-    // 2. Αν το Pokémon έχει Ability, ελέγχουμε αν αλλάζει κάτι
+    // 2. If the Pokémon has an Ability, check if it changes anything
     if (ability) {
-        let cleanAbility = ability.toLowerCase().replace(/-/g, ' '); // Καθαρισμός ονόματος
+        let cleanAbility = ability.toLowerCase().replace(/-/g, ' '); // Sanitize ability name
         if (ABILITY_TYPE_MODS[cleanAbility]) {
             const mod = ABILITY_TYPE_MODS[cleanAbility][atkType.toLowerCase()];
             if (mod !== undefined) {
-                if (mod === 0) return 0; // Απόλυτη Ανοσία (π.χ. Levitate)
-                mult *= mod; // Πολλαπλασιασμός (π.χ. x0.5 για Thick Fat)
+                if (mod === 0) return 0; // Full Immunity (e.g. Levitate)
+                mult *= mod; // Multiply (e.g. x0.5 for Thick Fat)
             }
         }
     }

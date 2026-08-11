@@ -1,6 +1,6 @@
 // --- data/bosses.js : Boss Trainer Data ---
-// Δομή: κάθε boss έχει id, name, title, region, location, και difficulties (easy / medium / hard).
-// Κάθε difficulty περιέχει μια λίστα από Pokémon με name, nature, ability, item, και moves (ένα ή περισσότερα).
+// Structure: each boss has id, name, title, region, location, and difficulties (easy / medium / hard).
+// Each difficulty contains a list of Pokémon with name, nature, ability, item, and moves (one or more).
 //
 // {
 //   id: 'trainer-id',
@@ -15,10 +15,10 @@
 //   }
 // }
 //
-// Κανόνες δυσκολίας:
-//   Easy  : Κανένα EV, κανένα item, εξασθενημένα moves.
-//   Medium: 252 EVs σε κάθε stat, items.
-//   Hard  : 400 EVs σε κάθε stat, items. Ο παίκτης δεν μπορεί να χρησιμοποιήσει items μάχης (Revives κ.λπ.).
+// Difficulty rules:
+//   Easy  : No EVs, no items, weakened moves.
+//   Medium: 252 EVs per stat, items.
+//   Hard  : 400 EVs per stat, items. The player cannot use battle items (Revives etc.).
 
 const BOSSES = [
 

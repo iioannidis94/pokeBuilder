@@ -27,7 +27,7 @@ function setStat(slot, kind, stat, value, el) {
 function setMoveType(slot, move, value) { team[slot].moves[move] = value; saveTeam(); if (team[slot].calc) renderTeamSlots() } 
 function setMoveCat(slot, move, value) { team[slot].moveCats[move] = value; saveTeam(); if (team[slot].calc) renderTeamSlots() } 
 function setMoveName(slot, move, value) { 
-    // SAFE CHECK: Μην κρασάρεις αν το MOVE_INFO λείπει
+    // SAFE CHECK: Do not crash if MOVE_INFO is missing
     const info = (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[value]) ? MOVE_INFO[value] : {}; 
     team[slot].moveNames[move] = value; 
     team[slot].moves[move] = info.type || ''; 
@@ -117,7 +117,7 @@ function applyRecommendedBuild(slotIndex) {
 function calcTeam() { 
     return team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) }))
         .filter(x => x.slot.pokemonId && x.slot.calc && x.p)
-        // ΝΕΟ: Ταξινομεί τους επιλεγμένους με βάση το AI Score (Φθίνουσα σειρά)
+        // NEW: Sort selected Pokémon by AI Score (Descending order)
         .sort((a, b) => (b.slot.aiScore || 0) - (a.slot.aiScore || 0))
         .slice(0, 6); 
 }
@@ -202,16 +202,16 @@ function getTeamComparisonHTML() {
 function calcPanel() { 
     const selected = calcTeam(); 
 
-    // Ασφαλής κλήση των UI Αντιπάλου
+    // Safe call to the Opponent UI
     const oppUI = window.getOpponentUI ? window.getOpponentUI() : '';
     const matchupsUI = window.getMatchupsUI ? window.getMatchupsUI(selected) : '';
 
-    // --- EMPTY STATE (Όταν δεν έχεις διαλέξει κανένα Pokemon για Calculate) ---
+    // --- EMPTY STATE (When no Pokémon have been selected for Calculate) ---
     if (!selected.length) { 
         return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
             <div class="calcHead"><strong>Battle Calculate</strong><span>0/6 selected</span></div>
             <div class="calcEmpty" style="margin-bottom: 15px;">Use "Add to calculate" on up to 6 Pokémon from your slots.</div>
-            <!-- Το Κόκκινο Κουμπί στο ΚΑΤΩ μέρος -->
+            <!-- The Red Button at the BOTTOM -->
             ${oppUI}
         </div>`; 
     } 
@@ -264,7 +264,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         `).join('')}
     </div>`;
 
-// --- FILLED STATE (Όταν έχεις επιλεγμένα Pokemon) ---
+// --- FILLED STATE (When you have selected Pokémon) ---
     // Analytics (Archetype, Speed Control, Meta Threats)
     const archetypeHTML   = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
     const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
@@ -301,7 +301,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         <!-- Stat Comparison (My Team + Opponent Max) -->
         ${statCompareHTML}
 
-        <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΓΙΑ ΤΙΣ ΕΠΙΘΕΣΕΙΣ (Move Optimizer) -->
+        <!-- THE NEW BUTTON FOR MOVES (Move Optimizer) -->
         <div style="display:flex; gap:8px; margin-top:10px; margin-bottom:15px;">
             <button onclick="showMoveRecommendations()" style="flex:1; padding:10px; background:#4dabf7; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
                 💡 Optimizer
@@ -331,7 +331,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         <!-- Tera Defense Impact -->
         ${teraDefenseHTML}
         
-        <!-- Το Κόκκινο Κουμπί και τα Counters στο ΚΑΤΩ μέρος -->
+        <!-- The Red Button and Counters at the BOTTOM -->
         ${oppUI}
         ${matchupsUI}
     </div>`;
@@ -445,7 +445,7 @@ function renderTeamSlots() {
             </div>`;
         }).join('')}</div>`; 
         
-        // Το μυστικό είναι το `style="height: auto; min-height: max-content; padding-bottom: 20px;"` στην κάρτα!
+        // The secret is the `style="height: auto; min-height: max-content; padding-bottom: 20px;"` on the card!
         return `<article class="slot" style="height: auto !important; min-height: max-content !important; overflow: visible; padding-bottom: 20px;">${head}${meta}${recHint}${stats}${moves}</article>` 
     }).join('');
     if (document.body.classList.contains('calc-view')) renderCalculatorView();
@@ -530,7 +530,7 @@ document.getElementById('teamSelect')?.addEventListener('change', e => {
 });
 
 document.getElementById('addTeamBtn')?.addEventListener('click', () => {
-    const name = prompt('Όνομα νέας ομάδας (π.χ. PvP, Catchers, Farm):', 'New Team');
+    const name = prompt('Name for the new team (e.g. PvP, Catchers, Farm):', 'New Team');
     if (name) {
         allData.teams.push({ name: name, slots: Array.from({ length: TEAM_SIZE }, () => EMPTY_SLOT()) });
         currentTeamIndex = allData.teams.length - 1;
@@ -543,7 +543,7 @@ document.getElementById('addTeamBtn')?.addEventListener('click', () => {
 });
 
 document.getElementById('renameTeamBtn')?.addEventListener('click', () => {
-    const name = prompt('Νέο όνομα για αυτή την ομάδα:', allData.teams[currentTeamIndex].name);
+    const name = prompt('New name for this team:', allData.teams[currentTeamIndex].name);
     if (name) {
         allData.teams[currentTeamIndex].name = name;
         saveTeam();
@@ -581,8 +581,8 @@ document.getElementById('bossesBtn')?.addEventListener('click', () => {
 // Start initialization
 openTeam();
 
-// ΤΟ ΑΠΟΛΥΤΟ FIX ΓΙΑ ΤΟ SHIFT+F5:
-// Αναγκάζει τον browser να ξαναζωγραφίσει το UI ΜΟΝΟ ΑΦΟΥ έχουν φορτώσει 100% ΟΛΑ τα αρχεία.
+// THE ULTIMATE FIX FOR SHIFT+F5:
+// Forces the browser to re-render the UI ONLY AFTER all files have loaded 100%.
 window.addEventListener('load', () => {
     if (typeof renderTeamSlots === 'function') {
         renderTeamSlots();

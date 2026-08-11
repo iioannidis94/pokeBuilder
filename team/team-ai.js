@@ -3,7 +3,7 @@
 function autoRecommendTeam() {
     const pool = team.map((slot, i) => ({ slot, i, p: POKE.find(x => x.id === slot.pokemonId) })).filter(x => x.slot.pokemonId && x.p);
 
-    if (pool.length === 0) { alert('Πρόσθεσε μερικά Pokémon στο ρόστερ σου πρώτα!'); return; }
+    if (pool.length === 0) { alert('Add some Pokémon to your roster first!'); return; }
     if (pool.length <= 6) { pool.forEach(x => x.slot.calc = true); saveTeam(); if (typeof renderTeamSlots === 'function') renderTeamSlots(); return; }
 
     // Store the pool for async access by the preset modal
@@ -29,7 +29,7 @@ function autoRecommendTeam() {
             <button onclick="document.getElementById('presetPickerModal').remove(); window._pendingPool=null;"
                 style="position:absolute; top:12px; right:12px; background:#ff4d4f; color:white; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:bold;">✕</button>
             <h3 style="color:#38d878; margin:0 0 6px; font-size:16px;">✨ Auto-Build 6 — Team Preset</h3>
-            <p style="font-size:12px; color:var(--dim); margin:0 0 16px;">Επίλεξε στυλ ομάδας. Το AI θα προτιμά Pokémon που ταιριάζουν με το preset.</p>
+            <p style="font-size:12px; color:var(--dim); margin:0 0 16px;">Choose a team style. The AI will favour Pokémon that match the preset.</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                 ${PRESETS.map(pr => `
                     <button onclick="document.getElementById('presetPickerModal').remove(); window._runAutoRecommend('${pr.id}')"
@@ -48,7 +48,7 @@ window._runAutoRecommend = function(preset) {
     window._pendingPool = null;
     if (!pool) return;
 
-    if (!confirm(`Master Mode (${preset}): Το AI θα σαρώσει Speed Tiers, 4x Weaknesses, Roles και Offensive Coverage. Ξεκινάμε;`)) return;
+    if (!confirm(`Master Mode (${preset}): The AI will scan Speed Tiers, 4x Weaknesses, Roles and Offensive Coverage. Start?`)) return;
 
     const getNatureMultiplier = (nature, statName) => {
         if (!nature) return 1;
@@ -92,7 +92,7 @@ window._runAutoRecommend = function(preset) {
     };
 
     // ==========================================
-    // PHASE 1: Αξιολόγηση Ωμής Δύναμης (Raw Power)
+    // PHASE 1: Evaluate Raw Power
     // ==========================================
     pool.forEach(candidate => {
         let baseScore = 0;
@@ -102,11 +102,11 @@ window._runAutoRecommend = function(preset) {
         baseScore += (candidate.slot.level * 15); 
         baseScore += (details.bstReal / 1.5); 
 
-        // ⚔️ SPEED TIERS: Η ταχύτητα είναι ζωτική για τους Attackers!
+        // ⚔️ SPEED TIERS: Speed is vital for Attackers!
         if (details.role !== 'tank') {
-            baseScore += (details.rSpe * 1.5); // Τεράστιο μπόνους αν είναι γρήγορος sweeper
+            baseScore += (details.rSpe * 1.5); // Huge bonus if it is a fast sweeper
         } else {
-            baseScore += (details.bulk / 2); // Τα Tanks παίρνουν μπόνους από το Bulk τους
+            baseScore += (details.bulk / 2); // Tanks get a bonus from their Bulk
         }
         
         let statKeys = ['HP', 'ATK', 'DEF', 'SPATK', 'SPDEF', 'SPD'];
@@ -261,7 +261,7 @@ window._runAutoRecommend = function(preset) {
     // PHASE 2: AI Master Drafting (Coverage, Synergy & 4x Weaknesses)
     // ==========================================
     let bestTeam = [];
-    console.log("=== ΕΝΑΡΞΗ ENDGAME AI DRAFTING ===");
+    console.log("=== START ENDGAME AI DRAFTING ===");
 
     while (bestTeam.length < 6 && bestTeam.length < pool.length) {
         let bestScore = -Infinity;
@@ -500,7 +500,7 @@ window._runAutoRecommend = function(preset) {
         });
 
         if(bestCandidate) {
-            bestCandidate.slot.aiScore = Math.floor(bestScore); // Αποθήκευση σκορ για το UI!
+            bestCandidate.slot.aiScore = Math.floor(bestScore); // Store score for the UI!
             bestTeam.push(bestCandidate);
             console.log(`✅ SLOT #${bestTeam.length}: ${bestCandidate.p.name} | Total Score: ${Math.floor(bestScore)}`);
             if (logDetails) console.log(`   -> Tactics: ${logDetails}`);
@@ -508,7 +508,7 @@ window._runAutoRecommend = function(preset) {
     }
 
     // ==========================================
-    // PHASE 3: Εφαρμογή (Χωρίς Αναδιάταξη!)
+    // PHASE 3: Apply (Without Reordering!)
     // ==========================================
     pool.forEach(x => {
         x.slot.calc = bestTeam.includes(x);
@@ -518,5 +518,5 @@ window._runAutoRecommend = function(preset) {
     if (typeof renderTeamSlots === 'function') renderTeamSlots();
     
     let teamNames = bestTeam.map(x => x.p.name).join(', ');
-    alert(`🏆 Η Ιδανική 6άδα επιλέχθηκε!\n\n${teamNames}\n\nΤο AI σκάναρε 4x Weaknesses, Speed Tiers και Immunities! Το σκορ τους φαίνεται πλέον στον Calculator!`);
+    alert(`🏆 The Ideal 6 have been selected!\n\n${teamNames}\n\nThe AI scanned 4x Weaknesses, Speed Tiers and Immunities! Their scores are now shown in the Calculator!`);
 }
