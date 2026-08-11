@@ -108,6 +108,7 @@ function showTypeChart(type) {
 
 
 // --- TOAST NOTIFICATION ---
+let _toastTimer = null;
 function showToast(message, duration) {
     duration = duration || 2800;
     let toast = document.getElementById('pkToast');
@@ -118,8 +119,8 @@ function showToast(message, duration) {
     }
     toast.textContent = message;
     toast.className = 'pk-toast pk-toast-show';
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => { toast.className = 'pk-toast'; }, duration);
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { toast.className = 'pk-toast'; }, duration);
 }
 
 
