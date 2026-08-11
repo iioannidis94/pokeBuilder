@@ -349,13 +349,54 @@ function getSpeedTierComparisonHTML(selected) {
 // ==========================================
 
 const OFFENSIVE_ITEM_MODS = {
+    // Choice / power items
     'choice band':   { mult: 1.5, cat: 'physical' },
     'choice specs':  { mult: 1.5, cat: 'special' },
     'life orb':      { mult: 1.3 },
     'expert belt':   { mult: 1.2, onlySuperEffective: true },
     'muscle band':   { mult: 1.1, cat: 'physical' },
     'wise glasses':  { mult: 1.1, cat: 'special' },
-    'light ball':    { mult: 2, species: 'pikachu' }
+    // Species-specific power items
+    'light ball':    { mult: 2, species: 'pikachu' },
+    'thick club':    { mult: 2, cat: 'physical', species: 'marowak' },
+    // Type-boosting hold items (×1.2 for matching type)
+    'charcoal':       { mult: 1.2, type: 'fire' },
+    'mystic water':   { mult: 1.2, type: 'water' },
+    'magnet':         { mult: 1.2, type: 'electric' },
+    'miracle seed':   { mult: 1.2, type: 'grass' },
+    'soft sand':      { mult: 1.2, type: 'ground' },
+    'sharp beak':     { mult: 1.2, type: 'flying' },
+    'black belt':     { mult: 1.2, type: 'fighting' },
+    'poison barb':    { mult: 1.2, type: 'poison' },
+    'never-melt ice': { mult: 1.2, type: 'ice' },
+    'spell tag':      { mult: 1.2, type: 'ghost' },
+    'twisted spoon':  { mult: 1.2, type: 'psychic' },
+    'silk scarf':     { mult: 1.2, type: 'normal' },
+    'hard stone':     { mult: 1.2, type: 'rock' },
+    'silver powder':  { mult: 1.2, type: 'bug' },
+    'dragon fang':    { mult: 1.2, type: 'dragon' },
+    'black glasses':  { mult: 1.2, type: 'dark' },
+    'metal coat':     { mult: 1.2, type: 'steel' },
+    'fairy feather':  { mult: 1.2, type: 'fairy' },
+    // Type-boosting Plates (same ×1.2 rate)
+    'flame plate':    { mult: 1.2, type: 'fire' },
+    'splash plate':   { mult: 1.2, type: 'water' },
+    'zap plate':      { mult: 1.2, type: 'electric' },
+    'meadow plate':   { mult: 1.2, type: 'grass' },
+    'earth plate':    { mult: 1.2, type: 'ground' },
+    'sky plate':      { mult: 1.2, type: 'flying' },
+    'fist plate':     { mult: 1.2, type: 'fighting' },
+    'toxic plate':    { mult: 1.2, type: 'poison' },
+    'icicle plate':   { mult: 1.2, type: 'ice' },
+    'spooky plate':   { mult: 1.2, type: 'ghost' },
+    'mind plate':     { mult: 1.2, type: 'psychic' },
+    'stone plate':    { mult: 1.2, type: 'rock' },
+    'insect plate':   { mult: 1.2, type: 'bug' },
+    'draco plate':    { mult: 1.2, type: 'dragon' },
+    'dread plate':    { mult: 1.2, type: 'dark' },
+    'iron plate':     { mult: 1.2, type: 'steel' },
+    'pixie plate':    { mult: 1.2, type: 'fairy' },
+    'blank plate':    { mult: 1.2, type: 'normal' },
 };
 
 const DEFENSIVE_ITEM_MODS = {
@@ -371,7 +412,12 @@ const OFFENSIVE_ABILITY_MODS = {
     'technician':   { mult: 1.5, powerAtMost: 60 },
     'transistor':   { mult: 1.3, type: 'electric' },
     'dragons-maw':  { mult: 1.5, type: 'dragon' },
-    'water-bubble': { mult: 2, type: 'water' }
+    'water-bubble': { mult: 2, type: 'water' },
+    'gorilla-tactics': { mult: 1.5, cat: 'physical' },
+    'hustle':       { mult: 1.5, cat: 'physical' },
+    'guts':         { mult: 1.5, cat: 'physical', requiresStatus: true },
+    'solar-power':  { mult: 1.5, cat: 'special', weather: 'sun' },
+    'defeatist':    { mult: 0.5 },  // halves ATK/SpA at ≤50% HP — applied as note only
 };
 
 const RECOVERY_ITEMS = new Set(['leftovers', 'black sludge', 'shell bell', 'sitrus berry']);
@@ -413,13 +459,16 @@ function applyAttackItemAndAbilityMods(baseDamage, atkMon, moveInfo, typeMult) {
     const cleanMoveType = String(moveInfo.type || '').toLowerCase();
 
     const itemMod = OFFENSIVE_ITEM_MODS[item];
-    if (itemMod && (!itemMod.cat || itemMod.cat === moveInfo.cat) && (!itemMod.species || itemMod.species === String(atkMon.p.name || '').toLowerCase()) && (!itemMod.onlySuperEffective || typeMult > 1)) {
+    if (itemMod && (!itemMod.cat || itemMod.cat === moveInfo.cat) && (!itemMod.species || itemMod.species === String(atkMon.p.name || '').toLowerCase()) && (!itemMod.onlySuperEffective || typeMult > 1) && (!itemMod.type || itemMod.type === cleanMoveType)) {
         damage *= itemMod.mult;
     }
 
     const abilityMod = OFFENSIVE_ABILITY_MODS[ability];
-    if (abilityMod && (!abilityMod.cat || abilityMod.cat === moveInfo.cat) && (!abilityMod.type || abilityMod.type === cleanMoveType) && (!abilityMod.powerAtMost || Number(moveInfo.power) <= abilityMod.powerAtMost)) {
-        damage *= abilityMod.mult;
+    if (abilityMod && abilityMod.mult && (!abilityMod.cat || abilityMod.cat === moveInfo.cat) && (!abilityMod.type || abilityMod.type === cleanMoveType) && (!abilityMod.powerAtMost || Number(moveInfo.power) <= abilityMod.powerAtMost)) {
+        const ctx = getBattleContext();
+        const statusActive = !abilityMod.requiresStatus || ctx.burnOnAttacker || ctx.paralysisOnMe;
+        const weatherOk   = !abilityMod.weather || ctx.weather === abilityMod.weather;
+        if (statusActive && weatherOk) damage *= abilityMod.mult;
     }
 
     return damage;
@@ -431,6 +480,62 @@ function getStabMultiplier(atkMon, moveInfo) {
     if (baseStab === 1) return 1;
     const abilityMod = OFFENSIVE_ABILITY_MODS[ability];
     return abilityMod && abilityMod.stab ? abilityMod.stab : baseStab;
+}
+
+// Resolve effective base power for variable-power moves.
+// Returns { power, note } where power replaces moveInfo.power in the damage formula.
+function resolveVariablePower(moveInfo, atkMon, defPoke, atkBs, defBs, battleContext) {
+    const name = String(moveInfo.name || '').toLowerCase().replace(/\s+/g, '-');
+    const basePower = Number(moveInfo.power) || 0;
+    if (!basePower && name !== 'gyro-ball' && name !== 'grass-knot' && name !== 'low-kick') return { power: basePower, note: '' };
+
+    // Gyro Ball: power = min(150, floor(25 × defSpeed / atkSpeed))
+    if (name === 'gyro-ball') {
+        const atkSpe = Number(atkBs.spe || atkBs.spd || 50);
+        const defSpe = Number(defBs.spe || defBs.spd || 50);
+        const power  = Math.min(150, Math.max(1, Math.floor(25 * defSpe / Math.max(1, atkSpe))));
+        return { power, note: `Gyro Ball: ~${power} BP (speed-based)` };
+    }
+
+    // Grass Knot / Low Kick: weight-based — use 80 BP as average estimate
+    if (name === 'grass-knot' || name === 'low-kick') {
+        return { power: 80, note: `${moveInfo.name || name}: ~80 BP est. (weight-based)` };
+    }
+
+    // Facade: 70 → 140 when attacker is burned, paralysed, or poisoned
+    if (name === 'facade') {
+        const statused = battleContext.burnOnAttacker || battleContext.paralysisOnMe;
+        return { power: statused ? 140 : 70, note: statused ? 'Facade: 140 BP (status active)' : 'Facade: 70 BP (no status)' };
+    }
+
+    // Hex: 65 → 130 when target has status
+    if (name === 'hex') {
+        const statusedTarget = !!(battleContext.opponentStatused);
+        return { power: statusedTarget ? 130 : 65, note: statusedTarget ? 'Hex: 130 BP (target statused)' : 'Hex: 65 BP' };
+    }
+
+    // Eruption / Water Spout: 150 × atkHP/maxHP — assume full HP → 150
+    if (name === 'eruption' || name === 'water-spout') {
+        return { power: 150, note: `${moveInfo.name || name}: 150 BP at full HP (decreases with damage)` };
+    }
+
+    // Acrobatics: 55 base, 110 if user has no item
+    if (name === 'acrobatics') {
+        const hasItem = !!(atkMon?.slot?.item && String(atkMon.slot.item).trim() !== '');
+        return { power: hasItem ? 55 : 110, note: hasItem ? 'Acrobatics: 55 BP (has item)' : 'Acrobatics: 110 BP (no item)' };
+    }
+
+    // Wring Out / Crush Grip: ~100 BP at full target HP
+    if (name === 'wring-out' || name === 'crush-grip') {
+        return { power: 100, note: `${moveInfo.name || name}: ~100 BP est. (full HP target)` };
+    }
+
+    // Body Press: uses user DEF as attack — flag as note, power stays as-is
+    if (name === 'body-press') {
+        return { power: basePower || 80, note: 'Body Press: uses user DEF as attack stat' };
+    }
+
+    return { power: basePower, note: '' };
 }
 
 function getWeatherMultiplier(moveType) {
@@ -472,7 +577,9 @@ function getRecoveryNote(slot) {
  * defLevel defaults to 50 (standard VGC).
  */
 function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
-    if (!atkMon || !moveInfo || !defPoke || !moveInfo.power) return null;
+    const moveName = String(moveInfo.name || '').toLowerCase().replace(/\s+/g, '-');
+    const VARIABLE_POWER_MOVES = new Set(['gyro-ball','grass-knot','low-kick','wring-out','crush-grip','body-press']);
+    if (!atkMon || !moveInfo || !defPoke || (!moveInfo.power && !VARIABLE_POWER_MOVES.has(moveName))) return null;
     defLevel = defLevel || 50;
     const battleContext = getBattleContext();
 
@@ -551,7 +658,10 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     }
 
     // Damage formula (Gen 5+)
-    const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / Math.max(defStat, 1)) / 50) + 2;
+    const varPower = resolveVariablePower(moveInfo, atkMon, defPoke, atkBs, defBs, battleContext);
+    const effectivePower = varPower.power || moveInfo.power;
+    const variablePowerNote = varPower.note;
+    const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * effectivePower * atkStat / Math.max(defStat, 1)) / 50) + 2;
     let preRoll = applyAttackItemAndAbilityMods(base, atkMon, moveInfo, typeMult) * stab * typeMult * getWeatherMultiplier(moveInfo.type) * getTerrainMultiplier(moveInfo.type);
     if (defSlotData && defSlotData.__side === 'opponent' && ((battleContext.reflect && isPhys) || (battleContext.lightScreen && !isPhys))) {
         preRoll *= battleContext.doubles ? (2 / 3) : 0.5;
@@ -625,6 +735,7 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
         multiHitMin, multiHitMax, multiHitAvg,
         recoilFrac, drainFrac,
         hasSashOrSturdy, recoveryPerTurn, hitsToKO,
+        variablePowerNote,
     };
 }
 
@@ -999,5 +1110,414 @@ function getTeraDefenseHTML(selected) {
     return `<div style="margin:10px 0; padding:12px 14px; background:#cc5de80d; border:1px solid #cc5de855; border-radius:8px;">
         <strong style="color:#cc5de8; font-size:13px;">⬡ Tera Defense Impact</strong>
         <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">${tips.join('')}</div>
+    </div>`;
+}
+
+// ==========================================
+// 8. TEAM-LEVEL INTELLIGENCE
+// ==========================================
+
+// Setup moves that identify a win-condition sweeper
+const SETUP_MOVES = {
+    'swords-dance':   { label: 'Swords Dance', role: 'Physical Sweeper', icon: '⚔️' },
+    'nasty-plot':     { label: 'Nasty Plot',   role: 'Special Sweeper',  icon: '🎭' },
+    'calm-mind':      { label: 'Calm Mind',    role: 'Special Sweeper',  icon: '🔵' },
+    'quiver-dance':   { label: 'Quiver Dance', role: 'Special Sweeper',  icon: '🦋' },
+    'dragon-dance':   { label: 'Dragon Dance', role: 'Mixed Sweeper',    icon: '🐉' },
+    'shell-smash':    { label: 'Shell Smash',  role: 'Shell Smasher',    icon: '🐚' },
+    'bulk-up':        { label: 'Bulk Up',      role: 'Bulky Attacker',   icon: '💪' },
+    'coil':           { label: 'Coil',         role: 'Physical Sweeper', icon: '🐍' },
+    'hone-claws':     { label: 'Hone Claws',   role: 'Physical Sweeper', icon: '🗡️' },
+    'charge-beam':    { label: 'Charge Beam',  role: 'Special Sweeper',  icon: '⚡' },
+    'growth':         { label: 'Growth',       role: 'Special Sweeper',  icon: '🌱' },
+    'agility':        { label: 'Agility',      role: 'Speed Sweeper',    icon: '💨' },
+    'rock-polish':    { label: 'Rock Polish',  role: 'Speed Sweeper',    icon: '🪨' },
+};
+
+// Abilities that abuse weather conditions
+const WEATHER_ABUSER_ABILITIES = {
+    'swift-swim':    { weather: 'rain',  label: 'Swift Swim (Rain)' },
+    'chlorophyll':   { weather: 'sun',   label: 'Chlorophyll (Sun)' },
+    'sand-rush':     { weather: 'sand',  label: 'Sand Rush (Sand)' },
+    'slush-rush':    { weather: 'snow',  label: 'Slush Rush (Snow)' },
+    'sand-force':    { weather: 'sand',  label: 'Sand Force (Sand)' },
+    'solar-power':   { weather: 'sun',   label: 'Solar Power (Sun)' },
+    'rain-dish':     { weather: 'rain',  label: 'Rain Dish (Rain)' },
+    'dry-skin':      { weather: 'rain',  label: 'Dry Skin (Rain)' },
+};
+
+/**
+ * Detect win-conditions on the team: setup sweepers, weather abusers, TR abusers.
+ * Returns an array of { pokemon, condition, icon, desc }.
+ */
+function detectWinConditions(selected) {
+    if (!selected || !selected.length) return [];
+    const results = [];
+
+    // Detect weather setters for context
+    const weatherSetterAbilities = new Set(['drizzle','drought','sand-stream','snow-warning']);
+    const activeWeather = (() => {
+        for (const mon of selected) {
+            const ab = String(mon.slot.ability || '').toLowerCase().replace(/\s+/g, '-');
+            if (ab === 'drizzle') return 'rain';
+            if (ab === 'drought') return 'sun';
+            if (ab === 'sand-stream') return 'sand';
+            if (ab === 'snow-warning') return 'snow';
+        }
+        return null;
+    })();
+
+    for (const mon of selected) {
+        const moveNames = (mon.slot.moveNames || []).map(m => String(m || '').toLowerCase().replace(/\s+/g, '-'));
+        const ability   = String(mon.slot.ability || '').toLowerCase().replace(/\s+/g, '-');
+        const name      = mon.p.name.replace(/-/g, ' ');
+
+        // Setup sweeper
+        for (const [moveName, info] of Object.entries(SETUP_MOVES)) {
+            if (moveNames.includes(moveName)) {
+                results.push({ pokemon: name, condition: `${info.label} → ${info.role}`, icon: info.icon, type: 'setup' });
+                break;
+            }
+        }
+
+        // Weather abuser
+        const abuserInfo = WEATHER_ABUSER_ABILITIES[ability];
+        if (abuserInfo) {
+            const synergy = (activeWeather === abuserInfo.weather) ? ' ✅ Setter on team!' : ' ⚠ No setter found';
+            results.push({ pokemon: name, condition: `${abuserInfo.label}${synergy}`, icon: '🌦️', type: 'weather' });
+        }
+
+        // Trick Room abuser (slow mon with offensive moves, no TR move itself)
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || {};
+        const speed = Number(bs.spe || bs.spd || 999);
+        const hasTR = moveNames.includes('trick-room');
+        if (speed <= 55 && !hasTR && moveNames.some(m => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[m] && MOVE_INFO[m].power >= 80))) {
+            results.push({ pokemon: name, condition: 'Trick Room abuser (slow + offensive)', icon: '🔄', type: 'trickroom' });
+        }
+    }
+
+    return results;
+}
+
+function getWinConditionHTML(selected) {
+    const conditions = detectWinConditions(selected);
+    if (!conditions.length) return '';
+
+    const color = '#63d471';
+    const rows = conditions.map(c =>
+        `<div style="display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid ${color}18;">
+            <span style="font-size:14px;">${c.icon}</span>
+            <div>
+                <span style="font-size:12px; font-weight:bold; color:var(--txt); text-transform:capitalize;">${c.pokemon}</span>
+                <span style="font-size:11px; color:var(--dim); display:block;">${c.condition}</span>
+            </div>
+        </div>`
+    ).join('');
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}44; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">🎯 Win-Condition Detection</strong>
+        <div style="margin-top:8px;">${rows}</div>
+    </div>`;
+}
+
+/**
+ * Defensive core: find the pair of Pokémon whose type combination gives the fewest shared weaknesses
+ * and best overall resistance profile.
+ */
+function getDefensiveCoreHTML(selected) {
+    if (!selected || selected.length < 2) return '';
+
+    const color = '#4dabf7';
+
+    // For each Pokémon, compute weakness set (types that hit for ≥2×)
+    const monData = selected.map(mon => {
+        const types = mon.p.types || [];
+        const weakTo  = AT.filter(a => types.some(t => (EFF[a]?.[t] ?? 1) >= 2) && !types.some(t => (EFF[a]?.[t] ?? 1) === 0));
+        const resistTo = AT.filter(a => types.every(t => (EFF[a]?.[t] ?? 1) <= 0.5));
+        const immuneTo = AT.filter(a => types.some(t => (EFF[a]?.[t] ?? 1) === 0));
+        return { name: mon.p.name.replace(/-/g, ' '), types, weakTo: new Set(weakTo), resistTo: new Set(resistTo), immuneTo: new Set(immuneTo) };
+    });
+
+    // Score pairs: fewer shared weaknesses + more complementary resistances = better
+    let bestPair = null, bestScore = -Infinity;
+    for (let i = 0; i < monData.length; i++) {
+        for (let j = i + 1; j < monData.length; j++) {
+            const a = monData[i], b = monData[j];
+            const sharedWeaks = [...a.weakTo].filter(t => b.weakTo.has(t)).length;
+            const coveredA    = [...a.weakTo].filter(t => b.resistTo.has(t) || b.immuneTo.has(t)).length;
+            const coveredB    = [...b.weakTo].filter(t => a.resistTo.has(t) || a.immuneTo.has(t)).length;
+            const score = (coveredA + coveredB) * 2 - sharedWeaks * 3;
+            if (score > bestScore) { bestScore = score; bestPair = [a, b]; }
+        }
+    }
+
+    if (!bestPair) return '';
+
+    const [a, b] = bestPair;
+    const sharedWeaks    = [...a.weakTo].filter(t => b.weakTo.has(t));
+    const coveredByB     = [...a.weakTo].filter(t => b.resistTo.has(t) || b.immuneTo.has(t));
+    const coveredByA     = [...b.weakTo].filter(t => a.resistTo.has(t) || a.immuneTo.has(t));
+    const remainingGaps  = [...new Set([...a.weakTo, ...b.weakTo])].filter(t => !b.resistTo.has(t) && !b.immuneTo.has(t) && !a.resistTo.has(t) && !a.immuneTo.has(t));
+
+    const typeChip = t => `<span style="background:${TC[t] || '#888'}33; border:1px solid ${TC[t] || '#888'}; color:${TC[t] || '#aaa'}; border-radius:10px; padding:1px 7px; font-size:10px; font-weight:bold; text-transform:capitalize;">${t}</span>`;
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}44; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">🛡️ Defensive Core</strong>
+        <div style="font-size:11px; color:var(--dim); margin-top:4px;">Best pair: <b style="color:var(--txt); text-transform:capitalize;">${a.name} + ${b.name}</b></div>
+        ${coveredByB.length ? `<div style="margin-top:6px; font-size:11px;"><span style="color:#63d471;">✓ ${b.name} covers ${a.name}'s weaknesses to:</span> <span style="display:inline-flex;gap:3px;flex-wrap:wrap;">${coveredByB.map(typeChip).join('')}</span></div>` : ''}
+        ${coveredByA.length ? `<div style="margin-top:4px; font-size:11px;"><span style="color:#63d471;">✓ ${a.name} covers ${b.name}'s weaknesses to:</span> <span style="display:inline-flex;gap:3px;flex-wrap:wrap;">${coveredByA.map(typeChip).join('')}</span></div>` : ''}
+        ${sharedWeaks.length ? `<div style="margin-top:4px; font-size:11px;"><span style="color:#ffc107;">⚠ Shared weakness:</span> <span style="display:inline-flex;gap:3px;flex-wrap:wrap;">${sharedWeaks.map(typeChip).join('')}</span></div>` : ''}
+        ${remainingGaps.length ? `<div style="margin-top:4px; font-size:11px;"><span style="color:#ff6b6b;">✗ Coverage gaps:</span> <span style="display:inline-flex;gap:3px;flex-wrap:wrap;">${remainingGaps.map(typeChip).join('')}</span></div>` : ''}
+    </div>`;
+}
+
+/**
+ * Detect role redundancy: flag pairs of Pokémon sharing the same offensive role AND overlapping types.
+ */
+function getRoleRedundancyHTML(selected) {
+    if (!selected || selected.length < 2) return '';
+
+    const color = '#ffa94d';
+
+    // Classify role from moveset/items
+    const classifyRole = mon => {
+        const moves = (mon.slot.moveNames || []).map(m => String(m || '').toLowerCase().replace(/\s+/g, '-'));
+        const item  = String(mon.slot.item  || '').toLowerCase();
+        const ability = String(mon.slot.ability || '').toLowerCase().replace(/\s+/g, '-');
+        const bs    = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || {};
+        const hasPhys = moves.some(m => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[m] && MOVE_INFO[m].cat === 'physical' && MOVE_INFO[m].power >= 80));
+        const hasSpec = moves.some(m => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[m] && MOVE_INFO[m].cat === 'special' && MOVE_INFO[m].power >= 80));
+        const isPhysCB = hasPhys && (item === 'choice band' || item === 'life orb');
+        const isSpecCS = hasSpec && (item === 'choice specs' || item === 'life orb');
+        const isSetup  = moves.some(m => SETUP_MOVES[m]);
+        const isTank   = (Number(bs.hp||0) + Number(bs.def||0) + Number(bs.spd||0)) > 280;
+        const isSupport = moves.some(m => ['trick-room','tailwind','follow-me','rage-powder','helping-hand','stealth-rock'].includes(m));
+        if (isSupport) return 'Support';
+        if (isSetup && isPhysCB) return 'Physical Setup Sweeper';
+        if (isSetup && isSpecCS) return 'Special Setup Sweeper';
+        if (isSetup) return 'Setup Sweeper';
+        if (isPhysCB) return 'Physical Attacker';
+        if (isSpecCS) return 'Special Attacker';
+        if (isTank) return 'Tank / Wall';
+        if (hasPhys) return 'Physical Attacker';
+        if (hasSpec) return 'Special Attacker';
+        return 'Unknown';
+    };
+
+    const monRoles = selected.map(mon => ({
+        name: mon.p.name.replace(/-/g, ' '),
+        role: classifyRole(mon),
+        types: new Set(mon.p.types || []),
+    }));
+
+    const warnings = [];
+    for (let i = 0; i < monRoles.length; i++) {
+        for (let j = i + 1; j < monRoles.length; j++) {
+            const a = monRoles[i], b = monRoles[j];
+            if (a.role === b.role && a.role !== 'Unknown') {
+                const overlap = [...a.types].filter(t => b.types.has(t));
+                if (overlap.length) {
+                    warnings.push(`<b style="color:var(--txt); text-transform:capitalize;">${a.name}</b> & <b style="color:var(--txt); text-transform:capitalize;">${b.name}</b> — both <i>${a.role}</i> with overlapping type <b>${overlap.join(', ')}</b>`);
+                } else {
+                    warnings.push(`<b style="color:var(--txt); text-transform:capitalize;">${a.name}</b> & <b style="color:var(--txt); text-transform:capitalize;">${b.name}</b> — both <i>${a.role}</i> (no type overlap, ok if coverage differs)`);
+                }
+            }
+        }
+    }
+
+    if (!warnings.length) return '';
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}55; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">⚠️ Role Redundancy</strong>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:5px;">
+            ${warnings.map(w => `<div style="font-size:11px; color:var(--dim);">${w}</div>`).join('')}
+        </div>
+        <p style="font-size:10px; color:var(--dim); margin:8px 0 0;">Consider diversifying roles or coverage moves to reduce overlap.</p>
+    </div>`;
+}
+
+/**
+ * Lead pair optimiser for VGC / Doubles.
+ * Returns HTML with the recommended lead pair.
+ */
+function getLeadPairHTML(selected) {
+    const ctx = getBattleContext();
+    if (!ctx.doubles || !selected || selected.length < 2) return '';
+
+    const color = '#cc5de8';
+
+    // Score each Pokémon as a lead candidate
+    const scoreAsLead = mon => {
+        let score = 0;
+        const moves = (mon.slot.moveNames || []).map(m => String(m || '').toLowerCase().replace(/\s+/g, '-'));
+        const ability = String(mon.slot.ability || '').toLowerCase().replace(/\s+/g, '-');
+        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || {};
+        const spe  = Number(bs.spe || bs.spd || 50);
+
+        if (moves.includes('fake-out'))    score += 4;  // Fake Out is top-tier lead
+        if (moves.includes('tailwind'))    score += 3;
+        if (moves.includes('trick-room'))  score += 3;
+        if (moves.includes('follow-me'))   score += 2;
+        if (moves.includes('rage-powder')) score += 2;
+        if (moves.includes('helping-hand')) score += 1;
+        if (moves.includes('protect'))     score += 1;
+        if (ability === 'intimidate')      score += 3;  // Intimidate is always value
+        if (ability === 'prankster')       score += 2;
+        if (spe >= 100)                    score += 1;  // Speed advantage
+
+        // Spread move user is a strong lead
+        if (moves.some(m => typeof SPREAD_MOVES !== 'undefined' && SPREAD_MOVES.has(m))) score += 1;
+
+        return score;
+    };
+
+    // Score pairs: prefer complementary leads (Fake Out + Setup, Intimidate + Sweeper, etc.)
+    const leadScores = selected.map(mon => ({ mon, score: scoreAsLead(mon) }));
+    leadScores.sort((a, b) => b.score - a.score);
+
+    if (leadScores.length < 2) return '';
+
+    const top    = leadScores[0];
+    const second = leadScores[1];
+
+    const movesA = (top.mon.slot.moveNames    || []).map(m => String(m || '').toLowerCase().replace(/\s+/g, '-'));
+    const movesB = (second.mon.slot.moveNames || []).map(m => String(m || '').toLowerCase().replace(/\s+/g, '-'));
+
+    const synergies = [];
+    if (movesA.includes('fake-out') || movesB.includes('fake-out')) synergies.push('Fake Out → free setup turn');
+    if (movesA.includes('trick-room') || movesB.includes('trick-room')) synergies.push('Trick Room setter present');
+    if (movesA.includes('tailwind')  || movesB.includes('tailwind'))  synergies.push('Tailwind speed control');
+    if ([top.mon, second.mon].some(m => String(m.slot.ability||'').toLowerCase().replace(/\s+/g,'-') === 'intimidate')) synergies.push('Intimidate on lead');
+    if (movesA.some(m => SPREAD_MOVES && SPREAD_MOVES.has(m)) || movesB.some(m => SPREAD_MOVES && SPREAD_MOVES.has(m))) synergies.push('Spread move pressure');
+
+    const nameA = top.mon.p.name.replace(/-/g, ' ');
+    const nameB = second.mon.p.name.replace(/-/g, ' ');
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}44; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">🎮 Lead Pair Optimiser <span style="font-size:10px; font-weight:400; color:var(--dim);">(Doubles)</span></strong>
+        <div style="margin-top:8px; font-size:12px;">
+            Recommended lead: <b style="color:var(--txt); text-transform:capitalize;">${nameA}</b> + <b style="color:var(--txt); text-transform:capitalize;">${nameB}</b>
+        </div>
+        ${synergies.length ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
+            ${synergies.map(s => `<span style="background:${color}22; border:1px solid ${color}55; border-radius:10px; padding:2px 8px; font-size:10px; color:${color};">${s}</span>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+/**
+ * 3-turn scenario simulator.
+ * Shows a simple preview of HP remaining after 3 turns for the selected Pokémon vs. their best opponent threat.
+ * Interactive: the user can pick which two Pokémon to compare.
+ */
+function getScenarioSimulatorHTML(selected) {
+    if (!selected || selected.length < 2) return '';
+
+    const color = '#ff6b6b';
+
+    // Build a simplified 3-turn simulation for the first two selected Pokémon
+    const attacker = selected[0];
+    const defender = selected[1];
+
+    const ctx = getBattleContext();
+    const atkBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[attacker.p.id]) || { hp: 80, atk: 80, spa: 80, spe: 50 };
+    const defBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[defender.p.id]) || { hp: 80, atk: 80, spa: 80, spe: 50 };
+    const atkLv  = Number(attacker.slot.level) || 50;
+    const defLv  = Number(defender.slot.level) || 50;
+
+    const calcHP = (bs, iv, ev, lv) => Math.floor(((2 * (Number(bs.hp)||80) + (Number(iv)||31) + Math.floor((Number(ev)||0)/4)) * lv) / 100) + lv + 10;
+    const atkMaxHP = calcHP(atkBs, attacker.slot.iv?.HP, attacker.slot.ev?.HP, atkLv);
+    const defMaxHP = calcHP(defBs, defender.slot.iv?.HP, defender.slot.ev?.HP, defLv);
+
+    // Best damage estimate in each direction
+    const atkBest = getBestDamageEstimate(attacker, defender.p, { ...defender.slot, __side: 'opponent' });
+    const defBest = getBestDamageEstimate(defender, attacker.p, { ...attacker.slot, __side: 'me' });
+
+    const atkDmgPct  = atkBest ? (atkBest.minPct + atkBest.maxPct) / 2 : 0;
+    const defDmgPct  = defBest ? (defBest.minPct + defBest.maxPct) / 2 : 0;
+    const atkDmg     = Math.round(defMaxHP * atkDmgPct / 100);
+    const defDmg     = Math.round(atkMaxHP * defDmgPct / 100);
+
+    // Per-turn recovery
+    const atkItem = String(attacker.slot.item || '').toLowerCase();
+    const defItem = String(defender.slot.item || '').toLowerCase();
+    const atkRec  = (atkItem === 'leftovers' || atkItem === 'black sludge') ? Math.floor(atkMaxHP / 16) : (atkItem === 'sitrus berry' ? 0 : 0);
+    const defRec  = (defItem === 'leftovers' || defItem === 'black sludge') ? Math.floor(defMaxHP / 16) : 0;
+    // Life Orb recoil on each hit
+    const atkRecoil = (atkItem === 'life orb') ? Math.round(atkMaxHP * 0.1) : 0;
+    const defRecoil = (defItem === 'life orb') ? Math.round(defMaxHP * 0.1) : 0;
+
+    // Speed: who goes first?
+    const atkSpe = Number(atkBs.spe || atkBs.spd || 50);
+    const defSpe = Number(defBs.spe || defBs.spd || 50);
+    const atkGoesFirst = ctx.trickRoom ? atkSpe < defSpe : atkSpe >= defSpe;
+
+    let atkHP = atkMaxHP, defHP = defMaxHP;
+    const turns = [];
+
+    for (let t = 1; t <= 3; t++) {
+        let turn = { turn: t };
+        if (atkGoesFirst) {
+            // Attacker moves first
+            defHP = Math.max(0, defHP - atkDmg);
+            atkHP = Math.max(0, atkHP - atkRecoil);
+            atkHP = Math.min(atkMaxHP, atkHP + atkRec);
+            turn.afterAtk = { atkHP, defHP };
+            if (defHP > 0) {
+                atkHP = Math.max(0, atkHP - defDmg);
+                defHP = Math.max(0, defHP - defRecoil);
+                defHP = Math.min(defMaxHP, defHP + defRec);
+            }
+        } else {
+            defHP = Math.max(0, defHP - defRecoil);
+            defHP = Math.min(defMaxHP, defHP + defRec);
+            atkHP = Math.max(0, atkHP - defDmg);
+            atkHP = Math.min(atkMaxHP, atkHP + atkRec);
+            turn.afterDef = { atkHP, defHP };
+            if (atkHP > 0) {
+                defHP = Math.max(0, defHP - atkDmg);
+                atkHP = Math.max(0, atkHP - atkRecoil);
+            }
+        }
+        turn.atkHP = Math.max(0, atkHP);
+        turn.defHP = Math.max(0, defHP);
+        turn.atkPct = Math.round(turn.atkHP / atkMaxHP * 100);
+        turn.defPct = Math.round(turn.defHP / defMaxHP * 100);
+        turns.push(turn);
+        if (atkHP <= 0 || defHP <= 0) break;
+    }
+
+    const outcome = turns[turns.length - 1];
+    let resultLabel = '';
+    if (outcome.atkPct === 0 && outcome.defPct === 0) resultLabel = '⚡ Speed tie / double KO likely';
+    else if (outcome.atkPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> KO'd`;
+    else if (outcome.defPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${defender.p.name.replace(/-/g,' ')}</b> KO'd`;
+    else if (outcome.atkPct < outcome.defPct) resultLabel = `📉 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> trading worse`;
+    else if (outcome.defPct < outcome.atkPct) resultLabel = `📈 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> winning the trade`;
+    else resultLabel = '↔ Even trade';
+
+    const hpBar = (pct, color2) => {
+        const c = pct > 50 ? '#63d471' : pct > 25 ? '#ffc107' : '#ff6b6b';
+        return `<div style="flex:1; height:6px; background:#333; border-radius:3px; overflow:hidden;"><div style="width:${pct}%; height:100%; background:${c}; transition:.2s;"></div></div>`;
+    };
+
+    const turnRows = turns.map(t => `
+        <div style="display:grid; grid-template-columns:40px 1fr 40px 1fr 30px; gap:4px; align-items:center; font-size:10px;">
+            <span style="color:var(--dim);">T${t.turn}</span>
+            ${hpBar(t.atkPct)} <span style="color:var(--txt); font-weight:bold;">${t.atkPct}%</span>
+            ${hpBar(t.defPct)} <span style="color:var(--txt); font-weight:bold;">${t.defPct}%</span>
+        </div>`).join('');
+
+    const atkName = attacker.p.name.replace(/-/g, ' ');
+    const defName = defender.p.name.replace(/-/g, ' ');
+
+    return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}44; border-radius:8px;">
+        <strong style="color:${color}; font-size:13px;">🔮 3-Turn Scenario Preview</strong>
+        <div style="font-size:10px; color:var(--dim); margin:4px 0 8px;">${atkName} (${atkGoesFirst ? '⚡ faster' : '🐢 slower'}) vs ${defName} · Best moves each side</div>
+        <div style="display:grid; grid-template-columns:40px 1fr 40px 1fr 30px; gap:4px; margin-bottom:4px; font-size:10px; color:var(--dim);">
+            <span></span><span style="text-transform:capitalize;">${atkName}</span><span></span><span style="text-transform:capitalize;">${defName}</span><span></span>
+        </div>
+        ${turnRows}
+        <div style="margin-top:8px; font-size:11px; color:var(--dim);">${resultLabel}</div>
+        <p style="font-size:10px; color:var(--dim); margin:4px 0 0;">Based on best equipped moves vs slot 1 & 2. Select different Pokémon to change preview.</p>
     </div>`;
 }

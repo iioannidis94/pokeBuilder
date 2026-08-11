@@ -274,6 +274,12 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
     const teraDefenseHTML = (typeof getTeraDefenseHTML === 'function') ? getTeraDefenseHTML(selected) : '';
     const teamCompareHTML = getTeamComparisonHTML();
+    // Team-Level Intelligence panels
+    const winConditionHTML   = (typeof getWinConditionHTML   === 'function') ? getWinConditionHTML(selected)   : '';
+    const defensiveCoreHTML  = (typeof getDefensiveCoreHTML  === 'function') ? getDefensiveCoreHTML(selected)  : '';
+    const roleRedundancyHTML = (typeof getRoleRedundancyHTML === 'function') ? getRoleRedundancyHTML(selected) : '';
+    const leadPairHTML       = (typeof getLeadPairHTML       === 'function') ? getLeadPairHTML(selected)       : '';
+    const scenarioHTML       = (typeof getScenarioSimulatorHTML === 'function') ? getScenarioSimulatorHTML(selected) : '';
 
     return `<div class="calcPanel" style="height: auto !important; min-height: max-content !important; overflow: visible !important; padding-bottom: 20px;">
         <div class="calcHead"><strong>Battle Calculate</strong><span>${selected.length}/6 selected</span></div>
@@ -284,6 +290,13 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         ${battleContextHTML}
         ${teamCompareHTML}
         ${matchupSummaryHTML}
+
+        <!-- Team-Level Intelligence -->
+        ${winConditionHTML}
+        ${defensiveCoreHTML}
+        ${roleRedundancyHTML}
+        ${leadPairHTML}
+        ${scenarioHTML}
 
         <!-- Stat Comparison (My Team + Opponent Max) -->
         ${statCompareHTML}
