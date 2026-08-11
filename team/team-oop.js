@@ -357,12 +357,130 @@ window.getMatchupsUI = function(selected) {
                 ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">${outHtml}${inHtml}</div>`
                 : '';
 
+            // --- Move Suggestions: all moves ranked by damage output vs this opponent ---
+            let moveSuggestionsHtml = '';
+            if (typeof estimateDamagePct === 'function' && typeof MOVE_INFO !== 'undefined') {
+                const moveRanks = [];
+                (my.slot.moveNames || []).forEach(mName => {
+                    if (!mName) return;
+                    const mInfo = MOVE_INFO[mName] || MOVE_INFO[(mName || '').toLowerCase().replace(/\s+/g, '-')];
+                    if (!mInfo) return;
+                    if (mInfo.cat === 'status') {
+                        moveRanks.push({ name: mName, label: 'Status', minPct: -1, maxPct: 0, typeMult: 0, isStatus: true });
+                        return;
+                    }
+                    if (!mInfo.power) return;
+                    const est = estimateDamagePct(my, mInfo, op, Number((oppSlotData && oppSlotData.level) || 50), oppSlotData);
+                    if (est) {
+                        moveRanks.push({ name: mName, ...est, isStatus: false });
+                    } else {
+                        moveRanks.push({ name: mName, label: 'No effect', minPct: 0, maxPct: 0, typeMult: 0, isStatus: false, immune: true });
+                    }
+                });
+                // Sort: best damage first, status last, immune last
+                moveRanks.sort((a, b) => b.maxPct - a.maxPct);
+
+                if (moveRanks.length) {
+                    const moveItems = moveRanks.map((m, idx) => {
+                        if (m.isStatus) {
+                            return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                                <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
+                                <span style="font-size:10px; font-weight:bold; color:var(--dim);">${m.name.replace(/-/g,' ')}</span>
+                                <span style="font-size:9px; background:#55555533; border:1px solid #555; color:#aaa; border-radius:3px; padding:1px 5px;">Status</span>
+                            </div>`;
+                        }
+                        if (m.immune) {
+                            return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                                <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
+                                <span style="font-size:10px; font-weight:bold; color:var(--dim);">${m.name.replace(/-/g,' ')}</span>
+                                <span style="font-size:9px; background:#88222233; border:1px solid #882222; color:#ff8080; border-radius:3px; padding:1px 5px;">x0 Immune</span>
+                            </div>`;
+                        }
+                        const effLabel = m.typeMult >= 4 ? 'x4 ⚡⚡' : m.typeMult >= 2 ? 'x2 ⚡' : m.typeMult <= 0.25 ? 'x0.25' : m.typeMult <= 0.5 ? 'x0.5' : 'x1';
+                        const effColor = m.typeMult >= 2 ? '#ff6b6b' : m.typeMult < 1 ? '#74c0fc' : '#aaa';
+                        const dmgColor = m.minPct >= 100 ? '#ff4d4f' : m.minPct >= 50 ? '#ffc107' : m.maxPct >= 30 ? '#4dabf7' : '#888';
+                        const priority = idx === 0 ? `<span style="font-size:9px; background:#ff6b6b22; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:3px; padding:0 4px; margin-left:2px;">USE FIRST</span>` : '';
+                        return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                            <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
+                            <span style="font-size:10px; font-weight:bold; color:var(--txt);">${m.name.replace(/-/g,' ')}</span>${priority}
+                            <span style="margin-left:auto; display:flex; gap:4px; align-items:center; flex-shrink:0;">
+                                <span style="font-size:9px; color:${effColor}; font-weight:bold;">${effLabel}</span>
+                                <span style="font-size:10px; font-weight:900; color:${dmgColor};">${m.label} ${m.minPct}%–${m.maxPct}%</span>
+                            </span>
+                        </div>`;
+                    }).join('');
+
+                    moveSuggestionsHtml = `<div style="margin-top:8px; padding:7px 8px; background:rgba(77,171,247,0.06); border:1px solid rgba(77,171,247,0.25); border-radius:6px;">
+                        <span style="font-size:10px; font-weight:900; color:#4dabf7; display:block; margin-bottom:5px;">💡 Move Suggestions vs ${op.name.replace(/-/g,' ')}</span>
+                        <div style="display:flex; flex-direction:column; gap:3px;">${moveItems}</div>
+                    </div>`;
+                }
+            }
+
+            // --- Battle Prep Tip ---
+            let battlePrepHtml = '';
+            if (typeof calcFinalStats === 'function' && typeof BASE_STATS !== 'undefined' && typeof getNatureMultiplier === 'function') {
+                const myBs  = BASE_STATS[my.p.id]  || { spe: 70 };
+                const opBs  = BASE_STATS[op.id]     || { spe: 70 };
+                const mySpIv = my.slot.iv?.SPD === '' || my.slot.iv?.SPD === undefined ? 31 : Number(my.slot.iv?.SPD) || 31;
+                const mySpEv = Number(my.slot.ev?.SPD) || 0;
+                const myLv   = Number(my.slot.level) || 100;
+                const mySpeedRaw = Math.floor(((2 * (Number(myBs.spe) || 70) + mySpIv + Math.floor(mySpEv / 4)) * myLv) / 100) + 5;
+                const mySpeed    = Math.floor(mySpeedRaw * getNatureMultiplier(my.slot.nature, 'SPD'));
+
+                const opLv = Number((oppSlotData && oppSlotData.level) || 50);
+                const opSpeedRaw = Math.floor(((2 * (Number(opBs.spe) || 70) + 31 + Math.floor(0 / 4)) * opLv) / 100) + 5;
+                const opSpeed    = Math.floor(opSpeedRaw * getNatureMultiplier(oppSlotData && oppSlotData.nature, 'SPD'));
+
+                const tips = [];
+
+                // Speed comparison
+                if (mySpeed > opSpeed) {
+                    tips.push(`<span style="color:#63d471;">⚡ You move first (${mySpeed} vs ${opSpeed})</span> — attack immediately.`);
+                } else if (mySpeed < opSpeed) {
+                    tips.push(`<span style="color:#ffc107;">🐢 Opponent is faster (${opSpeed} vs ${mySpeed})</span> — prepare to take a hit first.`);
+                } else {
+                    tips.push(`<span style="color:#ffa94d;">🎲 Speed tie (${mySpeed})</span> — 50/50 who moves first.`);
+                }
+
+                // OHKO warning
+                if (typeof getBestDamageEstimate === 'function') {
+                    const myBest = getBestDamageEstimate(my, op, oppSlotData);
+                    if (myBest && myBest.minPct >= 100) {
+                        tips.push(`<span style="color:#ff4d4f;">💥 OHKO guaranteed</span> with <b>${myBest.moveName ? myBest.moveName.replace(/-/g,' ') : '?'}</b> — go for the KO immediately.`);
+                    } else if (myBest && myBest.ohkoChance > 0) {
+                        tips.push(`<span style="color:#ffc107;">💥 ${myBest.ohkoChance}% OHKO chance</span> with <b>${myBest.moveName ? myBest.moveName.replace(/-/g,' ') : '?'}</b>.`);
+                    }
+
+                    if (oppSlotData) {
+                        const oppAtkMon = { p: op, slot: oppSlotData };
+                        const opBest = getBestDamageEstimate(oppAtkMon, my.p, my.slot);
+                        if (opBest && opBest.minPct >= 100) {
+                            tips.push(`<span style="color:#ff6b6b;">⚠️ Watch out!</span> Opponent can OHKO you with <b>${opBest.moveName ? opBest.moveName.replace(/-/g,' ') : '?'}</b>.`);
+                        } else if (opBest && opBest.minPct >= 50) {
+                            tips.push(`<span style="color:#ffa94d;">🛡️ Take care</span> — opponent deals ${opBest.minPct}%–${opBest.maxPct}% with <b>${opBest.moveName ? opBest.moveName.replace(/-/g,' ') : '?'}</b>. May need 2 hits to KO.`);
+                        }
+                    }
+                }
+
+                if (tips.length) {
+                    battlePrepHtml = `<div style="margin-top:8px; padding:7px 8px; background:rgba(99,212,113,0.05); border:1px solid rgba(99,212,113,0.2); border-radius:6px;">
+                        <span style="font-size:10px; font-weight:900; color:#63d471; display:block; margin-bottom:5px;">⚔️ Battle Prep</span>
+                        <ul style="margin:0; padding:0 0 0 14px; display:flex; flex-direction:column; gap:3px;">
+                            ${tips.map(t => `<li style="font-size:10px; color:var(--dim); line-height:1.5;">${t}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+            }
+
             return `<div style="display:flex; align-items:center; gap:8px; padding:7px 10px; background:var(--surf2); border-radius:6px; flex-wrap:wrap;">
                 <span style="font-size:14px; flex-shrink:0;">${medal}</span>
                 ${spriteImg(my.p)}
                 <span style="font-size:12px; font-weight:900; text-transform:capitalize; color:var(--txt); flex:1; min-width:80px;">${my.p.name.replace(/-/g,' ')}</span>
                 <span style="font-size:10px; font-weight:900; color:${scoreColor}; background:${scoreColor}18; border:1px solid ${scoreColor}44; border-radius:12px; padding:2px 8px; flex-shrink:0;">Score: ${score}</span>
                 ${dmgRow ? `<div style="width:100%;">${dmgRow}</div>` : ''}
+                ${moveSuggestionsHtml ? `<div style="width:100%;">${moveSuggestionsHtml}</div>` : ''}
+                ${battlePrepHtml ? `<div style="width:100%;">${battlePrepHtml}</div>` : ''}
             </div>`;
         }).join('');
 
