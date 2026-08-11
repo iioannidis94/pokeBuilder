@@ -181,24 +181,24 @@ The items below represent the most impactful upgrades to close the gap between p
 
 ### 📊 Team-Level Intelligence
 
-| Feature | Why it matters |
-|---|---|
-| **Win-condition detection** | Identify which Pokémon on the team is the primary win-condition (setup sweeper with Calm Mind/Swords Dance, a weather abuser, a Trick Room abuser) and surface that clearly so the player knows what they are trying to set up for. |
-| **Defensive core analysis** | Automatically find the two or three Pokémon on the team whose types best complement each other defensively (e.g., Water + Grass + Fire or Dragon + Steel + Fairy) and highlight the remaining coverage gaps. |
-| **Role redundancy warning** | If two Pokémon have the same role (both Choice Band physical sweepers with overlapping types), flag it and suggest a more diversified build. |
-| **Lead pair optimiser (VGC / Doubles)** | For doubles, calculate the best lead pair from the team of 6 given the known opponent team, based on speed ties, spread damage, and synergy (e.g., Fake Out + setup sweeper). |
-| **Turn-by-turn scenario simulator (MVP)** | A simple 3-turn preview: show who attacks first, estimated HP remaining for both sides after each turn (including Leftovers, Life Orb recoil, and status), and flag the likely outcome (KO / survive / trade). Not a full battle engine — just enough to validate the "send it" decision. |
+| Feature | Status | Notes |
+|---|---|---|
+| **Win-condition detection** | ✅ Done | Identifies setup sweepers (Swords Dance, Nasty Plot, Calm Mind, Dragon Dance, Shell Smash…), weather abusers (Swift Swim, Chlorophyll, Sand Rush, Slush Rush), and Trick Room abusers — surfaces primary win-condition per Pokémon in the Battle Calculate panel. |
+| **Defensive core analysis** | ✅ Done | Automatically scores all pairs on the team and highlights the two Pokémon whose types best complement each other defensively, listing covered weaknesses, shared weaknesses, and remaining gaps. |
+| **Role redundancy warning** | ✅ Done | Classifies each Pokémon's role (Physical Attacker, Special Attacker, Setup Sweeper, Tank/Wall, Support) and flags pairs that share the same role with overlapping types. |
+| **Lead pair optimiser (VGC / Doubles)** | ✅ Done | When Doubles mode is active, scores every Pokémon's lead potential (Fake Out, Intimidate, Tailwind, Follow Me, spread moves, speed) and recommends the best lead pair with synergy notes. |
+| **Turn-by-turn scenario simulator (MVP)** | ✅ Done | A 3-turn preview for the first two selected Pokémon: shows estimated HP % remaining each turn using their best equipped moves, including Leftovers recovery and Life Orb recoil, with a trade outcome verdict. |
 
 ---
 
 ### 🗄️ Data Quality & Freshness
 
-| Feature | Why it matters |
-|---|---|
-| **Move base-power accuracy for variable-power moves** | Moves like Gyro Ball, Grass Knot, Hex, Facade, and Eruption have power that depends on Speed, weight, status, or current HP. Currently they use a fixed base power estimate. Accurate calculation requires knowing the exact stat context. |
-| **Held item modifier table** | A data table for the ~20 most competitive items (type-boosting plates, Choice items, Life Orb, Expert Belt, etc.) that adjusts the damage multiplier automatically when an item is set on the attacking Pokémon's slot. |
-| **Ability offensive modifier table** | Some abilities boost damage output: Huge Power / Pure Power double ATK, Sheer Force removes secondary effects but adds ×1.3 damage, Adaptability upgrades STAB from ×1.5 to ×2. These are high-impact and currently not factored into outgoing damage estimates. |
-| **Full moveset database with PP and secondary effects** | Adding PP counts, secondary effects (30% flinch on Air Slash, 10% burn on Flamethrower), and contact/sound/powder/bite flags would unlock many of the features listed above without requiring external API calls. |
+| Feature | Status | Notes |
+|---|---|---|
+| **Move base-power accuracy for variable-power moves** | ✅ Done | Gyro Ball power is calculated from actual Speed stats; Grass Knot / Low Kick use an 80 BP estimate; Facade shows 70 / 140 based on the burn / paralysis Battle Context toggle; Acrobatics shows 55 / 110 based on whether the attacker holds an item; Eruption / Water Spout default to 150 BP at full HP; Wring Out / Crush Grip default to ~100 BP. Each shows a labelled note in the damage result. |
+| **Held item modifier table** | ✅ Done | All 17 type-boosting hold items (Charcoal, Mystic Water, Magnet, Miracle Seed, etc.), all 18 corresponding Plates (Flame Plate, Splash Plate, Zap Plate…), Choice Band / Specs, Life Orb, Expert Belt, Muscle Band, Wise Glasses, Light Ball, and Thick Club are applied automatically to damage estimates. |
+| **Ability offensive modifier table** | ✅ Done | Adaptability (STAB ×2), Huge Power / Pure Power (ATK ×2), Sheer Force (×1.3), Technician (×1.5 for ≤60 BP moves), Transistor (Electric ×1.3), Dragon's Maw (Dragon ×1.5), Water Bubble (Water ×2), Gorilla Tactics (physical ×1.5), Hustle (physical ×1.5), Guts (physical ×1.5 when statused), Solar Power (special ×1.5 in Sun) all applied. |
+| **Full moveset database with PP and secondary effects** | ✅ Done | `MOVE_METADATA` table added in `data/move-info.js` with PP counts and secondary effect data (chance + effect label) for 80+ competitive moves. Body Press added to `MOVE_INFO`. Variable-power resolution covers Gyro Ball, Grass Knot, Low Kick, Facade, Hex, Eruption, Acrobatics, Wring Out, Crush Grip, and Body Press. |
 
 ---
 
