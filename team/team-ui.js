@@ -133,6 +133,15 @@ window.setCompareTeamIndex = function(idx) {
     renderTeamSlots();
 };
 
+function ensureCompareTeamIndex() {
+    if (!allData?.teams || allData.teams.length < 2) return;
+    if (!allData.teams[window.compareTeamIndex] || window.compareTeamIndex === currentTeamIndex) {
+        const fallback = allData.teams.findIndex((_, idx) => idx !== currentTeamIndex);
+        window.compareTeamIndex = fallback;
+        localStorage.setItem('tb_compareTeamIndex', String(fallback));
+    }
+}
+
 function getTeamSnapshot(slots) {
     const filled = (slots || []).filter(s => s && s.pokemonId);
     const mons = filled.map(slot => ({ slot, p: POKE.find(x => x.id === slot.pokemonId) })).filter(x => x.p);
@@ -160,13 +169,9 @@ function getTeamSnapshot(slots) {
 
 function getTeamComparisonHTML() {
     if (!allData?.teams || allData.teams.length < 2) return '';
-    const options = allData.teams.map((entry, idx) => idx === currentTeamIndex ? '' : `<option value="${idx}" ${idx === window.compareTeamIndex ? 'selected' : ''}>${entry.name}</option>`).join('');
-    const compareIdx = allData.teams[window.compareTeamIndex] && window.compareTeamIndex !== currentTeamIndex ? window.compareTeamIndex : allData.teams.findIndex((_, idx) => idx !== currentTeamIndex);
+    const compareIdx = allData.teams[window.compareTeamIndex] && window.compareTeamIndex !== currentTeamIndex ? window.compareTeamIndex : -1;
     if (compareIdx < 0) return '';
-    if (compareIdx !== window.compareTeamIndex) {
-        window.compareTeamIndex = compareIdx;
-        localStorage.setItem('tb_compareTeamIndex', String(compareIdx));
-    }
+    const options = allData.teams.map((entry, idx) => idx === currentTeamIndex ? '' : `<option value="${idx}" ${idx === compareIdx ? 'selected' : ''}>${entry.name}</option>`).join('');
     const activeSnap = getTeamSnapshot(team);
     const other = allData.teams[compareIdx];
     const otherSnap = getTeamSnapshot(other.slots);
@@ -445,6 +450,7 @@ function setView(view) {
     document.getElementById('teamOverlay').setAttribute('aria-hidden', teamView ? 'false' : 'true');
     
     if (teamView) { 
+        ensureCompareTeamIndex();
         renderTeamList(); 
         renderTeamSlots(); 
         updateTeamDropdown(); 
@@ -497,6 +503,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeam() 
 document.getElementById('teamSelect')?.addEventListener('change', e => {
     currentTeamIndex = Number(e.target.value);
     team = allData.teams[currentTeamIndex].slots;
+    ensureCompareTeamIndex();
     saveTeam();
     renderTeamSlots();
 });
@@ -507,6 +514,7 @@ document.getElementById('addTeamBtn')?.addEventListener('click', () => {
         allData.teams.push({ name: name, slots: Array.from({ length: TEAM_SIZE }, () => EMPTY_SLOT()) });
         currentTeamIndex = allData.teams.length - 1;
         team = allData.teams[currentTeamIndex].slots;
+        ensureCompareTeamIndex();
         saveTeam();
         updateTeamDropdown();
         renderTeamSlots();
@@ -559,4 +567,3 @@ window.addEventListener('load', () => {
         renderTeamSlots();
     }
 });
-

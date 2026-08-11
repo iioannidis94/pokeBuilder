@@ -291,13 +291,12 @@ function getEffectiveSpeedStat(baseSpeed, slot, options) {
     const item = getSafeItemName(slot?.item);
     const ability = getSafeAbilityName(slot?.ability);
     const ctx = getBattleContext();
+    if (ability === 'swift-swim' && ctx.weather === 'rain') stat = Math.floor(stat * 2);
+    if (ability === 'chlorophyll' && ctx.weather === 'sun') stat = Math.floor(stat * 2);
+    if (ability === 'sand-rush' && ctx.weather === 'sand') stat = Math.floor(stat * 2);
+    if (ability === 'slush-rush' && ctx.weather === 'snow') stat = Math.floor(stat * 2);
     if (item === 'choice scarf') stat = Math.floor(stat * 1.5);
-    if (ctx.hazardsOnMe?.stickyWeb && options.side === 'me' && !(options.types || []).includes('flying')) stat = Math.floor(stat * 0.67);
-    if (ability === 'swift-swim' && ctx.weather === 'rain') stat *= 2;
-    if (ability === 'chlorophyll' && ctx.weather === 'sun') stat *= 2;
-    if (ability === 'sand-rush' && ctx.weather === 'sand') stat *= 2;
-    if (ability === 'slush-rush' && ctx.weather === 'snow') stat *= 2;
-    return stat;
+    return Math.floor(stat);
 }
 
 function getSpeedTierComparisonHTML(selected) {
@@ -379,6 +378,7 @@ function getBattleContext() {
     return (typeof window !== 'undefined' && window.battleContext) ? window.battleContext : {
         weather: 'none',
         terrain: 'none',
+        doubles: false,
         trickRoom: false,
         reflect: false,
         lightScreen: false,
@@ -402,7 +402,7 @@ function applyAttackItemAndAbilityMods(baseDamage, atkMon, moveInfo, typeMult) {
     const cleanMoveType = String(moveInfo.type || '').toLowerCase();
 
     const itemMod = OFFENSIVE_ITEM_MODS[item];
-    if (itemMod && (!itemMod.cat || itemMod.cat === moveInfo.cat) && (!itemMod.species || itemMod.species === atkMon.p.name) && (!itemMod.onlySuperEffective || typeMult > 1)) {
+    if (itemMod && (!itemMod.cat || itemMod.cat === moveInfo.cat) && (!itemMod.species || itemMod.species === String(atkMon.p.name || '').toLowerCase()) && (!itemMod.onlySuperEffective || typeMult > 1)) {
         damage *= itemMod.mult;
     }
 
@@ -511,13 +511,12 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     if (defensiveItem && (!defensiveItem.cat || defensiveItem.cat === moveInfo.cat)) {
         defStat = Math.floor(defStat * defensiveItem.mult);
     }
-    if (defSlotData && defSlotData.__side === 'opponent' && ((battleContext.reflect && isPhys) || (battleContext.lightScreen && !isPhys))) {
-        defStat = Math.floor(defStat * 2);
-    }
-
     // Damage formula (Gen 5+)
     const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / Math.max(defStat, 1)) / 50) + 2;
-    const preRoll = applyAttackItemAndAbilityMods(base, atkMon, moveInfo, typeMult) * stab * typeMult * getWeatherMultiplier(moveInfo.type) * getTerrainMultiplier(moveInfo.type);
+    let preRoll = applyAttackItemAndAbilityMods(base, atkMon, moveInfo, typeMult) * stab * typeMult * getWeatherMultiplier(moveInfo.type) * getTerrainMultiplier(moveInfo.type);
+    if (defSlotData && defSlotData.__side === 'opponent' && ((battleContext.reflect && isPhys) || (battleContext.lightScreen && !isPhys))) {
+        preRoll *= battleContext.doubles ? (2 / 3) : 0.5;
+    }
     const rolls = [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
         .map(r => Math.floor(preRoll * (r / 100)));
     const dmgMin = Math.min(...rolls);
@@ -525,7 +524,7 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
 
     const minPct = Math.min(Math.round(dmgMin / defHP * 100), 999);
     const maxPct = Math.min(Math.round(dmgMax / defHP * 100), 999);
-    const hazardChip = getHazardChipPct(defPoke, defSlotData && defSlotData.__side ? defSlotData.__side : 'opponent');
+    const hazardChip = defSlotData && defSlotData.__side ? getHazardChipPct(defPoke, defSlotData.__side) : 0;
     const minAfterHazards = Math.min(999, Math.round((dmgMin / defHP * 100) + hazardChip));
     const maxAfterHazards = Math.min(999, Math.round((dmgMax / defHP * 100) + hazardChip));
 
@@ -535,10 +534,6 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     else if (minPct >= 50)   label = '2HKO';
     else if (minPct >= 34)   label = '3HKO';
     else                     label = `~${minPct}%`;
-
-    if ((getSafeItemName(defSlotData && defSlotData.item) === 'focus sash' || getSafeAbilityName(defSlotData && defSlotData.ability) === 'sturdy') && minPct >= 100) {
-        label = 'Survives at 1 HP';
-    }
 
     return { minPct, maxPct, label, typeMult, ohkoChance, minAfterHazards, maxAfterHazards, hazardChip };
 }
@@ -729,6 +724,10 @@ function getBattleContextHTML() {
             <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
                 <span>Trick Room active</span>
                 <input type="checkbox" ${ctx.trickRoom ? 'checked' : ''} onchange="window.updateBattleContext('trickRoom', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Doubles screen rules</span>
+                <input type="checkbox" ${ctx.doubles ? 'checked' : ''} onchange="window.updateBattleContext('doubles', this.checked)">
             </label>
             ${hazards.map(toggleHtml).join('')}
         </div>

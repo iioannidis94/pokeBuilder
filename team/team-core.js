@@ -14,6 +14,7 @@ const DEFAULT_HELD_ITEMS = [...HELD_ITEMS];
 const DEFAULT_BATTLE_CONTEXT = {
     weather: 'none',
     terrain: 'none',
+    doubles: false,
     trickRoom: false,
     reflect: false,
     lightScreen: false,
@@ -46,9 +47,9 @@ function deepClone(value) {
     return JSON.parse(JSON.stringify(value));
 }
 
-const DEFAULT_MOVE_INFO = (typeof MOVE_INFO !== 'undefined') ? deepClone(MOVE_INFO) : {};
-const DEFAULT_MOVES_BY_POKEMON = (typeof MOVES_BY_POKEMON !== 'undefined') ? deepClone(MOVES_BY_POKEMON) : {};
-const DEFAULT_ABILITIES = (typeof ABILITIES !== 'undefined') ? deepClone(ABILITIES) : {};
+let DEFAULT_MOVE_INFO = null;
+let DEFAULT_MOVES_BY_POKEMON = null;
+let DEFAULT_ABILITIES = null;
 
 function mutateObject(target, source) {
     if (!target) return;
@@ -64,6 +65,7 @@ function normalizeBattleContext(raw) {
     ctx.hazardsOnMe.spikes = Math.max(0, Math.min(3, Number(ctx.hazardsOnMe.spikes) || 0));
     ctx.weather = String(ctx.weather || 'none');
     ctx.terrain = String(ctx.terrain || 'none');
+    ctx.doubles = !!ctx.doubles;
     ctx.trickRoom = !!ctx.trickRoom;
     ctx.reflect = !!ctx.reflect;
     ctx.lightScreen = !!ctx.lightScreen;
@@ -95,10 +97,13 @@ function loadDataOverrides() {
 
 function applyDataOverrides(overrides) {
     overrides = overrides || {};
+    if (DEFAULT_MOVE_INFO === null && typeof MOVE_INFO !== 'undefined') DEFAULT_MOVE_INFO = deepClone(MOVE_INFO);
+    if (DEFAULT_MOVES_BY_POKEMON === null && typeof MOVES_BY_POKEMON !== 'undefined') DEFAULT_MOVES_BY_POKEMON = deepClone(MOVES_BY_POKEMON);
+    if (DEFAULT_ABILITIES === null && typeof ABILITIES !== 'undefined') DEFAULT_ABILITIES = deepClone(ABILITIES);
     HELD_ITEMS.splice(0, HELD_ITEMS.length, ...DEFAULT_HELD_ITEMS);
-    mutateObject(typeof MOVE_INFO !== 'undefined' ? MOVE_INFO : null, DEFAULT_MOVE_INFO);
-    mutateObject(typeof MOVES_BY_POKEMON !== 'undefined' ? MOVES_BY_POKEMON : null, DEFAULT_MOVES_BY_POKEMON);
-    mutateObject(typeof ABILITIES !== 'undefined' ? ABILITIES : null, DEFAULT_ABILITIES);
+    mutateObject(typeof MOVE_INFO !== 'undefined' ? MOVE_INFO : null, DEFAULT_MOVE_INFO || {});
+    mutateObject(typeof MOVES_BY_POKEMON !== 'undefined' ? MOVES_BY_POKEMON : null, DEFAULT_MOVES_BY_POKEMON || {});
+    mutateObject(typeof ABILITIES !== 'undefined' ? ABILITIES : null, DEFAULT_ABILITIES || {});
 
     if (Array.isArray(overrides.heldItems) && overrides.heldItems.length) {
         const cleanItems = [...new Set(overrides.heldItems.map(x => String(x).trim()).filter(Boolean))];

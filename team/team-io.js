@@ -417,11 +417,70 @@ function downloadDataBundle() {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
+function sanitizeDataBundle(bundle) {
+    if (!bundle || typeof bundle !== 'object') throw new Error('Invalid data bundle');
+    const clean = {
+        sourceUrl: bundle.sourceUrl ? String(bundle.sourceUrl) : '',
+        heldItems: Array.isArray(bundle.heldItems) ? bundle.heldItems.map(x => String(x).trim()).filter(Boolean) : undefined,
+        metaThreats: Array.isArray(bundle.metaThreats) ? bundle.metaThreats.filter(t => t && Number.isFinite(Number(t.id)) && typeof t.name === 'string' && Array.isArray(t.types)).map(t => ({
+            id: Number(t.id),
+            name: String(t.name),
+            types: t.types.map(x => String(x).toLowerCase()).filter(Boolean),
+            tier: Number(t.tier) || undefined
+        })) : undefined
+    };
+
+    if (bundle.moveInfo && typeof bundle.moveInfo === 'object') {
+        clean.moveInfo = Object.fromEntries(Object.entries(bundle.moveInfo).filter(([key, value]) =>
+            key && value && typeof value === 'object' && typeof value.type === 'string' && typeof value.cat === 'string'
+        ).map(([key, value]) => [key, {
+            type: String(value.type).toLowerCase(),
+            cat: String(value.cat).toLowerCase(),
+            power: Number(value.power) || 0,
+            acc: value.acc === undefined || value.acc === null ? 0 : Number(value.acc) || 0
+        }]));
+    }
+
+    if (bundle.movesByPokemon && typeof bundle.movesByPokemon === 'object') {
+        clean.movesByPokemon = Object.fromEntries(Object.entries(bundle.movesByPokemon).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [
+            key,
+            value.map(x => String(x).trim()).filter(Boolean)
+        ]));
+    }
+
+    if (bundle.abilities && typeof bundle.abilities === 'object') {
+        clean.abilities = Object.fromEntries(Object.entries(bundle.abilities).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [
+            key,
+            value.map(x => String(x).trim()).filter(Boolean)
+        ]));
+    }
+
+    return clean;
+}
+
 function importDataBundleFromText(text, sourceUrl) {
-    const bundle = JSON.parse(text);
+    let bundle;
+    try {
+        bundle = JSON.parse(text);
+    } catch (err) {
+        throw new Error('Invalid JSON data bundle');
+    }
     if (typeof window.applyDataOverridesBundle !== 'function') throw new Error('Data bundle import unavailable');
-    window.applyDataOverridesBundle(bundle, sourceUrl);
+    window.applyDataOverridesBundle(sanitizeDataBundle(bundle), sourceUrl);
     showToast('🗂 Data bundle applied.');
+}
+
+function isTrustedPublicDataUrl(rawUrl) {
+    try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.toLowerCase();
+        const isBracketedHost = parsed.host.startsWith('[');
+        const isPrivateIp = /^(10\.|127\.|169\.254\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(host);
+        const isLocalName = host === 'localhost' || host.endsWith('.local');
+        return parsed.protocol === 'https:' && !isPrivateIp && !isLocalName && !isBracketedHost;
+    } catch (err) {
+        return false;
+    }
 }
 
 (function injectDataLab() {
@@ -487,6 +546,7 @@ function importDataBundleFromText(text, sourceUrl) {
     document.getElementById('dataLabFetch').addEventListener('click', async () => {
         const url = document.getElementById('dataLabUrl').value.trim();
         if (!url) return alert('Paste a JSON URL first.');
+        if (!isTrustedPublicDataUrl(url)) return alert('Use a trusted public HTTPS JSON URL only.');
         try {
             const res = await fetch(url);
             if (!res.ok) throw new Error('Fetch failed');
