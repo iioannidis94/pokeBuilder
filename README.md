@@ -61,6 +61,15 @@ The goal is not just to list Pokémon, but to help the user:
 - Priority move awareness in matchup scoring
 - Counter scoring upgraded for pivots, recovery loops, status pressure, and hazard pressure
 - Matchup summaries that explain why a selected core still struggles against specific threats
+- **Battle Calculate is always open** — no collapse/expand required
+- **Full Gen 9 damage formula**: burn (−50% ATK), Choice Band/Specs/Life Orb modifiers, weather/terrain boosts, Doubles spread penalty (×0.75), full 16-step random roll range
+- **Move flag chips** on every move: priority tier (+N/−N), two-turn warning, contact tag, high-crit indicator, multi-hit total damage, recoil %, drain %
+- **Critical hit overlay**: "Crit: X%–Y%" shown alongside normal range; high-crit moves (Slash, Night Slash, Stone Edge…) marked with ⭐
+- **Sturdy / Focus Sash flag**: OHKO label changes to "OHKO*" with a "*Sash/Sturdy" warning chip
+- **Leftovers / Black Sludge recovery**: estimated hits-to-KO recalculated accounting for per-turn healing; "Heals through" shown if recovery outpaces damage
+- **Extended ability immunity table**: Wonder Guard, Dry Skin, Sap Sipper, Earth Eater, Fluffy, Heatproof, Purifying Salt, Ice Scales, Well-Baked Body, Wind Rider
+- **Contact proc warnings** in Battle Prep: Static (30% paralysis), Flame Body (30% burn), Rough Skin/Iron Barbs (100% recoil), Rocky Helmet — flagged when a contact move would trigger them
+- **Tailwind ×2 and Paralysis ×0.5 toggles** in Battle Context — applied in speed comparison and "who goes first" tip
 
 ### Competitive Data Upgrades
 - Dynamic defensive logic for abilities such as Levitate, Thick Fat, Flash Fire, Volt Absorb, Water Absorb and more
@@ -125,38 +134,38 @@ The items below represent the most impactful upgrades to close the gap between p
 
 ### 🎯 Damage Calculator — Accuracy & Depth
 
-| Feature | Why it matters |
-|---|---|
-| **Full Gen 9 damage formula with all modifiers** | Currently we apply base power × STAB × type effectiveness. Missing: burn halving physical attack, held item boosts (Choice Band ×1.5, Life Orb ×1.3, type-enhancing items like Charcoal), weather boosts (Rain doubles Water, Sun doubles Fire), terrain boosts (Electric Terrain ×1.3 on grounded Electric moves), and the random-roll range. |
-| **Burn / paralysis / toxic damage tracking** | Status conditions change both offense and effective HP across turns. A burned attacker deals half physical damage; toxic doubles each turn. Showing a "turns to KO under Toxic" or "effective ATK after Burn" column would make the battle prep section much more honest. |
-| **Multi-hit move damage** | Moves like Bullet Seed, Fury Attack, Population Bomb deal 2–5 hits. Currently their displayed % is per-hit only, leading to massive under-estimates for Loaded Dice sets. |
-| **Recoil and drain tracking** | Life Orb costs 10% HP per attack. Flare Blitz costs 33%. Leech Life heals 50% of damage dealt. Including these in the "effective HP remaining after exchange" estimate gives a far more accurate picture of who wins a 2HKO vs 2HKO trade. |
-| **Critical hit overlay** | Crits ignore defensive boosts and halve some modifiers. Showing "crit range: X%–Y%" alongside the normal range helps plan around High Crit moves (Slash, Night Slash, Stone Edge) or Scope Lens/Razor Claw sets. |
-| **Speed tier precision: Choice Scarf, Tailwind, paralysis** | Choice Scarf multiplies Speed ×1.5; Tailwind ×2; paralysis ×0.5. The speed comparison panel should apply these modifiers when the item/condition is set, so the "who goes first" read is correct. |
+| Feature | Status | Notes |
+|---|---|---|
+| **Full Gen 9 damage formula with all modifiers** | ✅ Done | Burn halves physical ATK, held item boosts (Choice Band ×1.5, Life Orb ×1.3), weather/terrain boosts, and full random-roll range all applied. |
+| **Burn / paralysis toggle** | ✅ Done | Battle Context toggles: "Attacker is Burned (−50% ATK)" and "My Pokémon Paralysed (−50% Spd)" — both applied to damage calc and speed tier. |
+| **Multi-hit move damage** | ✅ Done | Moves like Bullet Seed / Population Bomb show per-hit %, plus a "Total: ~X%" estimate at average hit count (e.g. ×3.5 avg for 2–5 hits). |
+| **Recoil and drain tracking** | ✅ Done | Recoil % and Drain % flags shown as colour-coded chips next to each move in the move suggestion panel. |
+| **Critical hit overlay** | ✅ Done | Normal damage range shown alongside "Crit: X%–Y%" (×1.5). High-crit moves (Slash, Night Slash, Stone Edge, etc.) marked with ⭐. |
+| **Speed tier precision: Choice Scarf, Tailwind, paralysis** | ✅ Done | Tailwind ×2 and Paralysis ×0.5 toggles added to Battle Context; applied in speed comparison and "who goes first" output. |
 
 ---
 
 ### ⚔️ Moves — Richer Competitive Modelling
 
-| Feature | Why it matters |
-|---|---|
-| **Move priority tiers in battle prep** | Fake Out (priority +3), Sucker Punch (+1), Quick Attack (+1), Aqua Jet (+1) all move before the speed order. The battle prep section already detects priority moves, but a visual priority-tier label next to each move would make the lead decision read instantly. |
-| **Two-turn moves and charging mechanics** | Fly, Dig, Dive, Solar Beam (without Sun) take two turns. Showing "2-turn move — opponent can switch or attack on turn 1" would be far more accurate than treating them as instant attacks. |
-| **Spread moves in doubles (VGC)** | Rock Slide, Earthquake, Heat Wave, Discharge hit both opponents for ×0.75 damage each. The current calculator treats them as single-target. For VGC formats this creates significant over-estimates. |
-| **Z-Move and Dynamax/Gigantamax move conversion** | PRO does not use Z-moves/Dynamax but including a toggle for completeness would help players who also play mainline Switch titles. |
-| **Contact vs non-contact distinction** | Rocky Helmet, Rough Skin, Static, Flame Body, and Iron Barbs all trigger only on contact moves. A "contact" tag on moves that would activate these hazards would be a meaningful overlay on the incoming-damage side. |
+| Feature | Status | Notes |
+|---|---|---|
+| **Move priority tiers in battle prep** | ✅ Done | Priority bracket shown as a coloured "+N Prio" chip on each move. Moves are sorted by damage, then flagged independently. |
+| **Two-turn moves and charging mechanics** | ✅ Done | Two-turn moves (Fly, Dig, Solar Beam, Phantom Force…) show an orange "2-Turn" warning chip — opponent can act freely on charge turn. |
+| **Spread moves in doubles (VGC)** | ✅ Done | When Doubles mode is on, spread moves (Earthquake, Rock Slide, Heat Wave, etc.) automatically apply ×0.75 to damage output. |
+| **Z-Move and Dynamax/Gigantamax move conversion** | ⏳ Skipped | PRO does not use these mechanics — skipped intentionally for now. |
+| **Contact vs non-contact distinction** | ✅ Done | Contact moves show a blue "Contact" chip. Battle Prep also warns when opponent's ability (Static, Flame Body, etc.) has a proc chance on contact. |
 
 ---
 
 ### 🛡️ Defensive Layer — Status, Items, Hazards
 
-| Feature | Why it matters |
-|---|---|
-| **Stealth Rock and Spike damage pre-calculation** | Before a Pokémon even acts, entry hazards chip HP. Stealth Rock deals 12.5%–50% damage depending on Rock type-effectiveness. Showing "SR chip: X%" as a pre-battle warning would change many switching decisions. |
-| **Leftovers / Black Sludge / Shell Bell recovery tracking** | Passive HP recovery changes how many attacks a wall can absorb. Showing "effective hits to KO accounting for Leftovers" versus raw OHKO/2HKO is far more useful for predicting whether a wall survives a combo. |
-| **Ability activation probability** | Some abilities (Static, Flame Body, Effect Spore) have a fixed proc chance (30%). Displaying this alongside incoming damage gives a "bonus risk" read for contact moves. |
-| **Sturdy / Focus Sash survival flag** | If the opponent's Pokémon holds a Focus Sash or has Sturdy and is at full HP, a guaranteed OHKO label should be corrected to "survives at 1 HP — need follow-up". This is a common mid-game mistake. |
-| **Wonder Guard, Dry Skin, and full ability immunity table** | The ABILITY_TYPE_MODS table already exists. Expanding it to cover Wonder Guard, Dry Skin (fully), Fluffy (contact ×2 / fire ×2), Sap Sipper, Earth Eater, Stamina, Dauntless Shield, etc. would complete the immunity chain. |
+| Feature | Status | Notes |
+|---|---|---|
+| **Stealth Rock and Spike damage pre-calculation** | ✅ Done (prior) | SR/Spikes chip shown in Battle Context and factored into damage estimates as "after hazards" range. |
+| **Leftovers / Black Sludge / Shell Bell recovery tracking** | ✅ Done | When defender holds Leftovers or Black Sludge, the estimated "hits to KO" accounts for per-turn recovery. "Heals through" shown if recovery outpaces damage. |
+| **Ability activation probability** | ✅ Done | Battle Prep tip warns when a contact move triggers an opponent ability with a proc chance (Static 30%, Flame Body 30%, Rough Skin 100%, etc.). |
+| **Sturdy / Focus Sash survival flag** | ✅ Done | OHKO labels change to "OHKO*" with a "*Sash/Sturdy" note when the defender has Sturdy, Multiscale, or a Focus Sash. |
+| **Wonder Guard, Dry Skin, and full ability immunity table** | ✅ Done | Extended immunity logic: Wonder Guard (blocks non-SE), Dry Skin (Water immunity / Fire weakness), Sap Sipper, Earth Eater, Well-Baked Body, Wind Rider, Fluffy, Heatproof, Purifying Salt, Ice Scales. |
 
 ---
 

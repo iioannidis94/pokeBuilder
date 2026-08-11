@@ -18,6 +18,10 @@ const DEFAULT_BATTLE_CONTEXT = {
     trickRoom: false,
     reflect: false,
     lightScreen: false,
+    tailwindOnMe: false,
+    tailwindOnOpponent: false,
+    burnOnAttacker: false,
+    paralysisOnMe: false,
     hazardsOnOpponent: { stealthRock: false, spikes: 0 },
     hazardsOnMe: { stealthRock: false, spikes: 0, stickyWeb: false }
 };

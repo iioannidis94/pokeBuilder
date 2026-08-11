@@ -296,6 +296,13 @@ function getEffectiveSpeedStat(baseSpeed, slot, options) {
     if (ability === 'sand-rush' && ctx.weather === 'sand') stat = Math.floor(stat * 2);
     if (ability === 'slush-rush' && ctx.weather === 'snow') stat = Math.floor(stat * 2);
     if (item === 'choice scarf') stat = Math.floor(stat * 1.5);
+    const side = options && options.side;
+    if (side === 'opponent') {
+        if (ctx.tailwindOnOpponent) stat = Math.floor(stat * 2);
+    } else {
+        if (ctx.tailwindOnMe) stat = Math.floor(stat * 2);
+        if (ctx.paralysisOnMe) stat = Math.floor(stat * 0.5);
+    }
     return Math.floor(stat);
 }
 
@@ -382,6 +389,10 @@ function getBattleContext() {
         trickRoom: false,
         reflect: false,
         lightScreen: false,
+        tailwindOnMe: false,
+        tailwindOnOpponent: false,
+        burnOnAttacker: false,
+        paralysisOnMe: false,
         hazardsOnOpponent: { stealthRock: false, spikes: 0 },
         hazardsOnMe: { stealthRock: false, spikes: 0, stickyWeb: false }
     };
@@ -495,9 +506,31 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     const defRaw = Math.floor(((2 * defBase + defIv + Math.floor(defEv / 4)) * defLevel) / 100) + 5;
     let defStat= Math.floor(defRaw * defNature);
 
-    // Type effectiveness
-    const typeMult = getDynamicMult(moveInfo.type, defPoke.types, defSlotData && defSlotData.ability);
+    // Type effectiveness — check extended ability immunities first
+    const defAbility = getSafeAbilityName(defSlotData && defSlotData.ability);
+    let typeMult = getDynamicMult(moveInfo.type, defPoke.types, defAbility);
     if (typeMult === 0) return null; // Immune
+
+    // Wonder Guard: only super-effective moves deal damage
+    if (defAbility === 'wonder-guard' && typeMult <= 1) return null;
+
+    // Extended defensive ability modifiers
+    const moveFlags = (typeof MOVE_FLAGS !== 'undefined' && MOVE_FLAGS[moveInfo.name || '']) || {};
+    const isContact = !!moveFlags.contact;
+    if (defAbility === 'fluffy') {
+        if (isContact) typeMult *= 2;
+        if (moveInfo.type === 'fire') typeMult *= 2;
+    }
+    if (defAbility === 'dry-skin' && moveInfo.type === 'water') return null;
+    if (defAbility === 'dry-skin' && moveInfo.type === 'fire') typeMult *= 1.25;
+    if (defAbility === 'sap-sipper' && moveInfo.type === 'grass') return null;
+    if (defAbility === 'earth-eater' && moveInfo.type === 'ground') return null;
+    if (defAbility === 'well-baked-body' && moveInfo.type === 'fire') return null;
+    if (defAbility === 'wind-rider' && moveInfo.type === 'flying') return null;
+    if (defAbility === 'purifying-salt' && moveInfo.type === 'ghost') typeMult *= 0.5;
+    if (defAbility === 'heatproof' && moveInfo.type === 'fire') typeMult *= 0.5;
+    if (defAbility === 'ice-scales' && !isPhys) defStat = Math.floor(defStat * 2);
+    if (typeMult === 0) return null;
 
     // STAB
     const stab = getStabMultiplier(atkMon, moveInfo);
@@ -507,35 +540,92 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
         atkStat = Math.floor(atkStat * 1.33);
     }
 
+    // Burn: halves physical attack
+    if (isPhys && battleContext.burnOnAttacker && offensiveAbility !== 'guts') {
+        atkStat = Math.floor(atkStat * 0.5);
+    }
+
     const defensiveItem = DEFENSIVE_ITEM_MODS[getSafeItemName(defSlotData && defSlotData.item)];
     if (defensiveItem && (!defensiveItem.cat || defensiveItem.cat === moveInfo.cat)) {
         defStat = Math.floor(defStat * defensiveItem.mult);
     }
+
     // Damage formula (Gen 5+)
     const base = Math.floor((Math.floor(2 * atkLv / 5 + 2) * moveInfo.power * atkStat / Math.max(defStat, 1)) / 50) + 2;
     let preRoll = applyAttackItemAndAbilityMods(base, atkMon, moveInfo, typeMult) * stab * typeMult * getWeatherMultiplier(moveInfo.type) * getTerrainMultiplier(moveInfo.type);
     if (defSlotData && defSlotData.__side === 'opponent' && ((battleContext.reflect && isPhys) || (battleContext.lightScreen && !isPhys))) {
         preRoll *= battleContext.doubles ? (2 / 3) : 0.5;
     }
+    // Spread move penalty in Doubles (×0.75)
+    if (battleContext.doubles && typeof SPREAD_MOVES !== 'undefined' && SPREAD_MOVES.has(moveInfo.name || '')) {
+        preRoll *= 0.75;
+    }
+
     const rolls = [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
         .map(r => Math.floor(preRoll * (r / 100)));
     const dmgMin = Math.min(...rolls);
     const dmgMax = Math.max(...rolls);
 
+    // Critical hit roll (crits ignore defensive boosts; ×1.5 damage, ignore screens)
+    const critRolls = rolls.map(d => Math.floor(d * 1.5));
+    const critMin = Math.min(...critRolls);
+    const critMax = Math.max(...critRolls);
+    const isHighCrit = !!(moveFlags.highCrit);
+
+    // Multi-hit move scaling
+    const multiHit = moveFlags.multiHit;
+    const multiHitMin = multiHit ? multiHit.min : 1;
+    const multiHitMax = multiHit ? multiHit.max : 1;
+    const multiHitAvg = multiHit ? ((multiHit.min + multiHit.max) / 2) : 1;
+
     const minPct = Math.min(Math.round(dmgMin / defHP * 100), 999);
     const maxPct = Math.min(Math.round(dmgMax / defHP * 100), 999);
+    const critMinPct = Math.min(Math.round(critMin / defHP * 100), 999);
+    const critMaxPct = Math.min(Math.round(critMax / defHP * 100), 999);
+
     const hazardChip = defSlotData && defSlotData.__side ? getHazardChipPct(defPoke, defSlotData.__side) : 0;
     const minAfterHazards = Math.min(999, Math.round((dmgMin / defHP * 100) + hazardChip));
     const maxAfterHazards = Math.min(999, Math.round((dmgMax / defHP * 100) + hazardChip));
 
     const ohkoChance = Math.round((rolls.filter(d => d >= defHP).length / rolls.length) * 100);
+
+    // OHKO blocker check (Sturdy / Focus Sash)
+    const defItem = getSafeItemName(defSlotData && defSlotData.item);
+    const hasSashOrSturdy = (typeof OHKO_BLOCKERS !== 'undefined' && OHKO_BLOCKERS.has(defAbility)) ||
+                            (typeof OHKO_BLOCKER_ITEMS !== 'undefined' && OHKO_BLOCKER_ITEMS.has(defItem));
+
+    // Leftovers / Black Sludge: heals 1/16 HP per turn
+    let recoveryPerTurn = 0;
+    if (defItem === 'leftovers' || defItem === 'black sludge') recoveryPerTurn = Math.floor(defHP / 16);
+    // Express recovery-adjusted number of hits to KO
+    let hitsToKO = minPct > 0 ? Math.ceil(100 / minPct) : null;
+    if (recoveryPerTurn > 0 && hitsToKO && hitsToKO > 1) {
+        // Each turn the defender regains recoveryPerTurn HP, attacker needs extra hits
+        const netDmgPerTurn = dmgMin - recoveryPerTurn;
+        if (netDmgPerTurn > 0) hitsToKO = Math.ceil(defHP / netDmgPerTurn);
+        else hitsToKO = null; // cannot KO through recovery
+    }
+
     let label = '';
     if (minPct >= 100)       label = 'OHKO';
     else if (minPct >= 50)   label = '2HKO';
     else if (minPct >= 34)   label = '3HKO';
     else                     label = `~${minPct}%`;
 
-    return { minPct, maxPct, label, typeMult, ohkoChance, minAfterHazards, maxAfterHazards, hazardChip };
+    if (hasSashOrSturdy && label === 'OHKO') label = 'OHKO*';
+
+    // Recoil / drain
+    const recoilFrac = moveFlags.recoil || 0;
+    const drainFrac  = moveFlags.drain  || 0;
+
+    return {
+        minPct, maxPct, label, typeMult, ohkoChance,
+        minAfterHazards, maxAfterHazards, hazardChip,
+        critMinPct, critMaxPct, isHighCrit,
+        multiHitMin, multiHitMax, multiHitAvg,
+        recoilFrac, drainFrac,
+        hasSashOrSturdy, recoveryPerTurn, hitsToKO,
+    };
 }
 
 /**
@@ -549,10 +639,11 @@ function getBestDamageEstimate(atkMon, defPoke, defSlotData) {
 
     atkMon.slot.moveNames.forEach(mName => {
         if (!mName) return;
-        const mInfo = (typeof MOVE_INFO !== 'undefined') ? (MOVE_INFO[mName] || MOVE_INFO[mName.toLowerCase().replace(/\s+/g, '-')]) : null;
+        const mKey = mName.toLowerCase().replace(/\s+/g, '-');
+        const mInfo = (typeof MOVE_INFO !== 'undefined') ? (MOVE_INFO[mName] || MOVE_INFO[mKey]) : null;
         if (!mInfo || mInfo.cat === 'status' || !mInfo.power) return;
 
-        const est = estimateDamagePct(atkMon, mInfo, defPoke, Number(defSlotData?.level) || 50, defSlotData);
+        const est = estimateDamagePct(atkMon, Object.assign({ name: mKey }, mInfo), defPoke, Number(defSlotData?.level) || 50, defSlotData);
         if (!est) return;
 
         if (!best || est.maxPct > best.maxPct) {
@@ -728,6 +819,22 @@ function getBattleContextHTML() {
             <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
                 <span>Doubles screen rules</span>
                 <input type="checkbox" ${ctx.doubles ? 'checked' : ''} onchange="window.updateBattleContext('doubles', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Tailwind on my side</span>
+                <input type="checkbox" ${ctx.tailwindOnMe ? 'checked' : ''} onchange="window.updateBattleContext('tailwindOnMe', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Tailwind on opponent</span>
+                <input type="checkbox" ${ctx.tailwindOnOpponent ? 'checked' : ''} onchange="window.updateBattleContext('tailwindOnOpponent', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>Attacker is Burned (−50% ATK)</span>
+                <input type="checkbox" ${ctx.burnOnAttacker ? 'checked' : ''} onchange="window.updateBattleContext('burnOnAttacker', this.checked)">
+            </label>
+            <label style="display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:var(--txt);">
+                <span>My Pokémon Paralysed (−50% Spd)</span>
+                <input type="checkbox" ${ctx.paralysisOnMe ? 'checked' : ''} onchange="window.updateBattleContext('paralysisOnMe', this.checked)">
             </label>
             ${hazards.map(toggleHtml).join('')}
         </div>

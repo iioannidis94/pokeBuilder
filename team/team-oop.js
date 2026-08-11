@@ -459,8 +459,10 @@ window.getMatchupsUI = function(selected) {
                 const est = getBestDamageEstimate(my, op, Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
                 if (est) {
                     const c = est.minPct >= 100 ? '#ff4d4f' : est.minPct >= 50 ? '#ffc107' : '#4dabf7';
+                    const sashWarn = est.hasSashOrSturdy && (est.label === 'OHKO' || est.label === 'OHKO*')
+                        ? ` <span style="font-size:9px; color:#ffa94d;" title="Focus Sash / Sturdy">*Sash</span>` : '';
                     outHtml = `<span style="font-size:10px; font-weight:bold; color:${c}; background:${c}18; padding:2px 6px; border-radius:3px;">
-                        ⚔️ ${est.label} ${est.minPct}%–${est.maxPct}%${est.hazardChip ? ` · ${est.minAfterHazards}%–${est.maxAfterHazards}% after hazards` : ''} (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)
+                        ⚔️ ${est.label} ${est.minPct}%–${est.maxPct}%${est.hazardChip ? ` · ${est.minAfterHazards}%–${est.maxAfterHazards}% after hazards` : ''} (<i>${est.moveName ? est.moveName.replace(/-/g,' ') : '?'}</i>)${sashWarn}
                     </span>`;
                 }
             }
@@ -488,18 +490,20 @@ window.getMatchupsUI = function(selected) {
                 const moveRanks = [];
                 (my.slot.moveNames || []).forEach(mName => {
                     if (!mName) return;
-                    const mInfo = MOVE_INFO[mName] || MOVE_INFO[(mName || '').toLowerCase().replace(/\s+/g, '-')];
+                    const mKey = (mName || '').toLowerCase().replace(/\s+/g, '-');
+                    const mInfo = MOVE_INFO[mName] || MOVE_INFO[mKey];
+                    const mFlags = (typeof MOVE_FLAGS !== 'undefined' && MOVE_FLAGS[mKey]) || {};
                     if (!mInfo) return;
                     if (mInfo.cat === 'status') {
-                        moveRanks.push({ name: mName, label: 'Status', minPct: -1, maxPct: 0, typeMult: 0, isStatus: true });
+                        moveRanks.push({ name: mName, label: 'Status', minPct: -1, maxPct: 0, typeMult: 0, isStatus: true, flags: mFlags });
                         return;
                     }
                     if (!mInfo.power) return;
-                    const est = estimateDamagePct(my, mInfo, op, Number((oppSlotData && oppSlotData.level) || 50), Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
+                    const est = estimateDamagePct(my, Object.assign({ name: mKey }, mInfo), op, Number((oppSlotData && oppSlotData.level) || 50), Object.assign({}, oppSlotData || {}, { __side: 'opponent' }));
                     if (est) {
-                        moveRanks.push({ name: mName, ...est, isStatus: false });
+                        moveRanks.push({ name: mName, ...est, isStatus: false, flags: mFlags });
                     } else {
-                        moveRanks.push({ name: mName, label: 'No effect', minPct: 0, maxPct: 0, typeMult: 0, isStatus: false, immune: true });
+                        moveRanks.push({ name: mName, label: 'No effect', minPct: 0, maxPct: 0, typeMult: 0, isStatus: false, immune: true, flags: mFlags });
                     }
                 });
                 // Sort: best damage first, then immune moves, then status moves last
@@ -508,31 +512,65 @@ window.getMatchupsUI = function(selected) {
 
                 if (moveRanks.length) {
                     const moveItems = moveRanks.map((m, idx) => {
+                        const flags = m.flags || {};
+                        // Build flag chips
+                        const flagChips = [];
+                        if (flags.priority && flags.priority > 0) flagChips.push(`<span style="font-size:9px; background:#ff6b6b22; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:3px; padding:0 4px;" title="Priority +${flags.priority}">+${flags.priority} Prio</span>`);
+                        if (flags.priority && flags.priority < 0) flagChips.push(`<span style="font-size:9px; background:#55555533; border:1px solid #888; color:#aaa; border-radius:3px; padding:0 4px;" title="Priority ${flags.priority}">Prio ${flags.priority}</span>`);
+                        if (flags.twoTurn) flagChips.push(`<span style="font-size:9px; background:#ffa94d22; border:1px solid #ffa94d; color:#ffa94d; border-radius:3px; padding:0 4px;" title="Charges 1 turn">2-Turn</span>`);
+                        if (flags.contact) flagChips.push(`<span style="font-size:9px; background:#74c0fc22; border:1px solid #74c0fc; color:#74c0fc; border-radius:3px; padding:0 4px;" title="Makes contact — triggers Rocky Helmet, Rough Skin, etc.">Contact</span>`);
+                        if (flags.highCrit) flagChips.push(`<span style="font-size:9px; background:#ffe06633; border:1px solid #ffe066; color:#ffe066; border-radius:3px; padding:0 4px;" title="High crit ratio">Hi-Crit</span>`);
+                        if (flags.multiHit) flagChips.push(`<span style="font-size:9px; background:#da77f222; border:1px solid #da77f2; color:#da77f2; border-radius:3px; padding:0 4px;" title="${flags.multiHit.min}–${flags.multiHit.max} hits">${flags.multiHit.min}–${flags.multiHit.max} hits</span>`);
+                        if (flags.drain) flagChips.push(`<span style="font-size:9px; background:#63d47122; border:1px solid #63d471; color:#63d471; border-radius:3px; padding:0 4px;" title="Drains ${Math.round(flags.drain*100)}% of damage dealt">Drain</span>`);
+                        if (flags.recoil) flagChips.push(`<span style="font-size:9px; background:#ff4d4f22; border:1px solid #ff4d4f; color:#ff4d4f; border-radius:3px; padding:0 4px;" title="${Math.round(flags.recoil*100)}% recoil of damage dealt">Recoil</span>`);
+
                         if (m.isStatus) {
-                            return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                            return `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
                                 <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
                                 <span style="font-size:10px; font-weight:bold; color:var(--dim);">${m.name.replace(/-/g,' ')}</span>
                                 <span style="font-size:9px; background:#55555533; border:1px solid #555; color:#aaa; border-radius:3px; padding:1px 5px;">Status</span>
+                                ${flagChips.join('')}
                             </div>`;
                         }
                         if (m.immune) {
-                            return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                            return `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
                                 <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
                                 <span style="font-size:10px; font-weight:bold; color:var(--dim);">${m.name.replace(/-/g,' ')}</span>
                                 <span style="font-size:9px; background:#88222233; border:1px solid #882222; color:#ff8080; border-radius:3px; padding:1px 5px;">x0 Immune</span>
+                                ${flagChips.join('')}
                             </div>`;
                         }
                         const effLabel = m.typeMult >= 4 ? 'x4 ⚡⚡' : m.typeMult >= 2 ? 'x2 ⚡' : m.typeMult <= 0.25 ? 'x0.25' : m.typeMult <= 0.5 ? 'x0.5' : 'x1';
                         const effColor = m.typeMult >= 2 ? '#ff6b6b' : m.typeMult < 1 ? '#74c0fc' : '#aaa';
                         const dmgColor = m.minPct >= 100 ? '#ff4d4f' : m.minPct >= 50 ? '#ffc107' : m.maxPct >= 30 ? '#4dabf7' : '#888';
-                        const priority = idx === 0 ? `<span style="font-size:9px; background:#ff6b6b22; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:3px; padding:0 4px; margin-left:2px;">USE FIRST</span>` : '';
-                        return `<div style="display:flex; align-items:center; gap:6px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
-                            <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
-                            <span style="font-size:10px; font-weight:bold; color:var(--txt);">${m.name.replace(/-/g,' ')}</span>${priority}
-                            <span style="margin-left:auto; display:flex; gap:4px; align-items:center; flex-shrink:0;">
-                                <span style="font-size:9px; color:${effColor}; font-weight:bold;">${effLabel}</span>
-                                <span style="font-size:10px; font-weight:900; color:${dmgColor};">${m.label} ${m.minPct}%–${m.maxPct}%</span>
-                            </span>
+                        const bestLabel = idx === 0 ? `<span style="font-size:9px; background:#ff6b6b22; border:1px solid #ff6b6b; color:#ff6b6b; border-radius:3px; padding:0 4px; margin-left:2px;">USE FIRST</span>` : '';
+                        // Sash/Sturdy asterisk note
+                        const sashNote = m.hasSashOrSturdy && m.label === 'OHKO*'
+                            ? `<span style="font-size:9px; color:#ffa94d;" title="Opponent may have Focus Sash / Sturdy — survives at 1 HP">*Sash/Sturdy</span>`
+                            : '';
+                        // Crit range note
+                        const critNote = (m.critMinPct && m.critMinPct !== m.minPct)
+                            ? `<span style="font-size:9px; color:#ffe066;" title="Crit damage range (×1.5, ignores screens)">${m.isHighCrit ? '⭐Crit:' : 'Crit:'} ${m.critMinPct}%–${m.critMaxPct}%</span>`
+                            : '';
+                        // Multi-hit total note
+                        const multiNote = m.multiHitMin > 1
+                            ? `<span style="font-size:9px; color:#da77f2;" title="Total damage across all hits (avg ${m.multiHitAvg.toFixed(1)} hits)">Total: ~${Math.round(m.minPct * m.multiHitAvg)}%</span>`
+                            : '';
+                        // Recovery accounting
+                        const recovNote = m.recoveryPerTurn > 0
+                            ? (m.hitsToKO ? `<span style="font-size:9px; color:#aaa;" title="Accounting for passive HP recovery per turn">~${m.hitsToKO} hits w/Recovery</span>` : `<span style="font-size:9px; color:#63d471;" title="Cannot KO through recovery">Heals through</span>`)
+                            : '';
+                        return `<div style="display:flex; flex-direction:column; gap:2px; padding:3px 6px; background:rgba(255,255,255,0.04); border-radius:4px;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <span style="font-size:9px; font-weight:900; color:#888; min-width:14px; text-align:center;">${idx + 1}</span>
+                                <span style="font-size:10px; font-weight:bold; color:var(--txt);">${m.name.replace(/-/g,' ')}</span>${bestLabel}
+                                ${flagChips.join('')}
+                                <span style="margin-left:auto; display:flex; gap:4px; align-items:center; flex-shrink:0;">
+                                    <span style="font-size:9px; color:${effColor}; font-weight:bold;">${effLabel}</span>
+                                    <span style="font-size:10px; font-weight:900; color:${dmgColor};">${m.label} ${m.minPct}%–${m.maxPct}%</span>
+                                </span>
+                            </div>
+                            ${(critNote || multiNote || sashNote || recovNote) ? `<div style="display:flex; flex-wrap:wrap; gap:6px; padding-left:26px;">${critNote}${multiNote}${sashNote}${recovNote}</div>` : ''}
                         </div>`;
                     }).join('');
 
@@ -588,6 +626,26 @@ window.getMatchupsUI = function(selected) {
                     if (my.slot.moveNames?.some(m => PIVOT_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Pivot option lets you scout without fully committing.');
                     if (my.slot.moveNames?.some(m => RECOVERY_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Recovery improves repeat switch-ins if the first trade is neutral.');
                     if (my.slot.moveNames?.some(m => STATUS_PRESSURE_MOVES.has(String(m).toLowerCase()))) utilityNotes.push('Status pressure can punish bulky answers even without an immediate KO.');
+                    // Contact proc chance from opponent's ability (Rocky Helmet, Rough Skin, Static, Flame Body…)
+                    if (typeof CONTACT_PROC_ABILITIES !== 'undefined' && oppSlotData) {
+                        const opAbility = String(oppSlotData.ability || '').toLowerCase().trim();
+                        const procInfo = CONTACT_PROC_ABILITIES[opAbility];
+                        const myContactMove = (my.slot.moveNames || []).some(mName => {
+                            const flags = (typeof MOVE_FLAGS !== 'undefined' && MOVE_FLAGS[(mName||'').toLowerCase().replace(/\s+/g,'-')]) || {};
+                            return flags.contact;
+                        });
+                        if (procInfo && myContactMove) {
+                            const procLabel = procInfo.chance === 100
+                                ? `<span style="color:#ffa94d;">⚡ ${opAbility.replace(/-/g,' ')} always triggers on contact (${procInfo.effect})</span>`
+                                : `<span style="color:#ffa94d;">⚡ ${opAbility.replace(/-/g,' ')} has ${procInfo.chance}% chance of ${procInfo.effect} on contact moves</span>`;
+                            utilityNotes.push(procLabel);
+                        }
+                        // Rocky Helmet / Iron Barbs — check opponent's item
+                        const opItem = getSafeItemName(oppSlotData.item);
+                        if ((opItem === 'rocky helmet' || opItem === 'binding band') && myContactMove) {
+                            utilityNotes.push(`<span style="color:#ffa94d;">🪨 Opponent holds ${opItem.replace(/-/g,' ')} — contact moves deal ${opItem === 'rocky helmet' ? '⅙ HP recoil to you' : 'bonus trap damage'}</span>`);
+                        }
+                    }
                     if (utilityNotes.length) tips.push(...utilityNotes.map(t => `<span style="color:#4dabf7;">🧩 ${t}</span>`));
                     battlePrepHtml = `<div style="margin-top:8px; padding:7px 8px; background:rgba(99,212,113,0.05); border:1px solid rgba(99,212,113,0.2); border-radius:6px;">
                         <span style="font-size:10px; font-weight:900; color:#63d471; display:block; margin-bottom:5px;">⚔️ Battle Prep</span>
