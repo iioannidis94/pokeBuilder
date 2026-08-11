@@ -1,5 +1,5 @@
 
-// --- team-core.js : Διαχείριση State & Μνήμης Ομάδας ---
+// --- team-core.js : Team State & Memory Management ---
 
 const TEAM_KEY = 'pokedex_my_team_v1';
 const MULTI_TEAM_KEY = 'pokedex_multiteam_v1';
@@ -26,10 +26,10 @@ const DEFAULT_BATTLE_CONTEXT = {
     hazardsOnMe: { stealthRock: false, spikes: 0, stickyWeb: false }
 };
 
-// Δομή ενός κενού Slot (Πλέον συμπεριλαμβάνει το Level!)
+// Structure of an empty Slot (Now includes Level!)
 const EMPTY_SLOT = () => ({ pokemonId: null, level: 100, nature: '', ability: '', item: '', teraType: '', calc: false, moveNames: ['', '', '', ''], moves: ['', '', '', ''], moveCats: ['', '', '', ''], iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' } });
 
-// Κανονικοποίηση δεδομένων slot (αν λείπουν πεδία από παλιά saves)
+// Normalize slot data (in case fields are missing from old saves)
 function normalizeSlot(slot) { 
     const base = EMPTY_SLOT(); 
     if (!slot || typeof slot !== 'object') return base; 
@@ -201,7 +201,7 @@ window.resetDataOverridesBundle = function() {
 let allData, teamQuery = '';
 let currentTeamIndex, team;
 
-// Φόρτωση δεδομένων από LocalStorage
+// Load data from LocalStorage
 function loadAllTeams() {
     try {
         const raw = JSON.parse(localStorage.getItem(MULTI_TEAM_KEY));
@@ -217,14 +217,14 @@ function loadAllTeams() {
     return { activeIndex: 0, teams: [{ name: 'Main Team', slots: oldTeam }] };
 }
 
-// Εκκίνηση State
+// Initialize State
 function initTeamState() {
     allData = loadAllTeams();
     currentTeamIndex = allData.activeIndex;
     team = allData.teams[currentTeamIndex].slots;
 }
 
-// Αποθήκευση στο LocalStorage
+// Save to LocalStorage
 function saveTeam() {
     allData.teams[currentTeamIndex].slots = team;
     allData.activeIndex = currentTeamIndex;

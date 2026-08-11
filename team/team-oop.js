@@ -1,6 +1,6 @@
-// --- team-opp.js : Λογική Αντίπαλης Ομάδας (Assassin Mode με Base Stats, Moves & Auto-Save) ---
+// --- team-opp.js : Opponent Team Logic (Assassin Mode with Base Stats, Moves & Auto-Save) ---
 
-// Φόρτωση από το Local Storage ή αρχικοποίηση
+// Load from Local Storage or initialize
 // Backwards compatibility: migrate old format (array of IDs) to new format (array of objects)
 (function() {
     const raw = JSON.parse(localStorage.getItem('tb_oppTeam')) || [];
@@ -12,7 +12,7 @@
 window.showOppPanel = JSON.parse(localStorage.getItem('tb_showOppPanel')) || false;
 window.oppMode = localStorage.getItem('tb_oppMode') || 'custom'; // 'custom' or 'bosses'
 
-// Βοηθητική συνάρτηση αποθήκευσης
+// Helper save function
 window.saveOpponents = function() {
     localStorage.setItem('tb_oppTeam', JSON.stringify(window.oppTeam));
     localStorage.setItem('tb_showOppPanel', JSON.stringify(window.showOppPanel));
@@ -48,8 +48,8 @@ window.searchAndAddOpponent = function() {
         x.name.toLowerCase().includes(normalizedInput)
     );
 
-    if(!p) return alert('Το Pokémon δεν βρέθηκε! Δοκίμασε στα Αγγλικά (π.χ. charizard) ή το ID του.');
-    if(window.oppTeam.length >= 6) return alert('Η αντίπαλη ομάδα είναι γεμάτη (Max 6)!');
+    if(!p) return alert('Pokémon not found! Try in English (e.g. charizard) or use its ID.');
+    if(window.oppTeam.length >= 6) return alert('Opponent team is full (Max 6)!');
 
     window.oppTeam.push({ id: p.id, ability: '', item: '', level: 50, nature: '', iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, moveNames: [], moves: [], moveCats: [] });
     window.saveOpponents();
@@ -179,7 +179,7 @@ window.importOpponentsFromShowdown = function(text) {
     return added;
 };
 
-// Σύγκριση Base Stats & Move Categories
+// Compare Base Stats & Move Categories
 // oppSlotData: { moveNames, moves, moveCats } – optional, enables move-aware scoring
 const PIVOT_MOVES = new Set(['u-turn', 'volt-switch', 'flip-turn', 'parting-shot', 'teleport', 'baton-pass']);
 const RECOVERY_MOVES = new Set(['recover', 'roost', 'soft-boiled', 'slack-off', 'wish', 'moonlight', 'morning-sun', 'milk-drink', 'synthesis', 'shore-up']);
@@ -278,18 +278,18 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
     return score + bestMoveScore;
 };
 
-// UI της αναζήτησης
+// Search UI
 window.getOpponentUI = function() {
     const optionsHtml = typeof POKE !== 'undefined' ? POKE.map(p => `<option value="${p.name.replace(/-/g, ' ')}">`).join('') : '';
 
     const toggleBtn = `<button onclick="toggleOppPanel()" style="width:100%; padding:12px; background: ${window.showOppPanel ? '#555' : '#ff4d4f'}; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:20px; font-size:14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
-        ${window.showOppPanel ? '❌ Κλείσιμο Πάνελ Αντιπάλου' : '🎯 Προσθήκη Αντίπαλης Ομάδας (Assassin Mode)'}
+        ${window.showOppPanel ? '❌ Close Opponent Panel' : '🎯 Add Opponent Team (Assassin Mode)'}
     </button>`;
 
     if (!window.showOppPanel) return toggleBtn;
 
     const oppCards = window.oppTeam.length === 0
-        ? '<span style="opacity:0.6; font-size:12px; margin-top:10px;">Πρόσθεσε αντιπάλους ή χρησιμοποίησε "📋 Paste Showdown" για γρήγορη εισαγωγή με τις επιθέσεις τους!</span>'
+        ? '<span style="opacity:0.6; font-size:12px; margin-top:10px;">Add opponents or use "📋 Paste Showdown" for quick import with their moves!</span>'
         : window.oppTeam.map((opp, idx) => {
             const opId = typeof opp === 'number' ? opp : opp.id;
             const oppMoveNames = (typeof opp === 'object' && opp.moveNames) ? opp.moveNames : [];
@@ -340,10 +340,10 @@ window.getOpponentUI = function() {
     <div class="opp-panel" style="margin-top:15px; padding:15px; background:rgba(255, 77, 79, 0.05); border:1px solid #ff4d4f; border-radius:8px;">
         <datalist id="oppPokeList">${optionsHtml}</datalist>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:6px;">
-            <strong style="color:#ff4d4f; font-size:15px;">Εκτελεστής (Target Mode)</strong>
+            <strong style="color:#ff4d4f; font-size:15px;">Assassin (Target Mode)</strong>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
                 <button onclick="window._openOppShowdownModal && window._openOppShowdownModal()" style="background:#4dabf7; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">📋 Paste Showdown</button>
-                <button onclick="clearOpponents()" style="background:#ff4d4f; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">Καθαρισμός</button>
+                <button onclick="clearOpponents()" style="background:#ff4d4f; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">Clear</button>
             </div>
         </div>
         <div style="display:flex; gap:8px; margin-bottom:14px;">
@@ -351,8 +351,8 @@ window.getOpponentUI = function() {
             <button onclick="setOppMode('bosses')" style="flex:1; padding:8px 10px; border-radius:6px; border:2px solid ${window.oppMode === 'bosses' ? '#ff6b6b' : '#555'}; background:${window.oppMode === 'bosses' ? 'rgba(255,107,107,0.15)' : 'transparent'}; color:${window.oppMode === 'bosses' ? '#ff6b6b' : 'var(--dim)'}; font-size:12px; font-weight:bold; cursor:pointer; transition:.15s;">⚔️ Bosses</button>
         </div>
         <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <input type="text" id="oppSearchInput" list="oppPokeList" onkeydown="if(event.key === 'Enter') searchAndAddOpponent()" placeholder="Π.χ. garchomp ή 445" style="flex:1; padding:8px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt);">
-            <button onclick="searchAndAddOpponent()" style="padding:8px 15px; cursor:pointer; background:#4dabf7; color:white; border:none; border-radius:4px; font-weight:bold;">Προσθήκη</button>
+            <input type="text" id="oppSearchInput" list="oppPokeList" onkeydown="if(event.key === 'Enter') searchAndAddOpponent()" placeholder="E.g. garchomp or 445" style="flex:1; padding:8px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt);">
+            <button onclick="searchAndAddOpponent()" style="padding:8px 15px; cursor:pointer; background:#4dabf7; color:white; border:none; border-radius:4px; font-weight:bold;">Add</button>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:10px; min-height:45px;">${oppCards}</div>
     </div>`;
@@ -763,7 +763,7 @@ window.calcAssassinScore = function(candidate) {
     document.getElementById('oppSdImportBtn').addEventListener('click', () => {
         const text = document.getElementById('oppSdPasteArea').value.trim();
         if (!text) { alert('Please paste some Pokémon data first.'); return; }
-        if (window.oppTeam.length >= 6) { alert('Η αντίπαλη ομάδα είναι γεμάτη! Κάνε "Clear & Replace" ή αφαίρεσε κάποιο Pokémon.'); return; }
+        if (window.oppTeam.length >= 6) { alert('Opponent team is full! Click "Clear & Replace" or remove a Pokémon.'); return; }
         const added = window.importOpponentsFromShowdown(text);
         if (!added) { alert('Could not recognise any Pokémon in the pasted text. Check spelling or formatting.'); return; }
         showMsg(`✓ Added ${added} opponent(s)!`);
@@ -783,7 +783,7 @@ window.calcAssassinScore = function(candidate) {
     window._openOppShowdownModal = openOppModal;
 })();
 
-// --- Αναγκαστική εμφάνιση του UI κατά την πρώτη φόρτωση της σελίδας ---
+// --- Force UI display on first page load ---
 setTimeout(() => {
     if (typeof renderTeamSlots === 'function') renderTeamSlots();
 }, 50);

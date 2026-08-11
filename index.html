@@ -95,11 +95,11 @@
   </section>
 </div>
 
-<!-- 1. Data Layer (Πρώτα φορτώνουμε τις σταθερές) -->
+<!-- 1. Data Layer (Load constants first) -->
 <script src="data/TC.js" defer></script>
 
 
-<!-- 2. Μετά τα μεγάλα Data αντικείμενα -->
+<!-- 2. Then the large Data objects -->
 <script src="data/pokemon-core.js" defer></script>
 <script src="data/base_stats.js" defer></script>
 <script src="data/abilities.js" defer></script>
@@ -109,13 +109,13 @@
 <script src="data/bosses.js" defer></script>
 
 
-<!-- 3. Εργαλεία που χρησιμοποιούνται παντού -->
+<!-- 3. Tools used everywhere -->
 <script src="utils.js" defer></script>
 
-<!-- 4. Το Core Logic της ομάδας (πρέπει να τρέξει ΠΡΙΝ το UI!) -->
+<!-- 4. Team Core Logic (must run BEFORE the UI!) -->
 <script src="team/team-core.js" defer></script>
 
-<!-- 5. Τελευταία τα αρχεία που "πειράζουν" το HTML (UI, Events, AI) -->
+<!-- 5. Last, the files that modify the HTML (UI, Events, AI) -->
 <script src="team/team-io.js" defer></script>
 <script src="team/team-ai.js" defer></script>
 <script src="team/team-recommender.js" defer></script>

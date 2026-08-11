@@ -1,4 +1,4 @@
-// --- dex.js : Κεντρικό Pokédex & Αναζήτηση ---
+// --- dex.js : Central Pokédex & Search ---
 
 function card(p) {
     const { id, name, types } = p;
@@ -6,7 +6,7 @@ function card(p) {
     const num = String(id).padStart(4, '0');
     const img = spriteImg(p);
 
-    // Υπολογισμός Ability Notices
+    // Calculate Ability Notices
     const pokeAbilities = ABILITIES[String(id)] || [];
     let abilityNotices = [];
 
@@ -34,7 +34,7 @@ function card(p) {
 }
 
 const tfEl = document.getElementById('tf');
-let activeTypes = []; // Πλέον πίνακας για 2 τύπους
+let activeTypes = []; // Now an array for 2 types
 
 AT.forEach(t => {
     const b = document.createElement('button');
@@ -47,7 +47,7 @@ AT.forEach(t => {
             b.classList.remove('on');
         } else {
             if (activeTypes.length >= 2) {
-                // Καθαρισμός αν πάει για 3ο τύπο
+                // Reset if trying to add a 3rd type
                 tfEl.querySelectorAll('.tf').forEach(x => x.classList.remove('on'));
                 activeTypes = [t];
                 b.classList.add('on');
@@ -84,10 +84,10 @@ function renderDex() {
     const ql = qDex.toLowerCase().trim();
     let list = POKE;
     
-    // Φιλτράρισμα με όνομα/ID
+    // Filter by name/ID
     if (ql) list = list.filter(p => p.name.replace(/-/g, ' ').includes(ql) || String(p.id).includes(ql) || p.types.some(t => t.includes(ql)));
     
-    // Φιλτράρισμα με 1 ή 2 τύπους
+    // Filter by 1 or 2 types
     if (activeTypes.length > 0) {
         list = list.filter(p => activeTypes.every(t => p.types.includes(t)));
     }

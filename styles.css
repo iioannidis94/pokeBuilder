@@ -29,8 +29,8 @@ header {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-wrap: nowrap; /* ΑΛΛΑΞΕ ΤΟ ΑΠΟ wrap ΣΕ nowrap */
-  overflow-x: auto;  /* ΕΠΙΤΡΕΠΕΙ ΤΟ ΟΡΙΖΟΝΤΙΟ SCROLL */
+  flex-wrap: nowrap; /* CHANGED FROM wrap TO nowrap */
+  overflow-x: auto;  /* ALLOWS HORIZONTAL SCROLL */
 }
 .logo{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--yel);
   text-shadow:0 0 24px rgba(255,204,0,.5);white-space:nowrap;}
@@ -186,7 +186,7 @@ body.dex-view .sw{display:block}
 .calcViewPanel{width:100%;max-width:none;margin:0;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);box-shadow:0 22px 80px rgba(0,0,0,.55);overflow:hidden}
 .calcViewBody{padding:14px;display:grid;grid-template-columns:1fr;gap:10px}
 
-/* --- ΔΙΟΡΘΩΣΗ ΓΙΑ ΜΟΝΗ ΓΡΑΜΜΗ ΣΤΗΝ ΠΑΝΩ ΜΠΑΡΑ (Οριζόντιο Scroll) --- */
+/* --- FIX FOR SINGLE LINE IN THE TOP BAR (Horizontal Scroll) --- */
 .teamTop {
   position: sticky; 
   top: 0; 
@@ -235,7 +235,7 @@ body.dex-view .sw{display:block}
   .calcHead strong{font-size:12px;}
 }
 
-/* ΝΕΟΣ ΣΧΕΔΙΑΣΜΟΣ ΓΙΑ ΤΑ MOVES */
+/* NEW DESIGN FOR MOVES */
 .movesGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -329,12 +329,12 @@ body.dex-view .sw{display:block}
   header{padding:10px 12px}
 }
 
-/* Styling για το scroll της μπάρας */
+/* Styling for the bar scroll */
 header::-webkit-scrollbar { height: 4px; }
 header::-webkit-scrollbar-track { background: transparent; }
 header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 
-/* Αναγκάζουμε τα στοιχεία να μην μικραίνουν */
+/* Force elements not to shrink */
 .logo, .sw, .teamBtn, .dexBtn, .themeToggle {
   flex-shrink: 0;
   white-space: nowrap;

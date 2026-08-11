@@ -76,7 +76,7 @@ const SD_STAT_MAP = {
     'special-attack': 'SPATK', 'special-defense': 'SPDEF', speed: 'SPD'
 };
 
-// --- Ενισχυμένος Showdown Parser ---
+// --- Enhanced Showdown Parser ---
 function parseShowdownBlock(text) {
     const lines = text.split('\n').map(l => l.trim()).filter(l => l.length);
     if (!lines.length) return null;
@@ -84,15 +84,15 @@ function parseShowdownBlock(text) {
     const slot = EMPTY_SLOT();
     const moveNames = [];
 
-    // 1. Διάβασμα Ονόματος και Item
+    // 1. Read Name and Item
     const firstLine = lines[0];
-    const atIdx = firstLine.indexOf('@'); // Πιο forgiving, χωρίς να απαιτεί κενά γύρω από το @
+    const atIdx = firstLine.indexOf('@'); // More forgiving, does not require spaces around @
     let rawName = atIdx !== -1 ? firstLine.slice(0, atIdx).trim() : firstLine.trim();
     if (atIdx !== -1) {
         slot.item = firstLine.slice(atIdx + 1).trim();
     }
 
-    rawName = rawName.replace(/\s*\((M|F)\)\s*$/, '').trim(); // Αφαίρεση (M) / (F)
+    rawName = rawName.replace(/\s*\((M|F)\)\s*$/, '').trim(); // Remove (M) / (F)
 
     const nicknameMatch = rawName.match(/^.+\((.+)\)\s*$/);
     if (nicknameMatch) rawName = nicknameMatch[1].trim();
@@ -107,22 +107,22 @@ function parseShowdownBlock(text) {
     if (!pokemon) return null;   
     slot.pokemonId = pokemon.id;
 
-    // 2. Διάβασμα υπολοίπων γραμμών
+    // 2. Read remaining lines
     for (let li = 1; li < lines.length; li++) {
         const line = lines[li];
 
-        // LEVEL: Πιάνει το "Level: 50" ή "Level:50"
+        // LEVEL: Catches "Level: 50" or "Level:50"
         const lvMatch = line.match(/^Level:\s*(\d+)/i);
         if (lvMatch) { 
             slot.level = parseInt(lvMatch[1], 10); 
             continue; 
         }
 
-        // NATURE: Πιάνει το "Timid Nature"
+        // NATURE: Catches "Timid Nature"
         const natMatch = line.match(/^([a-zA-Z]+)\s+nature/i);
         if (natMatch) {
             const nat = natMatch[1].trim();
-            // Μετατροπή στο σωστό format (π.χ. "Timid")
+            // Convert to the correct format (e.g. "Timid")
             slot.nature = nat.charAt(0).toUpperCase() + nat.slice(1).toLowerCase();
             continue;
         }
@@ -134,15 +134,15 @@ function parseShowdownBlock(text) {
         }
 
 
-// ABILITY: Πιάνει το "Ability: Swift Swim"
+// ABILITY: Catches "Ability: Swift Swim"
         const abilMatch = line.match(/^Ability:\s*(.+)/i);
         if (abilMatch) { 
-            // Μετατροπή σε πεζά και αντικατάσταση κενών με παύλες για να ταιριάζει με το data.js
+            // Convert to lowercase and replace spaces with dashes to match data.js
             slot.ability = abilMatch[1].trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
             continue; 
         }
 
-        // EVs: Πιάνει το "EVs: 252 SpA / 4 SpD / 252 Spe"
+        // EVs: Catches "EVs: 252 SpA / 4 SpD / 252 Spe"
         const evMatch = line.match(/^EVs:\s*(.+)/i);
         if (evMatch) {
             evMatch[1].split('/').forEach(part => {
@@ -154,7 +154,7 @@ function parseShowdownBlock(text) {
             continue;
         }
 
-        // IVs: Πιάνει το "IVs: 0 Atk"
+        // IVs: Catches "IVs: 0 Atk"
         const ivMatch = line.match(/^IVs:\s*(.+)/i);
         if (ivMatch) {
             ivMatch[1].split('/').forEach(part => {
@@ -166,25 +166,25 @@ function parseShowdownBlock(text) {
             continue;
         }
 
-        // MOVES: Πιάνει το "- Thunderbolt"
+        // MOVES: Catches "- Thunderbolt"
         if (line.startsWith('- ')) {
             moveNames.push(line.slice(2).trim());
             continue;
         }
     }
 
-    // Καταχώρηση κινήσεων
+    // Register moves
     slot.moveNames = Array.from({ length: 4 }, (_, i) => moveNames[i] || '');
     slot.moveNames.forEach((mn, i) => {
         if (!mn) return;
         
-        // 1. Μετατρέπουμε το όνομα σε μορφή "moonblast" ή "shadow-ball"
+        // 1. Convert the name to the format "moonblast" or "shadow-ball"
         const key = mn.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
         
-        // 2. Το ΑΠΟΘΗΚΕΥΟΥΜΕ πίσω στο slot με τη σωστή μορφή!
+        // 2. SAVE it back to the slot with the correct format!
         slot.moveNames[i] = key; 
         
-        // 3. Βρίσκουμε τον τύπο και την κατηγορία (από το νέο κλειδί)
+        // 3. Find the type and category (from the new key)
         const info = typeof MOVE_INFO !== 'undefined' ? (MOVE_INFO[key] || {}) : {};
         slot.moves[i]    = info.type || '';
         slot.moveCats[i] = info.cat  || '';
@@ -211,7 +211,7 @@ function importFromShowdown(slots) {
     return added;
 }
 
-// Ενσωμάτωση του Modal Popup για Showdown
+// Embed the Modal Popup for Showdown
 (function injectShowdownModal() {
     const overlay = document.createElement('div');
     overlay.id = 'sdImportOverlay';
@@ -267,22 +267,22 @@ function importFromShowdown(slots) {
     window._openShowdownModal = openModal;
 })();
 
-    // --- ΝΕΟ: SHAREABLE TEAM LINKS ---
+    // --- NEW: SHAREABLE TEAM LINKS ---
 
-// 1. Δημιουργία και αντιγραφή του Share Link
+// 1. Create and copy the Share Link
 function generateShareLink() {
     const filled = team.filter(s => s.pokemonId);
     if (!filled.length) { alert('Your team is empty! Add some Pokémon before sharing.'); return; }
     
     try {
         const json = JSON.stringify(filled);
-        const b64 = btoa(encodeURIComponent(json)); // Μετατροπή σε Base64, ασφαλές για URL
+        const b64 = btoa(encodeURIComponent(json)); // Convert to Base64, safe for URL
         const url = window.location.origin + window.location.pathname + '#team=' + b64;
         
         navigator.clipboard.writeText(url).then(() => {
             showToast('🔗 Share Link copied to clipboard!');
         }).catch(() => {
-            // Αν ο browser μπλοκάρει το clipboard
+            // If the browser blocks the clipboard
             prompt('Copy this link to share your team:', url);
         });
     } catch (e) {
@@ -290,32 +290,32 @@ function generateShareLink() {
     }
 }
 
-// 2. Έλεγχος κατά το άνοιγμα της σελίδας: Αν υπάρχει link, φόρτωσε την ομάδα
+// 2. Check on page load: If a link exists, load the team
 window.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash.startsWith('#team=')) {
         try {
-            const b64 = window.location.hash.slice(6); // Παίρνει ότι είναι μετά το "#team="
+            const b64 = window.location.hash.slice(6); // Gets everything after "#team="
             const json = decodeURIComponent(atob(b64));
             const parsed = JSON.parse(json);
             
             if (Array.isArray(parsed) && parsed.length > 0) {
-                // Δημιουργούμε ένα νέο "Tab" για την εισαγόμενη ομάδα
+                // Create a new "Tab" for the imported team
                 const newTeamName = "Shared Team " + Math.floor(Math.random() * 1000);
                 allData.teams.push({ name: newTeamName, slots: Array.from({ length: TEAM_SIZE }, () => EMPTY_SLOT()) });
                 currentTeamIndex = allData.teams.length - 1;
                 team = allData.teams[currentTeamIndex].slots;
                 
-                // Γεμίζουμε τα slots
+                // Fill the slots
                 parsed.forEach((slotData, i) => {
                     if (i < TEAM_SIZE) team[i] = normalizeSlot(slotData);
                 });
                 
                 saveTeam();
                 
-                // Καθαρίζουμε το URL για να μην ξαναφορτωθεί στο επόμενο refresh
+                // Clean the URL so it does not reload on next refresh
                 window.history.replaceState(null, null, window.location.pathname);
                 
-                // Ανοίγουμε το Team Builder αυτόματα
+                // Open the Team Builder automatically
                 setTimeout(() => {
                     if (typeof openTeam === 'function') openTeam();
                     if (typeof updateTeamDropdown === 'function') updateTeamDropdown();
@@ -377,7 +377,7 @@ function copyTeamReport() {
     });
 }
 
-// 3. Δημιουργία του Κουμπιού "Share Link" δυναμικά
+// 3. Dynamically create the "Share Link" button
 (function injectShareButton() {
     window.addEventListener('DOMContentLoaded', () => {
         const exportBtn = document.getElementById('teamExport');
@@ -400,7 +400,7 @@ function copyTeamReport() {
         showdownBtn.style.cssText = 'border-color:#63d471; color:#63d471; background:rgba(99,212,113,0.1); margin-right: 5px;';
         showdownBtn.addEventListener('click', exportTeamShowdown);
 
-        // Το βάζουμε δίπλα στο κουμπί Export
+        // Place it next to the Export button
         exportBtn.parentNode.insertBefore(showdownBtn, exportBtn);
         exportBtn.parentNode.insertBefore(shareBtn, exportBtn);
     });
