@@ -1229,12 +1229,13 @@ function getDefensiveCoreHTML(selected) {
 
     const color = '#4dabf7';
 
-    // For each Pokémon, compute weakness set (types that hit for ≥2×)
+    // For each Pokémon, compute weakness set using the combined type multiplier
     const monData = selected.map(mon => {
         const types = mon.p.types || [];
-        const weakTo  = AT.filter(a => types.some(t => (EFF[a]?.[t] ?? 1) >= 2) && !types.some(t => (EFF[a]?.[t] ?? 1) === 0));
-        const resistTo = AT.filter(a => types.every(t => (EFF[a]?.[t] ?? 1) <= 0.5));
-        const immuneTo = AT.filter(a => types.some(t => (EFF[a]?.[t] ?? 1) === 0));
+        const combinedMult = a => types.reduce((acc, t) => acc * (EFF[a]?.[t] ?? 1), 1);
+        const weakTo   = AT.filter(a => combinedMult(a) >= 2);
+        const resistTo = AT.filter(a => { const m = combinedMult(a); return m > 0 && m <= 0.5; });
+        const immuneTo = AT.filter(a => combinedMult(a) === 0);
         return { name: mon.p.name.replace(/-/g, ' '), types, weakTo: new Set(weakTo), resistTo: new Set(resistTo), immuneTo: new Set(immuneTo) };
     });
 
@@ -1437,12 +1438,12 @@ function getScenarioSimulatorHTML(selected) {
     const atkDmg     = Math.round(defMaxHP * atkDmgPct / 100);
     const defDmg     = Math.round(atkMaxHP * defDmgPct / 100);
 
-    // Per-turn recovery
+    // Per-turn recovery (Leftovers / Black Sludge only — Sitrus Berry is one-time, handled as 0 here)
     const atkItem = String(attacker.slot.item || '').toLowerCase();
     const defItem = String(defender.slot.item || '').toLowerCase();
-    const atkRec  = (atkItem === 'leftovers' || atkItem === 'black sludge') ? Math.floor(atkMaxHP / 16) : (atkItem === 'sitrus berry' ? 0 : 0);
+    const atkRec  = (atkItem === 'leftovers' || atkItem === 'black sludge') ? Math.floor(atkMaxHP / 16) : 0;
     const defRec  = (defItem === 'leftovers' || defItem === 'black sludge') ? Math.floor(defMaxHP / 16) : 0;
-    // Life Orb recoil on each hit
+    // Life Orb recoil on each hit (10% of user's max HP)
     const atkRecoil = (atkItem === 'life orb') ? Math.round(atkMaxHP * 0.1) : 0;
     const defRecoil = (defItem === 'life orb') ? Math.round(defMaxHP * 0.1) : 0;
 
@@ -1457,23 +1458,26 @@ function getScenarioSimulatorHTML(selected) {
     for (let t = 1; t <= 3; t++) {
         let turn = { turn: t };
         if (atkGoesFirst) {
-            // Attacker moves first
+            // Attacker moves first: deal damage + recoil, then end-of-turn recovery
             defHP = Math.max(0, defHP - atkDmg);
             atkHP = Math.max(0, atkHP - atkRecoil);
             atkHP = Math.min(atkMaxHP, atkHP + atkRec);
             turn.afterAtk = { atkHP, defHP };
             if (defHP > 0) {
+                // Defender's counter-attack
                 atkHP = Math.max(0, atkHP - defDmg);
                 defHP = Math.max(0, defHP - defRecoil);
                 defHP = Math.min(defMaxHP, defHP + defRec);
             }
         } else {
-            defHP = Math.max(0, defHP - defRecoil);
+            // Defender moves first: apply recovery, deal damage + recoil
+            atkHP = Math.min(atkMaxHP, atkHP + atkRec);
             defHP = Math.min(defMaxHP, defHP + defRec);
             atkHP = Math.max(0, atkHP - defDmg);
-            atkHP = Math.min(atkMaxHP, atkHP + atkRec);
+            defHP = Math.max(0, defHP - defRecoil);
             turn.afterDef = { atkHP, defHP };
             if (atkHP > 0) {
+                // Attacker's counter-attack
                 defHP = Math.max(0, defHP - atkDmg);
                 atkHP = Math.max(0, atkHP - atkRecoil);
             }
@@ -1495,7 +1499,7 @@ function getScenarioSimulatorHTML(selected) {
     else if (outcome.defPct < outcome.atkPct) resultLabel = `📈 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> winning the trade`;
     else resultLabel = '↔ Even trade';
 
-    const hpBar = (pct, color2) => {
+    const hpBar = (pct) => {
         const c = pct > 50 ? '#63d471' : pct > 25 ? '#ffc107' : '#ff6b6b';
         return `<div style="flex:1; height:6px; background:#333; border-radius:3px; overflow:hidden;"><div style="width:${pct}%; height:100%; background:${c}; transition:.2s;"></div></div>`;
     };

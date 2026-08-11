@@ -1132,8 +1132,8 @@ const MOVE_METADATA = {
     'spore':            { pp: 15, secondary: { chance: 100, effect: 'Sleep' } },
     'sleep-powder':     { pp: 15, secondary: { chance: 75, effect: 'Sleep' } },
     'will-o-wisp':      { pp: 15, secondary: { chance: 85, effect: 'Burn' } },
-    'thunder-wave':     { pp: 20, secondary: { chance: 90, effect: 'Paralysis' } },
-    'toxic':            { pp: 10, secondary: { chance: 90, effect: 'Bad Poison' } },
+    'thunder-wave':     { pp: 20, secondary: { chance: 100, effect: 'Paralysis' } },
+    'toxic':            { pp: 10, secondary: { chance: 100, effect: 'Bad Poison' } },
     // --- Moves with no secondary but common PP reference ---
     'protect':          { pp: 10 },
     'detect':           { pp: 5 },
