@@ -20,6 +20,7 @@
   </div>
   <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
   <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
+  <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
   <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle theme">🌙</button>
 </header>
 
@@ -51,6 +52,16 @@
         </aside>
         <section class="teamSlots" id="teamSlots"></section>
     </div>
+  </section>
+</div>
+
+<div class="calcOverlay" id="calcOverlay" aria-hidden="true">
+  <section class="calcViewPanel" role="dialog" aria-modal="true" aria-labelledby="calcViewTitle">
+    <div class="teamTop">
+      <h2 class="teamTitle" id="calcViewTitle">BATTLE CALCULATOR</h2>
+      <button class="teamClose" id="calcClose" type="button">Close</button>
+    </div>
+    <div class="calcViewBody" id="calcViewContent"></div>
   </section>
 </div>
 
