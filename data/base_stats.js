@@ -1042,6 +1042,13 @@ const BASE_STATS = {
   "10019": { hp: 79, atk: 100, def: 80, spa: 110, spd: 90, spe: 121 }, // Tornadus-Therian (Regenerator — faster + SpA)
   "10020": { hp: 79, atk: 105, def: 70, spa: 145, spd: 80, spe: 101 }, // Thundurus-Therian (Volt Absorb — highest SpA of Genies)
   "10026": { hp: 89, atk: 145, def: 90, spa: 105, spd: 80, spe: 91 }, // Landorus-Therian (Intimidate — best Atk of Genies)
+// rotom 
+  "10008": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Heat
+  "10009": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Wash
+  "10010": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Frost
+  "10011": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Fan
+  "10012": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Mow
+  
   // Mega Forms (PokeAPI IDs)
   "10033": { hp: 80, atk: 100, def: 123, spa: 122, spd: 120, spe: 80 }, // Mega Venusaur
   "10034": { hp: 78, atk: 130, def: 111, spa: 130, spd: 85, spe: 100 }, // Mega Charizard X
