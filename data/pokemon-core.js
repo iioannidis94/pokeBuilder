@@ -10,7 +10,11 @@ const POKE=[{"id":1,"name":"bulbasaur","types":["grass","poison"]},{"id":2,"name
 {"id":10250,"name":"tauros-paldea-combat","types":["fighting"]},{"id":10251,"name":"tauros-paldea-blaze","types":["fire","fighting"]},{"id":10252,"name":"tauros-paldea-aqua","types":["water","fighting"]},{"id":10253,"name":"wooper-paldea","types":["poison","ground"]},
 {"id":10019,"name":"tornadus-therian","types":["flying"]},
 {"id":10020,"name":"thundurus-therian","types":["electric","flying"]},
-{"id":10026,"name":"landorus-therian","types":["ground","flying"]},
+{"id":10026,"name":"landorus-therian","types":["ground","flying"]},{"id":10008,"name":"rotom-heat","types":["electric","fire"]},
+{"id":10009,"name":"rotom-wash","types":["electric","water"]},
+{"id":10010,"name":"rotom-frost","types":["electric","ice"]},
+{"id":10011,"name":"rotom-fan","types":["electric","flying"]},
+{"id":10012,"name":"rotom-mow","types":["electric","grass"]},
 // Mega Forms
 {"id":10033,"name":"venusaur-mega","types":["grass","poison"]},
 {"id":10034,"name":"charizard-mega-x","types":["fire","dragon"]},
