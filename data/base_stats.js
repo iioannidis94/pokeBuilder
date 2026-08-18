@@ -759,7 +759,7 @@ const BASE_STATS = {
   "758": { hp: 68, atk: 64, def: 60, spa: 111, spd: 60, spe: 117 }, // Salazzle
   "759": { hp: 70, atk: 75, def: 50, spa: 45, spd: 50, spe: 50 }, // Stufful
   "760": { hp: 120, atk: 125, def: 80, spa: 55, spd: 60, spe: 60 }, // Bewear
-
+ 
   "761": { hp: 42, atk: 30, def: 38, spa: 30, spd: 38, spe: 32 }, // Bounsweet
   "762": { hp: 52, atk: 40, def: 48, spa: 40, spd: 48, spe: 62 }, // Steenee
   "763": { hp: 72, atk: 120, def: 98, spa: 50, spd: 98, spe: 72 }, // Tsareena
@@ -770,7 +770,7 @@ const BASE_STATS = {
   "768": { hp: 75, atk: 125, def: 140, spa: 60, spd: 90, spe: 40 }, // Golisopod
   "769": { hp: 55, atk: 55, def: 80, spa: 70, spd: 45, spe: 15 }, // Sandygast
   "770": { hp: 85, atk: 75, def: 110, spa: 100, spd: 75, spe: 35 }, // Palossand
-
+ 
   "771": { hp: 55, atk: 60, def: 130, spa: 30, spd: 130, spe: 5 }, // Pyukumuku
   "772": { hp: 95, atk: 95, def: 95, spa: 95, spd: 95, spe: 59 }, // Type: Null
   "773": { hp: 95, atk: 95, def: 95, spa: 95, spd: 95, spe: 95 }, // Silvally
@@ -781,7 +781,7 @@ const BASE_STATS = {
   "778": { hp: 55, atk: 90, def: 80, spa: 50, spd: 105, spe: 96 }, // Mimikyu
   "779": { hp: 68, atk: 105, def: 70, spa: 70, spd: 70, spe: 92 }, // Bruxish
   "780": { hp: 78, atk: 60, def: 85, spa: 135, spd: 91, spe: 36 }, // Drampa
-
+ 
   "781": { hp: 70, atk: 131, def: 100, spa: 86, spd: 90, spe: 40 }, // Dhelmise
   "782": { hp: 45, atk: 55, def: 65, spa: 45, spd: 45, spe: 45 }, // Jangmo-o
   "783": { hp: 55, atk: 75, def: 90, spa: 65, spd: 70, spe: 65 }, // Hakamo-o
@@ -792,7 +792,7 @@ const BASE_STATS = {
   "788": { hp: 70, atk: 75, def: 115, spa: 95, spd: 130, spe: 85 }, // Tapu Fini
   "789": { hp: 43, atk: 29, def: 31, spa: 29, spd: 31, spe: 37 }, // Cosmog
   "790": { hp: 43, atk: 29, def: 131, spa: 29, spd: 131, spe: 37 }, // Cosmoem
-
+ 
   "791": { hp: 137, atk: 137, def: 107, spa: 113, spd: 89, spe: 97 }, // Solgaleo
   "792": { hp: 137, atk: 113, def: 89, spa: 137, spd: 107, spe: 97 }, // Lunala
   "793": { hp: 109, atk: 53, def: 47, spa: 127, spd: 131, spe: 103 }, // Nihilego
@@ -803,7 +803,7 @@ const BASE_STATS = {
   "798": { hp: 59, atk: 181, def: 131, spa: 59, spd: 31, spe: 109 }, // Kartana
   "799": { hp: 223, atk: 101, def: 53, spa: 97, spd: 53, spe: 43 }, // Guzzlord
   "800": { hp: 97, atk: 107, def: 101, spa: 127, spd: 89, spe: 79 }, // Necrozma
-
+ 
   "801": { hp: 80, atk: 95, def: 115, spa: 130, spd: 115, spe: 65 }, // Magearna
   "802": { hp: 90, atk: 125, def: 80, spa: 90, spd: 90, spe: 125 }, // Marshadow
   "803": { hp: 67, atk: 73, def: 67, spa: 73, spd: 67, spe: 73 }, // Poipole
@@ -814,7 +814,7 @@ const BASE_STATS = {
   "808": { hp: 46, atk: 65, def: 65, spa: 55, spd: 35, spe: 34 }, // Meltan
   "809": { hp: 135, atk: 143, def: 143, spa: 80, spd: 65, spe: 34 }, // Melmetal
   "810": { hp: 50, atk: 65, def: 50, spa: 40, spd: 40, spe: 65 }, // Grookey
-
+ 
   "811": { hp: 70, atk: 85, def: 70, spa: 55, spd: 60, spe: 80 }, // Thwackey
   "812": { hp: 100, atk: 125, def: 90, spa: 60, spd: 70, spe: 85 }, // Rillaboom
   "813": { hp: 50, atk: 71, def: 40, spa: 40, spd: 40, spe: 69 }, // Scorbunny
@@ -825,7 +825,7 @@ const BASE_STATS = {
   "818": { hp: 70, atk: 85, def: 65, spa: 125, spd: 65, spe: 120 }, // Inteleon
   "819": { hp: 70, atk: 55, def: 55, spa: 35, spd: 35, spe: 25 }, // Skwovet
   "820": { hp: 120, atk: 95, def: 95, spa: 55, spd: 75, spe: 20 }, // Greedent
-
+ 
   "821": { hp: 38, atk: 47, def: 35, spa: 33, spd: 35, spe: 57 }, // Rookidee
   "822": { hp: 68, atk: 67, def: 55, spa: 43, spd: 55, spe: 77 }, // Corvisquire
   "823": { hp: 98, atk: 87, def: 105, spa: 53, spd: 85, spe: 67 }, // Corviknight
@@ -836,7 +836,7 @@ const BASE_STATS = {
   "828": { hp: 70, atk: 58, def: 58, spa: 87, spd: 92, spe: 90 }, // Thievul
   "829": { hp: 40, atk: 40, def: 60, spa: 40, spd: 60, spe: 10 }, // Gossifleur
   "830": { hp: 60, atk: 50, def: 90, spa: 80, spd: 120, spe: 10 }, // Eldegoss
-
+ 
   "831": { hp: 42, atk: 40, def: 55, spa: 40, spd: 45, spe: 48 }, // Wooloo
   "832": { hp: 72, atk: 80, def: 100, spa: 60, spd: 90, spe: 88 }, // Dubwool
   "833": { hp: 50, atk: 64, def: 50, spa: 38, spd: 38, spe: 44 }, // Chewtle
@@ -847,7 +847,7 @@ const BASE_STATS = {
   "838": { hp: 80, atk: 60, def: 90, spa: 60, spd: 70, spe: 50 }, // Carkol
   "839": { hp: 110, atk: 80, def: 120, spa: 80, spd: 90, spe: 30 }, // Coalossal
   "840": { hp: 40, atk: 40, def: 80, spa: 40, spd: 40, spe: 20 }, // Applin
-
+ 
   "841": { hp: 70, atk: 110, def: 80, spa: 95, spd: 60, spe: 70 }, // Flapple
   "842": { hp: 110, atk: 85, def: 80, spa: 100, spd: 80, spe: 30 }, // Appletun
   "843": { hp: 52, atk: 57, def: 75, spa: 35, spd: 50, spe: 46 }, // Silicobra
@@ -858,7 +858,7 @@ const BASE_STATS = {
   "848": { hp: 40, atk: 38, def: 35, spa: 54, spd: 35, spe: 40 }, // Toxel
   "849": { hp: 75, atk: 98, def: 70, spa: 114, spd: 70, spe: 75 }, // Toxtricity
   "850": { hp: 50, atk: 65, def: 45, spa: 50, spd: 50, spe: 45 }, // Sizzlipede
-
+ 
   "851": { hp: 100, atk: 115, def: 65, spa: 90, spd: 90, spe: 65 }, // Centiskorch
   "852": { hp: 50, atk: 68, def: 60, spa: 50, spd: 50, spe: 32 }, // Clobbopus
   "853": { hp: 80, atk: 118, def: 90, spa: 70, spd: 80, spe: 42 }, // Grapploct
@@ -869,7 +869,7 @@ const BASE_STATS = {
   "858": { hp: 57, atk: 90, def: 95, spa: 136, spd: 103, spe: 29 }, // Hatterene
   "859": { hp: 45, atk: 45, def: 30, spa: 55, spd: 40, spe: 50 }, // Impidimp
   "860": { hp: 65, atk: 60, def: 45, spa: 75, spd: 55, spe: 70 }, // Morgrem
-
+ 
   "861": { hp: 95, atk: 120, def: 65, spa: 95, spd: 75, spe: 60 }, // Grimmsnarl
   "862": { hp: 93, atk: 90, def: 101, spa: 60, spd: 81, spe: 46 }, // Obstagoon
   "863": { hp: 70, atk: 110, def: 100, spa: 50, spd: 60, spe: 50 }, // Perrserker
@@ -880,7 +880,7 @@ const BASE_STATS = {
   "868": { hp: 45, atk: 40, def: 40, spa: 50, spd: 61, spe: 34 }, // Milcery
   "869": { hp: 65, atk: 60, def: 75, spa: 110, spd: 121, spe: 64 }, // Alcremie
   "870": { hp: 65, atk: 100, def: 100, spa: 70, spd: 60, spe: 75 }, // Falinks
-
+ 
   "871": { hp: 48, atk: 101, def: 95, spa: 91, spd: 85, spe: 15 }, // Pincurchin
   "872": { hp: 30, atk: 25, def: 35, spa: 45, spd: 30, spe: 20 }, // Snom
   "873": { hp: 70, atk: 65, def: 60, spa: 125, spd: 90, spe: 65 }, // Frosmoth
@@ -891,7 +891,7 @@ const BASE_STATS = {
   "878": { hp: 72, atk: 80, def: 49, spa: 40, spd: 49, spe: 40 }, // Cufant
   "879": { hp: 122, atk: 130, def: 69, spa: 80, spd: 69, spe: 30 }, // Copperajah
   "880": { hp: 90, atk: 100, def: 90, spa: 80, spd: 70, spe: 75 }, // Dracozolt
-
+ 
   "881": { hp: 90, atk: 100, def: 90, spa: 90, spd: 80, spe: 55 }, // Arctozolt
   "882": { hp: 90, atk: 90, def: 100, spa: 70, spd: 80, spe: 75 }, // Dracovish
   "883": { hp: 90, atk: 90, def: 100, spa: 80, spd: 90, spe: 55 }, // Arctovish
@@ -902,7 +902,7 @@ const BASE_STATS = {
   "888": { hp: 92, atk: 130, def: 115, spa: 80, spd: 115, spe: 138 }, // Zacian
   "889": { hp: 92, atk: 130, def: 115, spa: 80, spd: 115, spe: 138 }, // Zamazenta
   "890": { hp: 140, atk: 85, def: 95, spa: 145, spd: 95, spe: 130 }, // Eternatus
-
+ 
   "891": { hp: 60, atk: 90, def: 60, spa: 53, spd: 50, spe: 72 }, // Kubfu
   "892": { hp: 100, atk: 130, def: 100, spa: 63, spd: 60, spe: 97 }, // Urshifu
   "893": { hp: 105, atk: 120, def: 105, spa: 70, spd: 95, spe: 105 }, // Zarude
