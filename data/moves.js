@@ -90,3 +90,46 @@ const MOVES_BY_POKEMON={
 "10011":["air-slash","astonish","attract","charge","charge-beam","confide","confuse-ray","dark-pulse","defog","discharge","double-team","dream-eater","eerie-impulse","electro-ball","electroweb","endure","facade","flash","foul-play","frustration","hex","hidden-power","light-screen","nasty-plot","ominous-wind","pain-split","poltergeist","protect","rain-dance","reflect","rest","return","round","secret-power","shadow-ball","shock-wave","signal-beam","sleep-talk","snatch","snore","spite","substitute","sunny-day","swagger","swift","telekinesis","thief","thunder","thunderbolt","thunder-shock","thunder-wave","toxic","trick","uproar","volt-switch","will-o-wisp"],
 "10012":["astonish","attract","charge","charge-beam","confide","confuse-ray","dark-pulse","defog","discharge","double-team","dream-eater","eerie-impulse","electro-ball","electroweb","endure","facade","flash","foul-play","frustration","hex","hidden-power","leaf-storm","light-screen","nasty-plot","ominous-wind","pain-split","poltergeist","protect","rain-dance","reflect","rest","return","round","secret-power","shadow-ball","shock-wave","signal-beam","sleep-talk","snatch","snore","spite","substitute","sunny-day","swagger","swift","telekinesis","thief","thunder","thunderbolt","thunder-shock","thunder-wave","toxic","trick","uproar","volt-switch","will-o-wisp"]
 }
+
+// Mapping για να κληρονομούν τα Forms τα movesets της βασικής τους μορφής
+const FORM_BASE_MAPPING = {
+  // Therian Forms
+  "10019": "641", "10020": "642", "10026": "645",
+  
+  // Mega Evolutions
+  "10033": "3", "10034": "6", "10035": "6", "10036": "9", "10037": "65", "10038": "94", "10039": "115",
+  "10040": "127", "10041": "130", "10042": "142", "10043": "150", "10044": "150", "10045": "181",
+  "10046": "212", "10047": "214", "10048": "229", "10049": "248", "10050": "257", "10051": "282",
+  "10052": "303", "10053": "306", "10054": "308", "10055": "310", "10056": "354", "10057": "359",
+  "10058": "445", "10059": "448", "10060": "460", "10061": "15", "10062": "18", "10063": "80",
+  "10064": "208", "10065": "254", "10066": "260", "10067": "302", "10068": "319", "10069": "323",
+  "10070": "334", "10071": "362", "10072": "373", "10073": "376", "10074": "380", "10075": "381",
+  "10076": "384", "10077": "428", "10078": "475", "10079": "531", "10080": "719",
+  
+  // Alolan Forms
+  "10091": "19", "10092": "20", "10093": "26", "10094": "27", "10095": "28", "10096": "37",
+  "10097": "38", "10098": "50", "10099": "51", "10100": "52", "10101": "53", "10102": "74",
+  "10103": "75", "10104": "76", "10105": "88", "10106": "89", "10107": "103", "10108": "105",
+  
+  // Galarian Forms
+  "10161": "52", "10162": "77", "10163": "78", "10164": "79", "10165": "80", "10166": "83",
+  "10167": "110", "10168": "122", "10169": "144", "10170": "145", "10171": "146", "10172": "199",
+  "10173": "222", "10174": "263", "10175": "264", "10176": "554", "10177": "555", "10178": "562",
+  "10179": "618",
+  
+  // Hisuian Forms
+  "10229": "58", "10230": "59", "10231": "100", "10232": "101", "10233": "157", "10234": "211",
+  "10235": "215", "10236": "503", "10237": "549", "10238": "570", "10239": "571", "10240": "628",
+  "10241": "705", "10242": "706", "10243": "713", "10244": "724",
+  
+  // Paldean Forms
+  "10250": "128", "10251": "128", "10252": "128", "10253": "194"
+};
+
+// Αυτόματη αντιγραφή των moves από τα base forms στα special forms
+for (let formId in FORM_BASE_MAPPING) {
+  let baseId = FORM_BASE_MAPPING[formId];
+  if (MOVES_BY_POKEMON[baseId]) {
+      MOVES_BY_POKEMON[formId] = MOVES_BY_POKEMON[baseId];
+  }
+}
