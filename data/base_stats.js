@@ -1097,5 +1097,41 @@ const BASE_STATS = {
   "10077": { hp: 65, atk: 136, def: 94, spa: 54, spd: 96, spe: 135 }, // Mega Lopunny
   "10078": { hp: 68, atk: 165, def: 95, spa: 65, spd: 115, spe: 110 }, // Mega Gallade
   "10079": { hp: 103, atk: 60, def: 126, spa: 80, spd: 126, spe: 50 }, // Mega Audino
-  "10080": { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }  // Mega Diancie
+  "10080": { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 },  // Mega Diancie
+
+  // --- SPECIAL FORMS & ALTERNATE FORMS ---
+  "10001": { hp: 50, atk: 180, def: 20, spa: 180, spd: 20, spe: 150 }, // Deoxys-Attack
+  "10002": { hp: 50, atk: 70, def: 160, spa: 70, spd: 160, spe: 90 }, // Deoxys-Defense
+  "10003": { hp: 50, atk: 95, def: 90, spa: 95, spd: 90, spe: 180 }, // Deoxys-Speed
+  "10004": { hp: 60, atk: 78, def: 112, spa: 78, spd: 112, spe: 36 }, // Wormadam-Sandy
+  "10005": { hp: 60, atk: 69, def: 135, spa: 79, spd: 105, spe: 36 }, // Wormadam-Trash
+  "10007": { hp: 150, atk: 120, def: 100, spa: 120, spd: 100, spe: 90 }, // Giratina-Origin
+  "10022": { hp: 125, atk: 170, def: 100, spa: 120, spd: 90, spe: 95 }, // Kyurem-White
+  "10023": { hp: 125, atk: 170, def: 100, spa: 120, spd: 90, spe: 95 }, // Kyurem-Black
+  "10027": { hp: 100, atk: 103, def: 75, spa: 120, spd: 75, spe: 127 }, // Shaymin-Sky
+  "10077": { hp: 100, atk: 180, def: 160, spa: 160, spd: 90, spe: 90 }, // Primal Kyogre
+  "10078": { hp: 100, atk: 180, def: 160, spa: 150, spd: 90, spe: 90 }, // Primal Groudon
+  "10086": { hp: 80, atk: 160, def: 60, spa: 170, spd: 130, spe: 80 }, // Hoopa-Unbound
+  "10118": { hp: 108, atk: 100, def: 121, spa: 81, spd: 95, spe: 95 }, // Zygarde-10%
+  "10120": { hp: 216, atk: 100, def: 121, spa: 91, spd: 95, spe: 85 }, // Zygarde-Complete
+  "10123": { hp: 75, atk: 70, def: 70, spa: 98, spd: 70, spe: 113 }, // Oricorio-Pom-Pom
+  "10124": { hp: 75, atk: 70, def: 70, spa: 98, spd: 70, spe: 113 }, // Oricorio-Pa'u
+  "10125": { hp: 75, atk: 70, def: 70, spa: 98, spd: 70, spe: 113 }, // Oricorio-Sensu
+  "10126": { hp: 75, atk: 115, def: 65, spa: 55, spd: 65, spe: 112 }, // Lycanroc-Midnight
+  "10127": { hp: 175, atk: 140, def: 130, spa: 140, spd: 130, spe: 20 }, // Wishiwashi-School
+  "10152": { hp: 75, atk: 115, def: 65, spa: 55, spd: 65, spe: 112 }, // Lycanroc-Dusk
+  "10155": { hp: 97, atk: 157, def: 127, spa: 113, spd: 109, spe: 77 }, // Necrozma-Dusk Mane
+  "10156": { hp: 97, atk: 113, def: 109, spa: 157, spd: 127, spe: 77 }, // Necrozma-Dawn Wings
+  "10157": { hp: 97, atk: 167, def: 97, spa: 167, spd: 97, spe: 129 }, // Necrozma-Ultra
+  "10184": { hp: 75, atk: 98, def: 70, spa: 114, spd: 70, spe: 75 }, // Toxtricity-Low Key
+  "10188": { hp: 92, atk: 170, def: 115, spa: 80, spd: 115, spe: 148 }, // Zacian-Crowned
+  "10189": { hp: 92, atk: 120, def: 145, spa: 80, spd: 145, spe: 128 }, // Zamazenta-Crowned
+  "10191": { hp: 100, atk: 130, def: 100, spa: 63, spd: 60, spe: 97 }, // Urshifu-Rapid Strike
+  "10193": { hp: 100, atk: 165, def: 170, spa: 85, spd: 105, spe: 50 }, // Calyrex-Ice
+  "10194": { hp: 100, atk: 85, def: 80, spa: 165, spd: 100, spe: 150 }, // Calyrex-Shadow
+  "10228": { hp: 74, atk: 60, def: 120, spa: 135, spd: 100, spe: 66 }, // Enamorus-Therian
+  "10273": { hp: 106, atk: 120, def: 94, spa: 60, spd: 96, spe: 100 }, // Ogerpon-Wellspring
+  "10274": { hp: 106, atk: 120, def: 84, spa: 60, spd: 96, spe: 110 }, // Ogerpon-Hearthflame
+  "10275": { hp: 106, atk: 120, def: 104, spa: 60, spd: 96, spe: 90 } // Ogerpon-Cornerstone
+
 };
