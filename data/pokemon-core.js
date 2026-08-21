@@ -65,6 +65,6 @@ const POKE=[{"id":1,"name":"bulbasaur","types":["grass","poison"]},{"id":2,"name
 {"id":10079,"name":"audino-mega","types":["normal","fairy"]},
 {"id":10080,"name":"diancie-mega","types":["rock","fairy"]},
 {"id":10126,"name":"lycanroc-midnight","types":["rock"]},
-{"id":10127,"name":"lycanroc-dusk","types":["rock"]}
+{"id":10152,"name":"lycanroc-dusk","types":["rock"]}
            
 ]
