@@ -1,4 +1,5 @@
-const CACHE_NAME = 'pokebuilder-v2';
+const CACHE_NAME = 'pokebuilder-v3'; // <--- 1. Αλλαγή έκδοσης σε v3 (ή ό,τι θες)
+
 const APP_SHELL = [
   './',
   './index.html',
@@ -14,6 +15,8 @@ const APP_SHELL = [
   './data/sprites.js',
   './data/moves.js',
   './data/move-info.js',
+  './data/move-metadata.js',
+  './data/move-evolutions.js',
   './data/bosses.js',
   './team/team-core.js',
   './team/team-io.js',
