@@ -1049,6 +1049,71 @@ const BASE_STATS = {
   "10011": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Fan
   "10012": { hp: 50, atk: 65, def: 107, spa: 105, spd: 107, spe: 86 }, // Rotom Mow
   
+  // --- ALOLAN FORMS ---
+  "10091": { hp: 35, atk: 56, def: 35, spa: 25, spd: 35, spe: 72 }, // Alolan Rattata
+  "10092": { hp: 75, atk: 71, def: 70, spa: 40, spd: 80, spe: 77 }, // Alolan Raticate
+  "10093": { hp: 60, atk: 85, def: 50, spa: 95, spd: 85, spe: 110 }, // Alolan Raichu
+  "10094": { hp: 50, atk: 30, def: 50, spa: 20, spd: 35, spe: 40 }, // Alolan Sandshrew
+  "10095": { hp: 75, atk: 100, def: 120, spa: 25, spd: 65, spe: 65 }, // Alolan Sandslash
+  "10096": { hp: 38, atk: 41, def: 40, spa: 50, spd: 65, spe: 65 }, // Alolan Vulpix
+  "10097": { hp: 73, atk: 67, def: 75, spa: 81, spd: 100, spe: 109 }, // Alolan Ninetales
+  "10098": { hp: 10, atk: 55, def: 30, spa: 30, spd: 30, spe: 15 }, // Alolan Diglett
+  "10099": { hp: 35, atk: 100, def: 60, spa: 50, spd: 70, spe: 25 }, // Alolan Dugtrio
+  "10100": { hp: 40, atk: 35, def: 35, spa: 50, spd: 40, spe: 90 }, // Alolan Meowth
+  "10101": { hp: 65, atk: 60, def: 60, spa: 75, spd: 65, spe: 115 }, // Alolan Persian
+  "10102": { hp: 40, atk: 80, def: 100, spa: 30, spd: 30, spe: 20 }, // Alolan Geodude
+  "10103": { hp: 55, atk: 95, def: 115, spa: 40, spd: 45, spe: 35 }, // Alolan Graveler
+  "10104": { hp: 80, atk: 120, def: 130, spa: 55, spd: 65, spe: 45 }, // Alolan Golem
+  "10105": { hp: 80, atk: 80, def: 50, spa: 40, spd: 50, spe: 25 }, // Alolan Grimer
+  "10106": { hp: 105, atk: 105, def: 75, spa: 60, spd: 100, spe: 50 }, // Alolan Muk
+  "10107": { hp: 95, atk: 70, def: 75, spa: 125, spd: 85, spe: 45 }, // Alolan Exeggutor
+  "10108": { hp: 60, atk: 80, def: 110, spa: 50, spd: 80, spe: 45 }, // Alolan Marowak
+
+  // --- GALARIAN FORMS ---
+  "10161": { hp: 45, atk: 85, def: 50, spa: 55, spd: 65, spe: 90 }, // Galarian Ponyta
+  "10162": { hp: 65, atk: 100, def: 70, spa: 80, spd: 80, spe: 105 }, // Galarian Rapidash
+  "10163": { hp: 65, atk: 100, def: 70, spa: 80, spd: 80, spe: 105 }, // Galarian Rapidash (alt ID)
+  "10164": { hp: 95, atk: 75, def: 110, spa: 100, spd: 80, spe: 30 }, // Galarian Slowpoke
+  "10165": { hp: 95, atk: 100, def: 95, spa: 100, spd: 70, spe: 30 }, // Galarian Slowbro
+  "10166": { hp: 52, atk: 85, def: 55, spa: 15, spd: 65, spe: 30 }, // Galarian Farfetch'd
+  "10167": { hp: 105, atk: 75, def: 70, spa: 110, spd: 70, spe: 60 }, // Galarian Weezing
+  "10168": { hp: 60, atk: 45, def: 80, spa: 90, spd: 140, spe: 70 }, // Galarian Mr. Mime
+  "10169": { hp: 80, atk: 85, def: 50, spa: 125, spd: 160, spe: 95 }, // Galarian Articuno
+  "10170": { hp: 90, atk: 125, def: 70, spa: 85, spd: 95, spe: 135 }, // Galarian Zapdos
+  "10171": { hp: 90, atk: 85, def: 90, spa: 125, spd: 100, spe: 90 }, // Galarian Moltres
+  "10172": { hp: 95, atk: 75, def: 80, spa: 110, spd: 125, spe: 30 }, // Galarian Slowking
+  "10173": { hp: 38, atk: 55, def: 90, spa: 95, spd: 55, spe: 30 }, // Galarian Yamask
+  "10174": { hp: 50, atk: 90, def: 62, spa: 50, spd: 62, spe: 32 }, // Galarian Stunfisk
+
+  // --- HISUIAN FORMS ---
+  "10175": { hp: 60, atk: 85, def: 80, spa: 55, spd: 65, spe: 60 }, // Hisuian Growlithe
+  "10176": { hp: 90, atk: 115, def: 80, spa: 95, spd: 80, spe: 85 }, // Hisuian Arcanine
+  "10177": { hp: 90, atk: 115, def: 80, spa: 95, spd: 80, spe: 85 }, // Hisuian Arcanine (alt)
+  "10178": { hp: 65, atk: 84, def: 78, spa: 109, spd: 75, spe: 90 }, // Hisuian Typhlosion
+  "10179": { hp: 65, atk: 95, def: 95, spa: 55, spd: 45, spe: 55 }, // Hisuian Qwilfish
+  "10229": { hp: 60, atk: 85, def: 80, spa: 55, spd: 65, spe: 60 }, // Hisuian Growlithe (alt ID)
+  "10230": { hp: 90, atk: 115, def: 80, spa: 95, spd: 80, spe: 85 }, // Hisuian Arcanine (alt ID)
+  "10231": { hp: 40, atk: 65, def: 85, spa: 80, spd: 55, spe: 100 }, // Hisuian Voltorb
+  "10232": { hp: 60, atk: 80, def: 95, spa: 80, spd: 80, spe: 115 }, // Hisuian Electrode
+  "10233": { hp: 65, atk: 84, def: 78, spa: 109, spd: 75, spe: 90 }, // Hisuian Typhlosion (alt)
+  "10234": { hp: 65, atk: 95, def: 95, spa: 55, spd: 45, spe: 55 }, // Hisuian Qwilfish (alt)
+  "10235": { hp: 35, atk: 60, def: 40, spa: 30, spd: 40, spe: 60 }, // Hisuian Sneasel
+  "10236": { hp: 58, atk: 108, def: 63, spa: 62, spd: 63, spe: 85 }, // Hisuian Samurott
+  "10237": { hp: 75, atk: 110, def: 60, spa: 85, spd: 60, spe: 105 }, // Hisuian Lilligant
+  "10238": { hp: 40, atk: 65, def: 60, spa: 80, spd: 60, spe: 90 }, // Hisuian Zorua
+  "10239": { hp: 60, atk: 100, def: 60, spa: 125, spd: 60, spe: 110 }, // Hisuian Zoroark
+  "10240": { hp: 85, atk: 90, def: 80, spa: 110, spd: 70, spe: 85 }, // Hisuian Braviary
+  "10241": { hp: 68, atk: 70, def: 65, spa: 70, spd: 55, spe: 30 }, // Hisuian Sliggoo
+  "10242": { hp: 113, atk: 100, def: 120, spa: 135, spd: 65, spe: 42 }, // Bloodmoon Ursaluna / Hisuian Goodra base
+  "10243": { hp: 95, atk: 80, def: 246, spa: 95, spd: 70, spe: 10 }, // Hisuian Avalugg
+  "10244": { hp: 78, atk: 112, def: 71, spa: 68, spd: 71, spe: 110 }, // Hisuian Decidueye
+
+  // --- PALDEAN FORMS ---
+  "10250": { hp: 75, atk: 110, def: 105, spa: 30, spd: 85, spe: 75 }, // Paldean Tauros (Combat)
+  "10251": { hp: 75, atk: 110, def: 105, spa: 30, spd: 85, spe: 75 }, // Paldean Tauros (Blaze)
+  "10252": { hp: 75, atk: 110, def: 105, spa: 30, spd: 85, spe: 75 },  // Paldean Tauros (Aqua)
+
+
   // Mega Forms (PokeAPI IDs)
   "10033": { hp: 80, atk: 100, def: 123, spa: 122, spd: 120, spe: 80 }, // Mega Venusaur
   "10034": { hp: 78, atk: 130, def: 111, spa: 130, spd: 85, spe: 100 }, // Mega Charizard X
