@@ -1207,7 +1207,3 @@ const MOVES_BY_POKEMON = {
 
 "10253": ["amnesia", "body-slam", "bulldoze", "chilling-water", "curse", "earth-power", "earthquake", "facade", "gunk-shot", "haze", "helping-hand", "liquidation", "low-kick", "mud-shot", "mud-slap", "poison-jab", "poison-tail", "protect", "rain-dance", "recover", "rest", "sludge-bomb", "sludge-wave", "spikes", "stealth-rock", "stomping-tantrum", "substitute", "tail-whip", "tera-blast", "toxic", "toxic-spikes", "water-pulse", "yawn"]
 }
-
-
-
-

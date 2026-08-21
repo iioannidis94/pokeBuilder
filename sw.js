@@ -8,7 +8,6 @@ const APP_SHELL = [
   './manifest.json',
   './icon.svg',
   './data/TC.js',
-  './data/move-evolutions.js',
   './data/pokemon-core.js',
   './data/base_stats.js',
   './data/abilities.js',
