@@ -1028,7 +1028,7 @@ const ABILITIES={"1":["overgrow","chlorophyll"],
 "1024":["tera-shift"],
 "1025":["poison-puppeteer"],
 
-                 "10008":["levitate"],
+"10008":["levitate"],
 "10009":["levitate"],
 "10010":["levitate"],
 "10011":["levitate"],
@@ -1101,6 +1101,70 @@ const ABILITIES={"1":["overgrow","chlorophyll"],
  // Ogerpon-Hearthflame
   "10275": ["sturdy"],
  // Ogerpon-Cornerstone
+
+ // --- ALOLAN FORMS ---
+  "10091": ["gluttony", "hustle", "thick-fat"], // Alolan Rattata
+  "10092": ["gluttony", "hustle", "thick-fat"], // Alolan Raticate
+  "10093": ["surge-surfer"], // Alolan Raichu
+  "10094": ["snow-cloak", "slush-rush"], // Alolan Sandshrew
+  "10095": ["snow-cloak", "slush-rush"], // Alolan Sandslash
+  "10096": ["snow-cloak", "snow-warning"], // Alolan Vulpix
+  "10097": ["snow-cloak", "snow-warning"], // Alolan Ninetales
+  "10098": ["sand-veil", "tangling-hair", "sand-force"], // Alolan Diglett
+  "10099": ["sand-veil", "tangling-hair", "sand-force"], // Alolan Dugtrio
+  "10100": ["pickup", "technician", "unnerve"], // Alolan Meowth
+  "10101": ["fur-coat", "technician", "unnerve"], // Alolan Persian
+  "10102": ["magnet-pull", "sturdy", "galvanize"], // Alolan Geodude
+  "10103": ["magnet-pull", "sturdy", "galvanize"], // Alolan Graveler
+  "10104": ["magnet-pull", "sturdy", "galvanize"], // Alolan Golem
+  "10105": ["poison-touch", "gluttony", "power-of-alchemy"], // Alolan Grimer
+  "10106": ["poison-touch", "gluttony", "power-of-alchemy"], // Alolan Muk
+  "10107": ["ripen", "gluttony", "harvest"], // Alolan Exeggutor
+  "10108": ["cursed-body"], // Alolan Marowak
+
+  // --- GALARIAN FORMS ---
+  "10161": ["pastor-veil", "anticipation"], // Galarian Ponyta
+  "10162": ["pastor-veil", "anticipation"], // Galarian Rapidash
+  "10163": ["pastel-veil", "anticipation"], // Galarian Rapidash (alternative ID check)
+  "10164": ["gluttony", "own-tempo", "regal-regeneration"], // Galarian Slowpoke
+  "10165": ["quick-draw", "own-tempo", "regenerator"], // Galarian Slowbro
+  "10166": ["steadfast", "scrappy"], // Galarian Farfetch'd
+  "10167": ["levitate", "neutralizing-gas", "misty-surge"], // Galarian Weezing
+  "10168": ["competitive", "curious-medicine", "regenerator"], // Galarian Mr. Mime
+  "10169": ["grim-neigh"], // Galarian Articuno
+  "10170": ["defiant"], // Galarian Zapdos
+  "10171": ["chilling-neigh"], // Galarian Moltres
+  "10172": ["gluttony", "own-tempo", "regenerator"], // Galarian Slowking
+  "10173": ["wandering-spirit"], // Galarian Yamask
+  "10174": ["tough-claws", "intimidate", "rock-head"], // Galarian Stunfisk
+
+  // --- HISUIAN FORMS ---
+  "10175": ["intimidate", "flash-fire", "rock-head"], // Hisuian Growlithe
+  "10176": ["intimidate", "flash-fire", "rock-head"], // Hisuian Arcanine
+  "10177": ["intimidate", "flash-fire", "rock-head"], // Hisuian Arcanine (alt)
+  "10178": ["pressure", "frisk", "infiltrator"], // Hisuian Typhlosion
+  "10179": ["swift-swim", "shed-skin", "poison-touch"], // Hisuian Qwilfish
+  "10229": ["intimidate", "flash-fire", "rock-head"], // Hisuian Growlithe (alt ID)
+  "10230": ["intimidate", "flash-fire", "rock-head"], // Hisuian Arcanine (alt ID)
+  "10231": ["soundproof", "static", "galvanize"], // Hisuian Voltorb
+  "10232": ["soundproof", "static", "galvanize"], // Hisuian Electrode
+  "10233": ["blaze", "flash-fire"], // Hisuian Typhlosion (alt)
+  "10234": ["poison-point", "swift-swim", "reckless"], // Hisuian Qwilfish (alt)
+  "10235": ["inner-focus", "keen-eye", "steely-spirit"], // Hisuian Sneasel
+  "10236": ["sharpness"], // Hisuian Samurott
+  "10237": ["chlorophyll", "leaf-guard", "scrappy"], // Hisuian Lilligant
+  "10238": ["illusion"], // Hisuian Zorua
+  "10239": ["illusion"], // Hisuian Zoroark
+  "10240": ["keen-eye", "tangled-feet", "tender-veiled"], // Hisuian Braviary
+  "10241": ["good-as-gold"], // Hisuian Sliggoo
+  "10242": ["good-as-gold"], // Bloodmoon Ursaluna / Hisuian Goodra base
+  "10243": ["ice-face", "sturdy"], // Hisuian Avalugg
+  "10244": ["sharpness"], // Hisuian Decidueye
+
+  // --- PALDEAN FORMS ---
+  "10250": ["intimidate", "mold-breaker", "cud-chew"], // Paldean Tauros (Combat)
+  "10251": ["intimidate", "mold-breaker", "cud-chew"], // Paldean Tauros (Blaze)
+  "10252": ["intimidate", "mold-breaker", "cud-chew"],  // Paldean Tauros (Aqua)
 
   // --- THERIAN & ROTOM FORMS ---
   "10019": ["regenerator"],
