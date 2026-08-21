@@ -1,4 +1,5 @@
-const ABILITIES={"1":["overgrow","chlorophyll"],
+const ABILITIES={
+"1":["overgrow","chlorophyll"],
 "2":["overgrow","chlorophyll"],
 "3":["overgrow","chlorophyll"],
 "4":["blaze","solar-power"],
