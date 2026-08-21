@@ -63,4 +63,8 @@ const POKE=[{"id":1,"name":"bulbasaur","types":["grass","poison"]},{"id":2,"name
 {"id":10077,"name":"lopunny-mega","types":["normal","fighting"]},
 {"id":10078,"name":"gallade-mega","types":["psychic","fighting"]},
 {"id":10079,"name":"audino-mega","types":["normal","fairy"]},
-{"id":10080,"name":"diancie-mega","types":["rock","fairy"]}]
+{"id":10080,"name":"diancie-mega","types":["rock","fairy"]},
+{"id":10126,"name":"lycanroc-midnight","types":["rock"]},
+{"id":10127,"name":"lycanroc-dusk","types":["rock"]}
+           
+]
