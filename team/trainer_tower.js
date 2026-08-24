@@ -1,6 +1,6 @@
 // team/trainer_tower.js
+console.log("Trainer Tower script loaded!"); 
 
-// 1. Δεδομένα των Trainer Tower NPCs βάσει των εικόνων
 const TRAINER_TOWER_DATA = [
     { id: "lass", name: "Young Girl", title: "Always Normal Type", types: ["normal"], sprite: "lass" },
     { id: "firebreather", name: "Fire Clown", title: "Always Fire Type", types: ["fire"], sprite: "firebreather" },
@@ -21,54 +21,50 @@ const TRAINER_TOWER_DATA = [
     { id: "bugcatcher", name: "Bug Catcher", title: "Always Bug Type", types: ["bug"], sprite: "bugcatcher" }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-    const towerBtn = document.getElementById('trainerTowerBtn');
-    const towerOverlay = document.getElementById('trainerTowerOverlay');
-    const towerClose = document.getElementById('trainerTowerClose');
-    const towerContent = document.getElementById('trainerTowerContent');
+// Συνδέουμε απευθείας τα στοιχεία
+const towerBtn = document.getElementById('trainerTowerBtn');
+const towerOverlay = document.getElementById('trainerTowerOverlay');
+const towerClose = document.getElementById('trainerTowerClose');
+const towerContent = document.getElementById('trainerTowerContent');
 
-    // Ανοίγει το Trainer Tower και κάνει render τους trainers
-    if (towerBtn && towerOverlay) {
-        towerBtn.addEventListener('click', () => {
-            // Κλείνουμε τυχόν άλλα ανοιχτά overlays
-            document.getElementById('teamOverlay')?.setAttribute('aria-hidden', 'true');
-            document.getElementById('calcOverlay')?.setAttribute('aria-hidden', 'true');
-            document.getElementById('bossesOverlay')?.setAttribute('aria-hidden', 'true');
-            
-            // Ανοίγουμε το δικό μας
-            towerOverlay.setAttribute('aria-hidden', 'false');
-            
-            // Σχεδιάζουμε το UI
-            renderTrainerTower(towerContent);
-        });
-    }
+if (towerBtn && towerOverlay) {
+    towerBtn.addEventListener('click', () => {
+        console.log("Trainer Tower opened!");
+        
+        // Κλείνουμε τυχόν άλλα ανοιχτά overlays
+        const teamOverlay = document.getElementById('teamOverlay');
+        const calcOverlay = document.getElementById('calcOverlay');
+        const bossesOverlay = document.getElementById('bossesOverlay');
+        
+        if (teamOverlay) teamOverlay.setAttribute('aria-hidden', 'true');
+        if (calcOverlay) calcOverlay.setAttribute('aria-hidden', 'true');
+        if (bossesOverlay) bossesOverlay.setAttribute('aria-hidden', 'true');
+        
+        // Ανοίγουμε το δικό μας
+        towerOverlay.setAttribute('aria-hidden', 'false');
+        
+        // Σχεδιάζουμε το UI
+        renderTrainerTower(towerContent);
+    });
+}
 
-    // Κλείνει το Trainer Tower
-    if (towerClose && towerOverlay) {
-        towerClose.addEventListener('click', () => {
-            towerOverlay.setAttribute('aria-hidden', 'true');
-        });
-    }
-});
+if (towerClose && towerOverlay) {
+    towerClose.addEventListener('click', () => {
+        towerOverlay.setAttribute('aria-hidden', 'true');
+    });
+}
 
-// 2. Συνάρτηση που σχεδιάζει τους Trainers
 function renderTrainerTower(container) {
-    // Φτιάχνουμε ένα CSS Grid για τις κάρτες
-    let html = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 10px;">
-    `;
+    let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 10px;">`;
 
     TRAINER_TOWER_DATA.forEach(trainer => {
-        // Παίρνουμε το χρώμα του πρώτου τύπου για να χρωματίσουμε την κάρτα
-        const mainColor = TC[trainer.types[0]] || '#888';
+        const mainColor = (typeof TC !== 'undefined' && TC[trainer.types[0]]) ? TC[trainer.types[0]] : '#888';
         
-        // Φτιάχνουμε τα σηματάκια (badges) για τους τύπους
         const typeBadges = trainer.types.map(t => {
-            const tColor = TC[t] || '#888';
+            const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;">${t}</span>`;
         }).join(' ');
 
-        // Τραβάμε τα sprites κατευθείαν από τη βάση του Pokemon Showdown
         const imgUrl = `https://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite}.png`;
 
         html += `
@@ -91,7 +87,7 @@ function renderTrainerTower(container) {
                 
                 <img src="${imgUrl}" alt="${trainer.name}" style="width: 80px; height: 80px; object-fit: contain; image-rendering: pixelated; margin-bottom: 10px;">
                 
-                <div>
+                <div style="width: 100%;">
                     <h3 style="margin: 0 0 5px 0; color: var(--txt, #fff); font-size: 15px;">${trainer.name}</h3>
                     <div style="font-size: 11px; color: var(--dim, #aaa); margin-bottom: 12px; min-height: 26px;">${trainer.title}</div>
                 </div>
