@@ -1,12 +1,11 @@
-
-// team/battle_tower.js
+// team/trainer_tower.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const towerBtn = document.getElementById('towerBtn');
-    const towerOverlay = document.getElementById('towerOverlay');
-    const towerClose = document.getElementById('towerClose');
+    const towerBtn = document.getElementById('trainerTowerBtn');
+    const towerOverlay = document.getElementById('trainerTowerOverlay');
+    const towerClose = document.getElementById('trainerTowerClose');
 
-    // Ανοίγει το Battle Tower
+    // Ανοίγει το Trainer Tower
     if (towerBtn && towerOverlay) {
         towerBtn.addEventListener('click', () => {
             // Κλείνουμε τυχόν άλλα ανοιχτά overlays
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Κλείνει το Battle Tower
+    // Κλείνει το Trainer Tower
     if (towerClose && towerOverlay) {
         towerClose.addEventListener('click', () => {
             towerOverlay.setAttribute('aria-hidden', 'true');
