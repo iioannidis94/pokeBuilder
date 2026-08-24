@@ -371,3 +371,44 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 #bossesOverlay[aria-hidden="false"] { display: flex; }
 .bossListItem:hover { background: var(--brd) !important; }
 .bossListItem.active { background: var(--brd) !important; }
+
+
+/* --- TRAINER TOWER MODAL & CARDS --- */
+#trainerTowerOverlay[aria-hidden="true"] { display: none !important; }
+#trainerTowerOverlay[aria-hidden="false"] { display: flex !important; }
+
+#trainerTowerOverlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.8); align-items: center; justify-content: center;
+  transition: .2s;
+}
+
+#trainerTowerOverlay .calcViewPanel {
+  background: var(--surf); border: 1px solid var(--brd); border-radius: 16px;
+  width: min(96vw, 900px); max-height: 90vh; display: flex; flex-direction: column;
+  overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+}
+
+.trainer-card {
+  background: var(--surf2); 
+  border-radius: 12px; 
+  padding: 15px; 
+  text-align: center; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.trainer-card img {
+  width: 80px; height: 80px; object-fit: contain; image-rendering: pixelated; margin-bottom: 10px;
+}
+.trainer-card h3 {
+  margin: 0 0 5px 0; color: var(--txt); font-size: 15px;
+}
+.trainer-card .trainer-title {
+  font-size: 11px; color: var(--dim); margin-bottom: 12px; min-height: 26px;
+}
