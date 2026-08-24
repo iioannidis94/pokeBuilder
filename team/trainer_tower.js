@@ -15,7 +15,9 @@ const TRAINER_TOWER_DATA = [
     { id: "rocket", name: "Rocket Grunt", title: "Always Dark Type", types: ["dark"], sprite: "rocketgrunt" },
     { id: "biker", name: "Biker", title: "Always Poison Type", types: ["poison"], sprite: "biker-gen3" },
     { id: "psychicm", name: "Male Medium", title: "Always Psychic Type", types: ["psychic"], sprite: "psychic" },
-    { id: "hexmaniac", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "channeler" },
+    
+    { id: "hexmaniac", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "medium" },
+    
     { id: "blackbelt", name: "Karate Trainer", title: "Always Fighting Type", types: ["fighting"], sprite: "blackbelt-gen3" },
     { id: "bugcatcher", name: "Bug Catcher", title: "Always Bug Type", types: ["bug"], sprite: "bugcatcher-gen3" }
 ];
