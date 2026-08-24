@@ -19,6 +19,7 @@ const APP_SHELL = [
   './data/move-evolutions.js',
   './data/bosses.js',
   './team/team-core.js',
+  './team/battle_tower.js',
   './team/team-io.js',
   './team/team-ai.js',
   './team/team-recommender.js',
