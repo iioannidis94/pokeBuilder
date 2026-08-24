@@ -1,23 +1,23 @@
 // team/trainer_tower.js
 
 const TRAINER_TOWER_DATA = [
-    { id: "lass", name: "Young Girl", title: "Always Normal Type", types: ["normal"], sprite: "lass" },
-    { id: "firebreather", name: "Fire Clown", title: "Always Fire Type", types: ["fire"], sprite: "firebreather" },
-    { id: "sailor", name: "Sailor", title: "Always Water Type", types: ["water"], sprite: "sailor" },
-    { id: "picnicker", name: "Cute Woman", title: "Always Grass Type", types: ["grass"], sprite: "picnicker" },
-    { id: "worker", name: "Orange Clothes", title: "Electric / Flying / Normal", types: ["electric", "flying", "normal"], sprite: "worker" },
-    { id: "backpackerf", name: "Ponytail & Backpack", title: "Always Rock Type", types: ["rock"], sprite: "backpackerf" },
-    { id: "skier", name: "Skier", title: "Always Ice Type", types: ["ice"], sprite: "skierf" },
-    { id: "hiker", name: "Hiker", title: "Ground (30+) / Steel (10-29)", types: ["ground", "steel"], sprite: "hiker" },
-    { id: "scientist", name: "Scientist", title: "Steel / Electric Type", types: ["steel", "electric"], sprite: "scientist" },
-    { id: "kimonogirl", name: "Kimono Girl", title: "Always Fairy Type", types: ["fairy"], sprite: "kimonogirl" },
-    { id: "acetrainer", name: "Ace Trainer", title: "Always Dragon Type", types: ["dragon"], sprite: "acetrainer" },
-    { id: "rocket", name: "Rocket Grunt", title: "Always Dark Type", types: ["dark"], sprite: "rocketgrunt" },
-    { id: "biker", name: "Biker", title: "Always Poison Type", types: ["poison"], sprite: "biker" },
-    { id: "psychicm", name: "Male Medium", title: "Always Psychic Type", types: ["psychic"], sprite: "psychic" },
-    { id: "channeler", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "channeler" }, // ΔΙΟΡΘΩΘΗΚΕ ΤΟ SPRITE
-    { id: "blackbelt", name: "Karate Trainer", title: "Always Fighting Type", types: ["fighting"], sprite: "blackbelt" },
-    { id: "bugcatcher", name: "Bug Catcher", title: "Always Bug Type", types: ["bug"], sprite: "bugcatcher" }
+    { id: "lass", name: "Young Girl", title: "Always Normal Type", types: ["normal"], sprite: "lass-gen3" },
+    { id: "firebreather", name: "Fire Clown", title: "Always Fire Type", types: ["fire"], sprite: "juggler-gen3" },
+    { id: "sailor", name: "Sailor", title: "Always Water Type", types: ["water"], sprite: "sailor-gen3" },
+    { id: "picnicker", name: "Cute Woman", title: "Always Grass Type", types: ["grass"], sprite: "picnicker-gen3" },
+    { id: "worker", name: "Orange Clothes", title: "Electric / Flying / Normal", types: ["electric", "flying", "normal"], sprite: "engineer-gen3" },
+    { id: "backpackerf", name: "Ponytail & Backpack", title: "Always Rock Type", types: ["rock"], sprite: "pokemonrangerf-gen3" },
+    { id: "skier", name: "Skier", title: "Always Ice Type", types: ["ice"], sprite: "skier" }, // Ο Skier παραμένει ο ίδιος
+    { id: "hiker", name: "Hiker", title: "Ground (30+) / Steel (10-29)", types: ["ground", "steel"], sprite: "hiker-gen3" },
+    { id: "scientist", name: "Scientist", title: "Steel / Electric Type", types: ["steel", "electric"], sprite: "scientist-gen3" },
+    { id: "kimonogirl", name: "Kimono Girl", title: "Always Fairy Type", types: ["fairy"], sprite: "kimonogirl" }, // Η Kimono Girl παραμένει η ίδια
+    { id: "acetrainer", name: "Ace Trainer", title: "Always Dragon Type", types: ["dragon"], sprite: "cooltrainerm-gen3" },
+    { id: "rocket", name: "Rocket Grunt", title: "Always Dark Type", types: ["dark"], sprite: "rocketgruntm-gen3" },
+    { id: "biker", name: "Biker", title: "Always Poison Type", types: ["poison"], sprite: "biker-gen3" },
+    { id: "psychicm", name: "Male Medium", title: "Always Psychic Type", types: ["psychic"], sprite: "psychicm-gen3" },
+    { id: "channeler", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "channeler-gen3" },
+    { id: "blackbelt", name: "Karate Trainer", title: "Always Fighting Type", types: ["fighting"], sprite: "blackbelt-gen3" },
+    { id: "bugcatcher", name: "Bug Catcher", title: "Always Bug Type", types: ["bug"], sprite: "bugcatcher-gen3" }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
