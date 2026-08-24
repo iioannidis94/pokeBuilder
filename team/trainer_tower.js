@@ -15,39 +15,38 @@ const TRAINER_TOWER_DATA = [
     { id: "rocket", name: "Rocket Grunt", title: "Always Dark Type", types: ["dark"], sprite: "rocketgrunt" },
     { id: "biker", name: "Biker", title: "Always Poison Type", types: ["poison"], sprite: "biker" },
     { id: "psychicm", name: "Male Medium", title: "Always Psychic Type", types: ["psychic"], sprite: "psychic" },
-    { id: "hexmaniac", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "hexmaniac" },
+    { id: "channeler", name: "Female Medium", title: "Always Ghost Type", types: ["ghost"], sprite: "channeler" }, // ΔΙΟΡΘΩΘΗΚΕ ΤΟ SPRITE
     { id: "blackbelt", name: "Karate Trainer", title: "Always Fighting Type", types: ["fighting"], sprite: "blackbelt" },
     { id: "bugcatcher", name: "Bug Catcher", title: "Always Bug Type", types: ["bug"], sprite: "bugcatcher" }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
     const towerBtn = document.getElementById('trainerTowerBtn');
-    const towerOverlay = document.getElementById('trainerTowerOverlay');
     const towerClose = document.getElementById('trainerTowerClose');
     const towerContent = document.getElementById('trainerTowerContent');
 
-    if (towerBtn && towerOverlay) {
+    if (towerBtn) {
         towerBtn.addEventListener('click', () => {
-            // Κλείνουμε τυχόν άλλα ανοιχτά overlays
-            document.getElementById('teamOverlay')?.setAttribute('aria-hidden', 'true');
-            document.getElementById('calcOverlay')?.setAttribute('aria-hidden', 'true');
-            document.getElementById('bossesOverlay')?.setAttribute('aria-hidden', 'true');
+            // Αφαιρούμε τις κλάσεις των άλλων views (αν είναι ανοιχτά)
+            document.body.classList.remove('team-view', 'calc-view', 'dex-view');
             
-            // Ανοίγουμε το δικό μας
-            towerOverlay.setAttribute('aria-hidden', 'false');
+            // Προσθέτουμε την κλάση που "ανοίγει" το δικό μας view
+            document.body.classList.add('tower-view');
+            
             renderTrainerTower(towerContent);
         });
     }
 
-    if (towerClose && towerOverlay) {
+    if (towerClose) {
         towerClose.addEventListener('click', () => {
-            towerOverlay.setAttribute('aria-hidden', 'true');
+            // Όταν πατάμε Close, βγάζουμε την κλάση και επιστρέφουμε στο κεντρικό Pokédex
+            document.body.classList.remove('tower-view');
         });
     }
 });
 
 function renderTrainerTower(container) {
-    let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">`;
+    let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">`;
 
     TRAINER_TOWER_DATA.forEach(trainer => {
         const mainColor = (typeof TC !== 'undefined' && TC[trainer.types[0]]) ? TC[trainer.types[0]] : '#888';
@@ -63,7 +62,7 @@ function renderTrainerTower(container) {
             <div class="trainer-card" style="border: 2px solid ${mainColor};" 
                  onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 15px ${mainColor}66';" 
                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.3)';">
-                <img src="${imgUrl}" alt="${trainer.name}">
+                <img src="${imgUrl}" alt="${trainer.name}" onerror="this.src='https://play.pokemonshowdown.com/sprites/trainers/unknown.png'">
                 <div style="width: 100%;">
                     <h3>${trainer.name}</h3>
                     <div class="trainer-title">${trainer.title}</div>
