@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const towerClose = document.getElementById('trainerTowerClose');
     const towerContent = document.getElementById('trainerTowerContent');
 
+    // Τα υπόλοιπα κουμπιά του μενού
+    const myTeamBtn = document.getElementById('myTeamBtn');
+    const dexViewBtn = document.getElementById('dexViewBtn');
+    const calcViewBtn = document.getElementById('calcViewBtn');
+
     if (towerBtn) {
         towerBtn.addEventListener('click', () => {
             document.body.classList.remove('team-view', 'calc-view', 'dex-view');
@@ -38,6 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('tower-view');
         });
     }
+
+    // --- ΝΕΟ: Κλείνει το Trainer Tower όταν πατάς άλλη καρτέλα ---
+    [myTeamBtn, dexViewBtn, calcViewBtn].forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', () => {
+                document.body.classList.remove('tower-view');
+            });
+        }
+    });
 });
 
 // Αλγόριθμος εύρεσης των απολύτως ελάχιστων τύπων για πλήρες coverage
