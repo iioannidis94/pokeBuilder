@@ -21,6 +21,8 @@
   <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
   <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
   <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
+  <!-- ΝΕΟ ΚΟΥΜΠΙ BATTLE TOWER -->
+  <button class="teamBtn" id="towerBtn" type="button" style="border-color: #f59f00; color: #f59f00;">Battle Tower</button>
   <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle theme">🌙</button>
 </header>
 
@@ -28,6 +30,7 @@
 <div class="sb"><span id="cnt">Loading...</span></div>
 <main><div id="grid"></div></main>
 
+<!-- TEAM BUILDER OVERLAY -->
 <div class="teamOverlay" id="teamOverlay" aria-hidden="true">
   <section class="teamPanel" role="dialog" aria-modal="true" aria-labelledby="teamTitle">
     <div class="teamTop">
@@ -55,6 +58,7 @@
   </section>
 </div>
 
+<!-- CALCULATOR OVERLAY -->
 <div class="calcOverlay" id="calcOverlay" aria-hidden="true">
   <section class="calcViewPanel" aria-labelledby="calcViewTitle">
     <div class="teamTop">
@@ -62,6 +66,20 @@
       <button class="calcClose" id="calcClose" type="button">Close</button>
     </div>
     <div class="calcViewBody" id="calcViewContent"></div>
+  </section>
+</div>
+
+<!-- ΝΕΟ: BATTLE TOWER OVERLAY -->
+<div class="calcOverlay" id="towerOverlay" aria-hidden="true">
+  <section class="calcViewPanel" aria-labelledby="towerTitle">
+    <div class="teamTop">
+      <h2 class="teamTitle" id="towerTitle" style="color: #f59f00;">BATTLE TOWER</h2>
+      <button class="calcClose" id="towerClose" type="button">Close</button>
+    </div>
+    <div class="calcViewBody" id="towerContent" style="padding: 20px;">
+      <!-- Εδώ θα κάνει render το UI το battle_tower.js -->
+      <h3 style="color: var(--txt); text-align: center; margin-top: 40px;">Welcome to the Battle Tower!</h3>
+    </div>
   </section>
 </div>
 
@@ -98,7 +116,6 @@
 <!-- 1. Data Layer (Load constants first) -->
 <script src="data/TC.js" defer></script>
 
-
 <!-- 2. Then the large Data objects -->
 <script src="data/pokemon-core.js" defer></script>
 <script src="data/base_stats.js" defer></script>
@@ -124,8 +141,12 @@
 <script src="team/team-analytics.js" defer></script>
     
 <script src="team/team-ui.js" defer></script>
-    <script src="team/team-oop.js" defer></script>
+<script src="team/team-oop.js" defer></script>
 <script src="team/team-bosses.js" defer></script>
+
+<!-- ΝΕΟ SCRIPT: BATTLE TOWER -->
+<script src="team/battle_tower.js" defer></script>
+
 <script src="dex.js" defer></script>
 <script>
 if ('serviceWorker' in navigator) {
