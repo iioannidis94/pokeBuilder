@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dexViewBtn = document.getElementById('dexViewBtn');
     const calcViewBtn = document.getElementById('calcViewBtn');
 
-    // Συνάρτηση για άνοιγμα του Trainer Tower και αποθήκευση state
     const openTower = () => {
         document.body.classList.remove('team-view', 'calc-view', 'dex-view');
         document.body.classList.add('tower-view');
@@ -37,32 +36,42 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('pokedex_active_view', 'tower');
     };
 
+    const closeTower = () => {
+        document.body.classList.remove('tower-view');
+        localStorage.removeItem('pokedex_active_view');
+    };
+
     if (towerBtn) {
         towerBtn.addEventListener('click', openTower);
     }
 
     if (towerClose) {
-        towerClose.addEventListener('click', () => {
+        towerClose.addEventListener('click', closeTower);
+    }
+
+    // Όταν πατάμε οποιοδήποτε άλλο κουμπί μενού, καθαρίζουμε το tower state
+    if (myTeamBtn) {
+        myTeamBtn.addEventListener('click', () => {
             document.body.classList.remove('tower-view');
-            localStorage.removeItem('pokedex_active_view'); // Επιστροφή στην αρχική
+            localStorage.setItem('pokedex_active_view', 'team');
+        });
+    }
+    if (dexViewBtn) {
+        dexViewBtn.addEventListener('click', () => {
+            document.body.classList.remove('tower-view');
+            localStorage.setItem('pokedex_active_view', 'dex');
+        });
+    }
+    if (calcViewBtn) {
+        calcViewBtn.addEventListener('click', () => {
+            document.body.classList.remove('tower-view');
+            localStorage.setItem('pokedex_active_view', 'calc');
         });
     }
 
-    // Καταγραφή αλλαγής στις άλλες καρτέλες
-    if (myTeamBtn) {
-        myTeamBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'team'));
-    }
-    if (dexViewBtn) {
-        dexViewBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'dex'));
-    }
-    if (calcViewBtn) {
-        calcViewBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'calc'));
-    }
-
-    // --- AUTO-RESTORE: Επαναφορά στην τελευταία σελίδα με το που ανοίγει το site ---
+    // Auto-restore κατά το φόρτωση/refresh
     const savedView = localStorage.getItem('pokedex_active_view');
     if (savedView === 'tower') {
-        // Μικρή καθυστέρηση για να προλάβουν να φορτώσουν τα δεδομένα/TC
         setTimeout(() => { openTower(); }, 50);
     }
 });
@@ -105,7 +114,6 @@ function getOptimalCoverage(trainers) {
     return optimalTypes.sort();
 }
 
-// Global συνάρτηση για τον υπολογισμό των floors στο Elevator Calculator
 window.calculateElevator = function(val) {
     let minLvl = parseInt(val);
     if(isNaN(minLvl) || minLvl < 1) minLvl = 1;
@@ -117,26 +125,22 @@ window.calculateElevator = function(val) {
     
     let base = Math.floor(minLvl / 10) * 10;
     
-    // Solo / 0-9 Level Diff
     let solo = "";
     if (base === 0) solo = "10-19";
     else if (base === 90) solo = "80-89, 90-100";
     else solo = `${base-10}-${base-1}, ${base}-${base+9}, ${base+10}-${base+19}`;
     
-    // 10-19 Level Diff
     let p19 = "";
     if (base === 0) p19 = "10-19";
     else if (base === 10) p19 = "10-19, 20-29";
     else if (base >= 80) p19 = "80-89, 90-100";
     else p19 = `${base}-${base+9}, ${base+10}-${base+19}`;
     
-    // 20-29 Level Diff
     let p29 = "";
     if (base === 0) p29 = "10-19";
     else if (base >= 80) p29 = "80-89, 90-100";
     else p29 = `${base+10}-${base+19}`;
     
-    // Update the UI
     document.getElementById('elevatorMax').innerText = maxAllowed;
     document.getElementById('elSolo').innerText = solo;
     document.getElementById('elSoloTeam').innerText = `(Team Lvl: ${minLvl} - ${max9})`;
@@ -172,7 +176,6 @@ function renderTrainerTower(container) {
 
     let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">`;
 
-    // 1. Checklist Card
     html += `
         <div class="trainer-card" style="border: 2px dashed var(--dim); grid-column: 1 / -1; align-items: center; justify-content: center; padding: 25px;">
             <h3 style="color: var(--yel); margin-bottom: 5px; font-size: 18px;">🛡️ Optimal Coverage Checklist</h3>
@@ -183,7 +186,6 @@ function renderTrainerTower(container) {
         </div>
     `;
 
-    // 2. ΝΕΟ: Elevator Level Calculator Card
     html += `
         <div class="trainer-card" style="border: 2px solid #38d878; grid-column: 1 / -1; padding: 25px; text-align: left; align-items: flex-start;">
             <h3 style="color: #38d878; margin-bottom: 5px; font-size: 18px;">🏢 Elevator Party Calculator</h3>
@@ -224,7 +226,6 @@ function renderTrainerTower(container) {
         </div>
     `;
 
-    // 3. Ζωγραφίζουμε τους Εκπαιδευτές από κάτω
     TRAINER_TOWER_DATA.forEach(trainer => {
         const mainColor = (typeof TC !== 'undefined' && TC[trainer.types[0]]) ? TC[trainer.types[0]] : '#888';
         
@@ -269,6 +270,5 @@ function renderTrainerTower(container) {
     html += `</div>`;
     container.innerHTML = html;
     
-    // Αρχικοποίηση του Calculator με την default τιμή (1) μόλις γίνει render
     setTimeout(() => { if(window.calculateElevator) window.calculateElevator(1); }, 50);
 }
