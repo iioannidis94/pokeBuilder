@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ΝΕΟ: Κλείνει το Trainer Tower όταν πατάς άλλη καρτέλα ---
+    // Κλείνει το Trainer Tower όταν πατάς άλλη καρτέλα
     [myTeamBtn, dexViewBtn, calcViewBtn].forEach(btn => {
         if (btn) {
             btn.addEventListener('click', () => {
@@ -60,7 +60,6 @@ function getOptimalCoverage(trainers) {
     let optimalTypes = [];
     let typeCoverage = {};
     
-    // Φτιάχνουμε έναν χάρτη για το ποιος τύπος χτυπάει ποιους trainers
     trainers.forEach(trainer => {
         trainer.suggested.forEach(type => {
             if (!typeCoverage[type]) typeCoverage[type] = new Set();
@@ -68,7 +67,6 @@ function getOptimalCoverage(trainers) {
         });
     });
 
-    // Επιλέγουμε απληστία (Greedy Algorithm) τον τύπο που χτυπάει τους περισσότερους
     while (uncovered.length > 0) {
         let bestType = null;
         let bestCoverCount = 0;
@@ -85,7 +83,6 @@ function getOptimalCoverage(trainers) {
 
         if (bestType) {
             optimalTypes.push(bestType);
-            // Αφαιρούμε τους trainers που μόλις καλυφθήκαν
             uncovered = uncovered.filter(id => !bestCovers.includes(id));
             delete typeCoverage[bestType];
         } else {
@@ -95,11 +92,50 @@ function getOptimalCoverage(trainers) {
     return optimalTypes.sort();
 }
 
+// Global συνάρτηση για τον υπολογισμό των floors στο Elevator Calculator
+window.calculateElevator = function(val) {
+    let minLvl = parseInt(val);
+    if(isNaN(minLvl) || minLvl < 1) minLvl = 1;
+    if(minLvl > 100) minLvl = 100;
+    
+    let maxAllowed = Math.min(100, minLvl + 29);
+    let max19 = Math.min(100, minLvl + 19);
+    let max9 = Math.min(100, minLvl + 9);
+    
+    let base = Math.floor(minLvl / 10) * 10;
+    
+    // Solo / 0-9 Level Diff
+    let solo = "";
+    if (base === 0) solo = "10-19";
+    else if (base === 90) solo = "80-89, 90-100";
+    else solo = `${base-10}-${base-1}, ${base}-${base+9}, ${base+10}-${base+19}`;
+    
+    // 10-19 Level Diff
+    let p19 = "";
+    if (base === 0) p19 = "10-19";
+    else if (base === 10) p19 = "10-19, 20-29";
+    else if (base >= 80) p19 = "80-89, 90-100";
+    else p19 = `${base}-${base+9}, ${base+10}-${base+19}`;
+    
+    // 20-29 Level Diff
+    let p29 = "";
+    if (base === 0) p29 = "10-19";
+    else if (base >= 80) p29 = "80-89, 90-100";
+    else p29 = `${base+10}-${base+19}`;
+    
+    // Update the UI
+    document.getElementById('elevatorMax').innerText = maxAllowed;
+    document.getElementById('elSolo').innerText = solo;
+    document.getElementById('elSoloTeam').innerText = `(Team Lvl: ${minLvl} - ${max9})`;
+    document.getElementById('elP19').innerText = p19;
+    document.getElementById('elP19Team').innerText = `(Team Lvl: ${minLvl} - ${max19})`;
+    document.getElementById('elP29').innerText = p29;
+    document.getElementById('elP29Team').innerText = `(Team Lvl: ${minLvl} - ${maxAllowed})`;
+}
+
 function renderTrainerTower(container) {
-    // Υπολογίζουμε τους ελάχιστους τύπους που καλύπτουν τους πάντες
     const optimalTypes = getOptimalCoverage(TRAINER_TOWER_DATA);
 
-    // Φτιάχνουμε τα badges για το checklist
     let checklistBadges = optimalTypes.map(t => {
         const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
         const toggleLogic = `
@@ -121,12 +157,11 @@ function renderTrainerTower(container) {
         " onclick="${toggleLogic}">${t}</div>`;
     }).join('');
 
-    // Ανοίγουμε το Grid
     let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">`;
 
-    // 1. Προσθέτουμε την κάρτα Checklist ΠΑΝΩ ΠΑΝΩ
+    // 1. Checklist Card
     html += `
-        <div class="trainer-card" style="border: 2px dashed var(--dim); grid-column: 1 / -1; align-items: center; justify-content: center; padding: 25px; margin-bottom: 10px;">
+        <div class="trainer-card" style="border: 2px dashed var(--dim); grid-column: 1 / -1; align-items: center; justify-content: center; padding: 25px;">
             <h3 style="color: var(--yel); margin-bottom: 5px; font-size: 18px;">🛡️ Optimal Coverage Checklist</h3>
             <div style="font-size: 12px; color: var(--dim); margin-bottom: 20px;">You only need these <strong>${optimalTypes.length} specific move types</strong> to hit every single trainer super-effectively! Check them off as you build your team.</div>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%;">
@@ -135,17 +170,56 @@ function renderTrainerTower(container) {
         </div>
     `;
 
-    // 2. Ζωγραφίζουμε τους Εκπαιδευτές από κάτω
+    // 2. ΝΕΟ: Elevator Level Calculator Card
+    html += `
+        <div class="trainer-card" style="border: 2px solid #38d878; grid-column: 1 / -1; padding: 25px; text-align: left; align-items: flex-start;">
+            <h3 style="color: #38d878; margin-bottom: 5px; font-size: 18px;">🏢 Elevator Party Calculator</h3>
+            <div style="font-size: 12px; color: var(--dim); margin-bottom: 15px; text-align: left;">
+                Enter the level of the lowest Pokémon in your party to see your floor access and limits.
+            </div>
+            
+            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.1); padding: 10px 15px; border-radius: 8px;">
+                <label style="color: var(--txt); font-weight: 900; font-size: 14px;">Lowest Pokémon Level:</label>
+                <input type="number" id="minLevelInput" min="1" max="100" value="1" oninput="calculateElevator(this.value)" style="
+                    background: var(--bg); border: 2px solid var(--brd); color: var(--txt);
+                    padding: 8px 12px; border-radius: 6px; font-weight: bold; width: 80px; outline: none; text-align: center; font-size: 16px;
+                ">
+                <span style="color: #ff5570; font-weight: bold; margin-left: auto; font-size: 13px;">Max Party Level Allowed: <span id="elevatorMax">30</span></span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; width: 100%; margin-bottom: 15px;">
+                <div style="background: rgba(56,216,120,0.1); border: 1px solid #38d878; padding: 10px; border-radius: 8px;">
+                    <div style="color: #38d878; font-weight: 900; font-size: 11px; margin-bottom: 4px;">SINGLE / 0-9 LVL DIFF</div>
+                    <div id="elSoloTeam" style="color: var(--dim); font-size: 10px; margin-bottom: 6px;">(Team Lvl: 1 - 10)</div>
+                    <div id="elSolo" style="color: var(--txt); font-weight: bold; font-size: 14px;">10-19</div>
+                </div>
+                <div style="background: rgba(245,159,0,0.1); border: 1px solid #f59f00; padding: 10px; border-radius: 8px;">
+                    <div style="color: #f59f00; font-weight: 900; font-size: 11px; margin-bottom: 4px;">10-19 LVL DIFF</div>
+                    <div id="elP19Team" style="color: var(--dim); font-size: 10px; margin-bottom: 6px;">(Team Lvl: 1 - 20)</div>
+                    <div id="elP19" style="color: var(--txt); font-weight: bold; font-size: 14px;">10-19</div>
+                </div>
+                <div style="background: rgba(255,85,112,0.1); border: 1px solid #ff5570; padding: 10px; border-radius: 8px;">
+                    <div style="color: #ff5570; font-weight: 900; font-size: 11px; margin-bottom: 4px;">20-29 LVL DIFF</div>
+                    <div id="elP29Team" style="color: var(--dim); font-size: 10px; margin-bottom: 6px;">(Team Lvl: 1 - 30)</div>
+                    <div id="elP29" style="color: var(--txt); font-weight: bold; font-size: 14px;">10-19</div>
+                </div>
+            </div>
+            
+            <div style="padding: 10px; border: 1px dashed var(--dim); border-radius: 6px; font-size: 11px; color: var(--dim); width: 100%;">
+                <strong style="color: var(--yel);">⚠️ IMPORTANT:</strong> The elevator calculates your party levels IN REAL TIME. If your lowest Pokémon is e.g. Lv.40 and your highest levels up from 69 to 70 <strong>while inside</strong>, the option to visit the 50-59 floor will instantly disappear! You won't be kicked out, but you cannot change floors anymore. Max allowed level difference in a party is 29.
+            </div>
+        </div>
+    `;
+
+    // 3. Ζωγραφίζουμε τους Εκπαιδευτές από κάτω
     TRAINER_TOWER_DATA.forEach(trainer => {
         const mainColor = (typeof TC !== 'undefined' && TC[trainer.types[0]]) ? TC[trainer.types[0]] : '#888';
         
-        // Badges τύπων του trainer
         const typeBadges = trainer.types.map(t => {
             const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
         }).join(' ');
 
-        // ΓΕΜΑΤΑ Badges για τα suggested counters
         const suggestedBadges = trainer.suggested.map(t => {
             const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
@@ -181,4 +255,7 @@ function renderTrainerTower(container) {
 
     html += `</div>`;
     container.innerHTML = html;
+    
+    // Αρχικοποίηση του Calculator με την default τιμή (1) μόλις γίνει render
+    setTimeout(() => { if(window.calculateElevator) window.calculateElevator(1); }, 50);
 }
