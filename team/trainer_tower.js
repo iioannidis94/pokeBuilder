@@ -47,17 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTrainerTower(container) {
     let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">`;
 
+    // 1. Δημιουργία των καρτών για τους Εκπαιδευτές
+    let allSuggestedTypes = new Set(); // Εδώ θα μαζέψουμε όλους τους προτεινόμενους τύπους
+
     TRAINER_TOWER_DATA.forEach(trainer => {
         const mainColor = (typeof TC !== 'undefined' && TC[trainer.types[0]]) ? TC[trainer.types[0]] : '#888';
         
-        // 1. Γεμάτα Badges για τους τύπους του Trainer
         const typeBadges = trainer.types.map(t => {
             const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
         }).join(' ');
 
-        // 2. ΙΔΙΑ Γεμάτα Badges για τους "Suggested" τύπους (Τα Counters)
         const suggestedBadges = trainer.suggested.map(t => {
+            allSuggestedTypes.add(t); // Προσθέτουμε τον τύπο στη γενική λίστα μας
             const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
         }).join(' ');
@@ -76,22 +78,56 @@ function renderTrainerTower(container) {
                     <div class="trainer-title">${trainer.title}</div>
                 </div>
                 
-                <!-- Τύποι που χρησιμοποιεί ο Trainer -->
                 <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; width: 100%;">
                     ${typeBadges}
                 </div>
                 
-                <!-- Προτεινόμενοι Τύποι για να τον νικήσεις -->
                 <div style="width: 100%; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--brd);">
                     <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px; font-weight: 900; letter-spacing: 0.5px;">SUGGESTED COUNTERS</div>
                     <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
                         ${suggestedBadges}
                     </div>
                 </div>
-                
             </div>
         `;
     });
+
+    // 2. Δημιουργία της Κάρτας Checklist στο τέλος
+    const uniqueTypes = Array.from(allSuggestedTypes).sort(); // Αλφαβητική ταξινόμηση
+
+    let checklistBadges = uniqueTypes.map(t => {
+        const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
+        
+        // Λογική για το toggle (άδειο -> γεμάτο) όταν το πατάς
+        const toggleLogic = `
+            if(this.dataset.checked === 'yes') {
+                this.dataset.checked = 'no';
+                this.style.background = 'transparent';
+                this.style.color = '${tColor}';
+            } else {
+                this.dataset.checked = 'yes';
+                this.style.background = '${tColor}';
+                this.style.color = '#fff';
+            }
+        `.replace(/\n/g, '');
+
+        return `<div data-checked="no" style="
+            border: 2px solid ${tColor}; background: transparent; color: ${tColor}; 
+            padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; cursor: pointer; transition: all 0.2s; user-select: none;
+        " onclick="${toggleLogic}">${t}</div>`;
+    }).join('');
+
+    // Προσθέτουμε την κάρτα να πιάνει όλο το πλάτος (grid-column: 1 / -1)
+    html += `
+        <div class="trainer-card" style="border: 2px dashed var(--dim); grid-column: 1 / -1; align-items: center; justify-content: center; padding: 25px;">
+            <h3 style="color: var(--yel); margin-bottom: 5px; font-size: 18px;">🛡️ Team Coverage Checklist</h3>
+            <div style="font-size: 12px; color: var(--dim); margin-bottom: 20px;">Click the move types you currently have in your team to see if you are prepared!</div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                ${checklistBadges}
+            </div>
+        </div>
+    `;
 
     html += `</div>`;
     container.innerHTML = html;
