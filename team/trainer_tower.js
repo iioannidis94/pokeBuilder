@@ -25,33 +25,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const towerClose = document.getElementById('trainerTowerClose');
     const towerContent = document.getElementById('trainerTowerContent');
 
-    // Τα υπόλοιπα κουμπιά του μενού
     const myTeamBtn = document.getElementById('myTeamBtn');
     const dexViewBtn = document.getElementById('dexViewBtn');
     const calcViewBtn = document.getElementById('calcViewBtn');
 
+    // Συνάρτηση για άνοιγμα του Trainer Tower και αποθήκευση state
+    const openTower = () => {
+        document.body.classList.remove('team-view', 'calc-view', 'dex-view');
+        document.body.classList.add('tower-view');
+        renderTrainerTower(towerContent);
+        localStorage.setItem('pokedex_active_view', 'tower');
+    };
+
     if (towerBtn) {
-        towerBtn.addEventListener('click', () => {
-            document.body.classList.remove('team-view', 'calc-view', 'dex-view');
-            document.body.classList.add('tower-view');
-            renderTrainerTower(towerContent);
-        });
+        towerBtn.addEventListener('click', openTower);
     }
 
     if (towerClose) {
         towerClose.addEventListener('click', () => {
             document.body.classList.remove('tower-view');
+            localStorage.removeItem('pokedex_active_view'); // Επιστροφή στην αρχική
         });
     }
 
-    // Κλείνει το Trainer Tower όταν πατάς άλλη καρτέλα
-    [myTeamBtn, dexViewBtn, calcViewBtn].forEach(btn => {
-        if (btn) {
-            btn.addEventListener('click', () => {
-                document.body.classList.remove('tower-view');
-            });
-        }
-    });
+    // Καταγραφή αλλαγής στις άλλες καρτέλες
+    if (myTeamBtn) {
+        myTeamBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'team'));
+    }
+    if (dexViewBtn) {
+        dexViewBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'dex'));
+    }
+    if (calcViewBtn) {
+        calcViewBtn.addEventListener('click', () => localStorage.setItem('pokedex_active_view', 'calc'));
+    }
+
+    // --- AUTO-RESTORE: Επαναφορά στην τελευταία σελίδα με το που ανοίγει το site ---
+    const savedView = localStorage.getItem('pokedex_active_view');
+    if (savedView === 'tower') {
+        // Μικρή καθυστέρηση για να προλάβουν να φορτώσουν τα δεδομένα/TC
+        setTimeout(() => { openTower(); }, 50);
+    }
 });
 
 // Αλγόριθμος εύρεσης των απολύτως ελάχιστων τύπων για πλήρες coverage
