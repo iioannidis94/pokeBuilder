@@ -372,23 +372,22 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 .bossListItem:hover { background: var(--brd) !important; }
 .bossListItem.active { background: var(--brd) !important; }
 
+/* --- TRAINER TOWER VIEW --- */
+body.tower-view .sw, 
+body.tower-view .tfs, 
+body.tower-view .sb, 
+body.tower-view main { display: none; }
 
-/* --- TRAINER TOWER MODAL & CARDS --- */
-#trainerTowerOverlay[aria-hidden="true"] { display: none !important; }
-#trainerTowerOverlay[aria-hidden="false"] { display: flex !important; }
+body.tower-view .teamOverlay { display: none; }
+body.tower-view #calcOverlay { display: none; }
 
-#trainerTowerOverlay {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgba(0,0,0,0.8); align-items: center; justify-content: center;
-  transition: .2s;
+body.tower-view #trainerTowerOverlay {
+  position: relative; inset: auto; display: block; z-index: 1; 
+  background: transparent; backdrop-filter: none; padding: 0; overflow: visible;
 }
+body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
 
-#trainerTowerOverlay .calcViewPanel {
-  background: var(--surf); border: 1px solid var(--brd); border-radius: 16px;
-  width: min(96vw, 900px); max-height: 90vh; display: flex; flex-direction: column;
-  overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.8);
-}
-
+/* Trainer Cards Styling */
 .trainer-card {
   background: var(--surf2); 
   border-radius: 12px; 
