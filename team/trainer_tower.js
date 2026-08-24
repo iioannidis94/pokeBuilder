@@ -56,10 +56,10 @@ function renderTrainerTower(container) {
             return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
         }).join(' ');
 
-        // 2. Outlined Badges για τους "Suggested" τύπους (Τα Counters)
+        // 2. ΙΔΙΑ Γεμάτα Badges για τους "Suggested" τύπους (Τα Counters)
         const suggestedBadges = trainer.suggested.map(t => {
             const tColor = (typeof TC !== 'undefined' && TC[t]) ? TC[t] : '#888';
-            return `<span style="border: 1px solid ${tColor}; color: ${tColor}; background: rgba(255,255,255,0.03); padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase;">${t}</span>`;
+            return `<span style="background: ${tColor}; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${t}</span>`;
         }).join(' ');
 
         const imgUrl = `https://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite}.png`;
@@ -72,7 +72,7 @@ function renderTrainerTower(container) {
                 <img src="${imgUrl}" alt="${trainer.name}" onerror="this.src='https://play.pokemonshowdown.com/sprites/trainers/unknown.png'">
                 
                 <div style="width: 100%;">
-                    <h3>${trainer.name}</h3>
+                    <h3 style="margin: 0 0 5px 0; color: var(--txt); font-size: 15px;">${trainer.name}</h3>
                     <div class="trainer-title">${trainer.title}</div>
                 </div>
                 
@@ -82,8 +82,8 @@ function renderTrainerTower(container) {
                 </div>
                 
                 <!-- Προτεινόμενοι Τύποι για να τον νικήσεις -->
-                <div style="width: 100%; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--brd, #333);">
-                    <div style="font-size: 9px; color: var(--dim, #aaa); margin-bottom: 8px; font-weight: 900; letter-spacing: 0.5px;">SUGGESTED COUNTERS</div>
+                <div style="width: 100%; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--brd);">
+                    <div style="font-size: 9px; color: var(--dim); margin-bottom: 8px; font-weight: 900; letter-spacing: 0.5px;">SUGGESTED COUNTERS</div>
                     <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
                         ${suggestedBadges}
                     </div>
