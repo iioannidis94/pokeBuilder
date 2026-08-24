@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokebuilder-v3'; // <--- 1. Αλλαγή έκδοσης σε v3 (ή ό,τι θες)
+const CACHE_NAME = 'pokebuilder-v4'; // <--- 1. Αλλαγή έκδοσης σε v3 (ή ό,τι θες)
 
 const APP_SHELL = [
   './',
