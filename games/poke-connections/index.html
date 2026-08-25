@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poké Connections | Pokémon Games</title>
+    <link rel="icon" type="image/svg+xml" href="../Pikachu SVG File.svg">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../games.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <a href="../index.html" class="back-btn">⬅ Games Hub</a>
+            <div class="score-board">
+                <span>Lives: <b id="lives-count" style="color:#ff6b6b">❤️❤️❤️❤️</b></span>
+            </div>
+        </header>
+
+        <main class="game-arena">
+            <div class="question-banner">
+                Create 4 groups of 4!
+            </div>
+
+            <!-- Εδώ θα μπαίνουν τα λυμένα groups -->
+            <div id="solved-container" class="solved-groups"></div>
+
+            <!-- Εδώ μπαίνουν τα 16 ανακατεμένα Pokemon -->
+            <div id="grid-container" class="connections-grid"></div>
+
+            <div class="connections-controls">
+                <button id="shuffle-btn" class="teamBtn dexBtn">Shuffle</button>
+                <button id="deselect-btn" class="teamBtn dexBtn">Deselect All</button>
+                <button id="submit-btn" class="teamBtn" style="border-color: #38d878; color: #38d878;" disabled>Submit</button>
+            </div>
+
+            <div id="feedback-msg" class="feedback-msg"></div>
+            <button id="next-puzzle-btn" class="next-btn hidden" onclick="loadNextPuzzle()">Next Puzzle ➡</button>
+        </main>
+    </div>
+
+    <!-- Data -->
+    <script src="../../data/pokemon-core.js"></script>
+    <script src="../../data/sprites.js"></script>
+    <script src="../../utils.js"></script>
+    <script src="connections-data.js"></script>
+    
+    <!-- Logic -->
+    <script src="poke-connections.js"></script>
+</body>
+</html>
