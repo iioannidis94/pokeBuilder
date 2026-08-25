@@ -22,16 +22,15 @@
                 Create 4 groups of 4!
             </div>
 
-            <!-- Εδώ θα μπαίνουν τα λυμένα groups -->
+            <!-- Solved Groups Container -->
             <div id="solved-container" class="solved-groups"></div>
 
-            <!-- Εδώ μπαίνουν τα 16 ανακατεμένα Pokemon -->
+            <!-- Grid Container -->
             <div id="grid-container" class="connections-grid"></div>
 
             <div class="connections-controls">
                 <button id="shuffle-btn" class="teamBtn dexBtn">Shuffle</button>
                 <button id="deselect-btn" class="teamBtn dexBtn">Deselect All</button>
-                <button id="submit-btn" class="teamBtn" style="border-color: #38d878; color: #38d878;" disabled>Submit</button>
             </div>
 
             <div id="feedback-msg" class="feedback-msg"></div>
@@ -39,13 +38,11 @@
         </main>
     </div>
 
-    <!-- Data -->
+    <!-- Data & Logic -->
     <script src="../../data/pokemon-core.js"></script>
     <script src="../../data/sprites.js"></script>
     <script src="../../utils.js"></script>
     <script src="connections-data.js"></script>
-    
-    <!-- Logic -->
     <script src="poke-connections.js"></script>
 </body>
 </html>
