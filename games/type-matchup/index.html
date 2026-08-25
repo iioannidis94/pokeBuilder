@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Type Matchup | Pokémon Games</title>
-    <link rel="icon" type="image/svg+xml" href="Pikachu SVG File.svg">
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="games.css">
+    <!-- Το favicon είναι έναν φάκελο πίσω -->
+    <link rel="icon" type="image/svg+xml" href="../Pikachu SVG File.svg">
+    <!-- Το βασικό CSS είναι 2 φακέλους πίσω -->
+    <link rel="stylesheet" href="../../styles.css">
+    <!-- Το games.css είναι 1 φάκελο πίσω -->
+    <link rel="stylesheet" href="../games.css">
 </head>
 <body>
     <div class="game-container">
         <header class="game-header">
-            <a href="index.html" class="back-btn">⬅ Games Hub</a>
+            <a href="../index.html" class="back-btn">⬅ Games Hub</a>
             <div class="score-board">
                 <span>Score: <b id="current-score" style="color:var(--yel)">0</b></span>
                 <span style="margin: 0 15px;">Streak: <b id="streak-score" style="color:#ff6b6b">0 🔥</b></span>
@@ -35,7 +38,7 @@
 
             <!-- Type Buttons -->
             <div class="type-options-grid" id="options-container">
-                <!-- Τα κουμπιά θα μπουν εδώ μέσω JS -->
+                <!-- Buttons injected via JS -->
             </div>
 
             <div id="feedback-msg" class="feedback-msg"></div>
@@ -43,13 +46,13 @@
         </main>
     </div>
 
-    <!-- Data & Utils -->
-    <script src="../data/TC.js"></script>
-    <script src="../data/pokemon-core.js"></script>
-    <script src="../data/sprites.js"></script>
-    <script src="../utils.js"></script>
+    <!-- Data & Utils (2 φακέλους πίσω) -->
+    <script src="../../data/TC.js"></script>
+    <script src="../../data/pokemon-core.js"></script>
+    <script src="../../data/sprites.js"></script>
+    <script src="../../utils.js"></script>
     
-    <!-- Game Logic -->
+    <!-- Game Logic (στον ίδιο φάκελο) -->
     <script src="type-matchup.js"></script>
 </body>
 </html>
