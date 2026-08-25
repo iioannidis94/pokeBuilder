@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="el">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stat Clash | Pokémon Games</title>
-    <!-- Φορτώνουμε και το κεντρικό σου CSS για να έχουμε τα χρώματα / types (TC) έτοιμα -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="games.css">
 </head>
@@ -21,7 +20,7 @@
 
         <main class="game-arena">
             <div class="question-banner">
-                Ποιο Pokémon έχει υψηλότερο <span id="target-stat" class="stat-highlight">...</span>;
+                Which Pokémon has higher <span id="target-stat" class="stat-highlight">...</span>?
             </div>
 
             <div class="pokemon-matchup" id="matchup-container">
@@ -45,18 +44,18 @@
             </div>
 
             <div id="feedback-msg" class="feedback-msg"></div>
-            <button id="next-btn" class="next-btn hidden" onclick="startNewRound()">Επόμενος Γύρος ➡</button>
+            <button id="next-btn" class="next-btn hidden" onclick="startNewRound()">Next Round ➡</button>
         </main>
     </div>
 
-    <!-- 1. Φόρτωση των τοπικών δεδομένων από τον γονικό φάκελο -->
+    <!-- Φόρτωση των δεδομένων -->
     <script src="../data/TC.js"></script>
     <script src="../data/pokemon-core.js"></script>
     <script src="../data/base_stats.js"></script>
     <script src="../data/sprites.js"></script>
     <script src="../utils.js"></script>
     
-    <!-- 2. Φόρτωση της λογικής του παιχνιδιού -->
+    <!-- Λογική Παιχνιδιού -->
     <script src="stat-clash.js"></script>
 </body>
 </html>
