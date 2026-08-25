@@ -418,7 +418,7 @@ const CONNECTIONS_QUESTIONS = [
     {
         theme: "Are completely blue in color",
         difficulty: "easy",
-        members: ["Squirtle", "Psyduck", "Poliwag", "Horsea"]
+        members: ["Squirtle", "Totodile", "Poliwag", "Horsea"]
     },
     {
         theme: "Are completely red in color",
