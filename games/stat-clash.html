@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Clash | Pokémon Games</title>
+    <link rel="stylesheet" href="games.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <a href="index.html" class="back-btn">⬅ Games Hub</a>
+            <div class="score-board">
+                <span>Score: <b id="current-score">0</b></span>
+                <span>Streak: <b id="streak-score">0 🔥</b></span>
+                <span>High Score: <b id="high-score">0</b></span>
+            </div>
+        </header>
+
+        <main class="game-arena">
+            <div class="question-banner">
+                Ποιο Pokémon έχει υψηλότερο <span id="target-stat" class="stat-highlight">...</span>;
+            </div>
+
+            <div id="loading-spinner" class="loading-state hidden">Φόρτωση Pokémon...</div>
+
+            <div class="pokemon-matchup" id="matchup-container">
+                <!-- Pokémon 1 -->
+                <div class="poke-card" id="card-1" onclick="choosePokemon(0)">
+                    <div class="poke-img-wrap">
+                        <img id="poke-img-1" src="" alt="Pokemon 1">
+                    </div>
+                    <h3 id="poke-name-1">---</h3>
+                    <div class="poke-types" id="poke-types-1"></div>
+                    <div class="stat-result" id="stat-val-1">??</div>
+                </div>
+
+                <div class="vs-circle">VS</div>
+
+                <!-- Pokémon 2 -->
+                <div class="poke-card" id="card-2" onclick="choosePokemon(1)">
+                    <div class="poke-img-wrap">
+                        <img id="poke-img-2" src="" alt="Pokemon 2">
+                    </div>
+                    <h3 id="poke-name-2">---</h3>
+                    <div class="poke-types" id="poke-types-2"></div>
+                    <div class="stat-result" id="stat-val-2">??</div>
+                </div>
+            </div>
+
+            <div id="feedback-msg" class="feedback-msg"></div>
+            <button id="next-btn" class="next-btn hidden" onclick="startNewRound()">Επόμενος Γύρος ➡</button>
+        </main>
+    </div>
+
+    <!-- Φόρτωση της λίστας POKE και των Sprites από τον γονικό φάκελο -->
+    <script src="../poke-data.js"></script>
+    <script src="../sprites.js"></script>
+    <script src="stat-clash.js"></script>
+</body>
+</html>
