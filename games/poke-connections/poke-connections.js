@@ -1,12 +1,14 @@
-let currentPuzzleIndex = 0;
+let availablePuzzleIndices = [];
+let currentPuzzle = null;
 let lives = 4;
-let selectedItems = []; // Αποθηκεύει τα HTML elements που έχει κάνει κλικ ο παίκτης
+let selectedItems = [];
 let solvedGroupsCount = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadPuzzle(currentPuzzleIndex);
+    initGameSession();
+    loadRandomPuzzle();
 
-    // Λειτουργία κουμπιού Shuffle
+    // Shuffle grid items button
     document.getElementById('shuffle-btn').onclick = () => {
         const grid = document.getElementById('grid-container');
         for (let i = grid.children.length; i >= 0; i--) {
@@ -14,14 +16,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Λειτουργία κουμπιού Deselect All
+    // Deselect all button
     document.getElementById('deselect-btn').onclick = () => {
         selectedItems.forEach(btn => btn.classList.remove('selected'));
         selectedItems = [];
     };
 });
 
-function loadPuzzle(index) {
+// Αρχικοποίηση λίστας πιστών για το τρέχον run και τυχαίο ανακάτεμα
+function initGameSession() {
+    availablePuzzleIndices = CONNECTIONS_PUZZLES.map((_, index) => index);
+    shuffleArray(availablePuzzleIndices);
+}
+
+// Fisher-Yates shuffle algorithm για τυχαία σειρά
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function loadRandomPuzzle() {
     lives = 4;
     selectedItems = [];
     solvedGroupsCount = 0;
@@ -33,16 +49,23 @@ function loadPuzzle(index) {
     document.getElementById('next-puzzle-btn').classList.add('hidden');
     document.querySelector('.connections-controls').classList.remove('hidden');
 
-    const puzzle = CONNECTIONS_PUZZLES[index];
-    if(!puzzle) {
-        document.querySelector('.question-banner').textContent = "Συγχαρητήρια! Τερμάτισες όλες τις πίστες!";
-        document.querySelector('.connections-controls').classList.add('hidden');
+    // Αν τελείωσαν όλες οι πίστες του run, τις ξαναφορτώνουμε από την αρχή
+    if (availablePuzzleIndices.length === 0) {
+        initGameSession();
+    }
+
+    // Παίρνουμε τυχαία πίστα που δεν έχει ξανατυχαίνει σε αυτό το run
+    const puzzleIndex = availablePuzzleIndices.pop();
+    currentPuzzle = CONNECTIONS_PUZZLES[puzzleIndex];
+
+    if (!currentPuzzle) {
+        document.querySelector('.question-banner').textContent = "No puzzles available!";
         return;
     }
 
-    // 1. Δημιουργία της λίστας με τα 16 Pokémon
+    // 1. Δημιουργία λίστας με τα 16 Pokémon της πίστας
     let flatItems = [];
-    puzzle.groups.forEach(group => {
+    currentPuzzle.groups.forEach(group => {
         group.members.forEach(memberName => {
             flatItems.push({
                 name: memberName,
@@ -52,13 +75,12 @@ function loadPuzzle(index) {
         });
     });
 
-    // 2. Ανακάτεμα (Shuffle)
+    // 2. Ανακάτεμα των 16 καρτών στο grid
     flatItems = flatItems.sort(() => Math.random() - 0.5);
 
     // 3. Render στο Grid
     const grid = document.getElementById('grid-container');
     flatItems.forEach(item => {
-        // Βρίσκουμε το Pokémon από το pokemon-core.js για να πάρουμε το sprite
         const searchName = item.name.toLowerCase().replace(/ /g, '-');
         const pokeData = POKE.find(p => p.name === searchName) || POKE.find(p => p.name.includes(searchName));
         
@@ -68,8 +90,7 @@ function loadPuzzle(index) {
         btn.dataset.diff = item.difficulty;
         btn.dataset.name = item.name;
         
-        // Φέρνουμε το sprite από το utils.js
-        const spriteHtml = pokeData ? spriteImg(pokeData) : `<div style="width:40px;height:40px;">?</div>`;
+        const spriteHtml = pokeData ? spriteImg(pokeData) : `<div style="width:50px;height:50px;">?</div>`;
         btn.innerHTML = `${spriteHtml} <span>${item.name}</span>`;
 
         btn.onclick = () => toggleSelect(btn);
@@ -78,30 +99,25 @@ function loadPuzzle(index) {
 }
 
 function toggleSelect(btn) {
-    // Αν είναι ήδη επιλεγμένο, βγάλτο
     if (btn.classList.contains('selected')) {
         btn.classList.remove('selected');
         selectedItems = selectedItems.filter(item => item !== btn);
         return;
     }
 
-    // Αν δεν έχουμε ήδη 4 επιλεγμένα, πρόσθεσέ το
     if (selectedItems.length < 4) {
         btn.classList.add('selected');
         selectedItems.push(btn);
     }
 
-    // Αυτόματο Submit αν επιλέχθηκαν 4
+    // Auto-submit όταν επιλεγούν ακριβώς 4
     if (selectedItems.length === 4) {
-        setTimeout(checkMatch, 200); // Μικρή καθυστέρηση για να φανεί το 4ο κλικ
+        setTimeout(checkMatch, 250);
     }
 }
 
 function checkMatch() {
-    // Παίρνουμε το theme του πρώτου επιλεγμένου
     const targetTheme = selectedItems[0].dataset.theme;
-    
-    // Ελέγχουμε αν ΚΑΙ ΤΑ 4 έχουν το ίδιο theme
     const isCorrect = selectedItems.every(btn => btn.dataset.theme === targetTheme);
 
     if (isCorrect) {
@@ -112,14 +128,12 @@ function checkMatch() {
 }
 
 function handleCorrectMatch(theme, difficulty) {
-    // Πρασινίζουμε τα επιλεγμένα
     selectedItems.forEach(btn => btn.classList.add('pop-green'));
 
     setTimeout(() => {
         const solvedContainer = document.getElementById('solved-container');
         const gridContainer = document.getElementById('grid-container');
         
-        // Μαζεύουμε τα sprites και τα ονόματα
         let spritesHtml = '';
         let namesArray = [];
         selectedItems.forEach(btn => {
@@ -127,7 +141,6 @@ function handleCorrectMatch(theme, difficulty) {
             namesArray.push(btn.dataset.name);
         });
 
-        // Φτιάχνουμε τη λυμένη γραμμή
         const solvedRow = document.createElement('div');
         solvedRow.className = `solved-row diff-${difficulty}`;
         solvedRow.innerHTML = `
@@ -138,23 +151,20 @@ function handleCorrectMatch(theme, difficulty) {
         
         solvedContainer.appendChild(solvedRow);
 
-        // Αφαιρούμε τα 4 κουμπιά από το Grid
         selectedItems.forEach(btn => gridContainer.removeChild(btn));
         selectedItems = [];
         solvedGroupsCount++;
 
-        // Έλεγχος αν λύθηκε όλο το παζλ
         if (solvedGroupsCount === 4) {
-            document.getElementById('feedback-msg').textContent = "Τέλεια! Λύσατε τον γρίφο! 🎉";
+            document.getElementById('feedback-msg').textContent = "Awesome! You solved the puzzle! 🎉";
             document.getElementById('feedback-msg').className = "feedback-msg correct";
             document.getElementById('next-puzzle-btn').classList.remove('hidden');
             document.querySelector('.connections-controls').classList.add('hidden');
         }
-    }, 500); // Περιμένουμε μισό δευτερόλεπτο για να παίξει το πράσινο animation
+    }, 500);
 }
 
 function handleWrongMatch() {
-    // Κοκκινίζουμε και τρέμουμε
     selectedItems.forEach(btn => {
         btn.classList.add('shake-red');
     });
@@ -163,21 +173,20 @@ function handleWrongMatch() {
     updateLivesUI();
 
     setTimeout(() => {
-        // Επαναφορά των κουμπιών (αφαίρεση του λάθους και της επιλογής)
         selectedItems.forEach(btn => {
             btn.classList.remove('shake-red', 'selected');
         });
         selectedItems = [];
 
-        // Έλεγχος αν χάσαμε
         if (lives <= 0) {
-            document.getElementById('feedback-msg').textContent = "Game Over! Τελείωσαν οι ζωές. 💀";
+            document.getElementById('feedback-msg').textContent = "Game Over! Out of lives. 💀";
             document.getElementById('feedback-msg').className = "feedback-msg wrong";
-            document.getElementById('grid-container').style.pointerEvents = 'none'; // Κλείδωμα
+            document.getElementById('grid-container').style.pointerEvents = 'none';
             document.querySelector('.connections-controls').classList.add('hidden');
+            document.getElementById('next-puzzle-btn').textContent = "Try Again 🔄";
             document.getElementById('next-puzzle-btn').classList.remove('hidden');
         }
-    }, 600); // Περιμένουμε λίγο να τελειώσει το "κούνημα"
+    }, 600);
 }
 
 function updateLivesUI() {
@@ -186,6 +195,6 @@ function updateLivesUI() {
 }
 
 function loadNextPuzzle() {
-    currentPuzzleIndex++;
-    loadPuzzle(currentPuzzleIndex);
+    document.getElementById('grid-container').style.pointerEvents = 'auto';
+    loadRandomPuzzle();
 }
