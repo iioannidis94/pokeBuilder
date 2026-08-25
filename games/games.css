@@ -244,43 +244,48 @@ body {
     100% { transform: scale(1.05); }
 }
 
-/* --- Poké Connections Styles --- */
+/* --- Poké Connections Dynamic Grid & Big Sprites --- */
 .connections-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .conn-item {
     background: #1a1a30;
     border: 2px solid #334155;
-    border-radius: 8px;
-    padding: 10px 5px;
+    border-radius: 12px;
+    padding: 16px 8px;
     text-align: center;
     cursor: pointer;
     font-weight: 900;
-    font-size: 13px;
+    font-size: clamp(11px, 1.2vw, 14px); /* Δυναμικό κείμενο ανάλογα την οθόνη */
     text-transform: uppercase;
     transition: all 0.2s;
     user-select: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    gap: 10px;
+    min-height: clamp(100px, 14vh, 140px); /* Δυναμικό ύψος κάρτας */
 }
 
+/* Μεγαλύτερα Icons/Sprites δυναμικά */
 .conn-item img {
-    width: 40px;
-    height: 40px;
+    width: clamp(50px, 7vw, 80px);
+    height: clamp(50px, 7vw, 80px);
     object-fit: contain;
+    image-rendering: pixelated;
 }
 
 .conn-item.selected {
     background: #334155;
     border-color: #fbbf24;
     color: #fbbf24;
-    transform: scale(0.95);
+    transform: scale(0.96);
 }
 
 .connections-controls {
@@ -290,20 +295,64 @@ body {
     margin-top: 10px;
 }
 
-/* Solved Rows */
+/* Solved Rows - Ελαφρύ Πράσινο (Light Green) */
 .solved-groups {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    width: 100%;
 }
 
 .solved-row {
-    border-radius: 8px;
-    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 14px;
     text-align: center;
-    color: #111;
-    animation: popIn 0.3s ease-out;
+    color: #064e3b; /* Σκοτεινό πράσινο κείμενο για τέλεια αντίθεση */
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Ελαφρύ πράσινο φόντο αντί για κίτρινο */
+.solved-row.diff-easy,
+.solved-row.diff-medium,
+.solved-row.diff-hard,
+.solved-row.diff-tricky {
+    background-color: #bbf7d0; /* Light Green / Mint */
+    border: 2px solid #4ade80;
+}
+
+.solved-row .solved-sprites {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+/* Μεγαλύτερα sprites και στην πάνω μπάρα */
+.solved-row .solved-sprites img {
+    width: clamp(40px, 5vw, 60px);
+    height: clamp(40px, 5vw, 60px);
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.solved-row h3 { 
+    font-size: clamp(14px, 1.5vw, 17px); 
+    font-weight: 900; 
+    margin-bottom: 2px; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.solved-row p { 
+    font-size: clamp(12px, 1.2vw, 14px); 
+    font-weight: 800; 
+    opacity: 0.85; 
 }
 
 .solved-row h3 { font-size: 16px; margin-bottom: 5px; text-transform: uppercase;}
