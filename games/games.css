@@ -195,3 +195,53 @@ body {
 }
 
 .hidden { display: none !important; }
+
+
+/* ----------- Type Matchup Quiz Styles --------- */
+.type-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.type-btn {
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.15s, filter 0.15s, opacity 0.2s;
+}
+
+.type-btn:hover:not(:disabled) {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+}
+
+.type-btn:disabled {
+    cursor: default;
+}
+
+.btn-correct {
+    border: 3px solid #fff;
+    box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    animation: pulse 1s infinite alternate;
+}
+
+.btn-wrong {
+    border: 3px solid #111;
+    filter: grayscale(80%);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+
