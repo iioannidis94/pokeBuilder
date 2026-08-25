@@ -244,4 +244,78 @@ body {
     100% { transform: scale(1.05); }
 }
 
+/* --- Poké Connections Styles --- */
+.connections-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
+.conn-item {
+    background: #1a1a30;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    padding: 10px 5px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.conn-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.conn-item.selected {
+    background: #334155;
+    border-color: #fbbf24;
+    color: #fbbf24;
+    transform: scale(0.95);
+}
+
+.connections-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Solved Rows */
+.solved-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.solved-row {
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    color: #111;
+    animation: popIn 0.3s ease-out;
+}
+
+.solved-row h3 { font-size: 16px; margin-bottom: 5px; text-transform: uppercase;}
+.solved-row p { font-size: 14px; font-weight: bold; }
+
+/* Colors for difficulties */
+.diff-easy { background-color: #fde047; }
+.diff-medium { background-color: #86efac; }
+.diff-hard { background-color: #93c5fd; }
+.diff-tricky { background-color: #c084fc; }
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
