@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stat Clash | Pokémon Games</title>
-    <!-- Το νέο σου Favicon -->
-    <link rel="icon" type="image/svg+xml" href="Pikachu SVG File.svg">
+    <!-- Favicon με σωστή διαδρομή -->
+    <link rel="icon" type="image/svg+xml" href="../Pikachu SVG File.svg">
     
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="games.css">
+    <!-- Σωστά paths για τα CSS (δύο επίπεδα πίσω για το styles.css) -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../games.css">
 </head>
-    
 <body>
     <div class="game-container">
         <header class="game-header">
-            <a href="index.html" class="back-btn">⬅ Games Hub</a>
+            <a href="../index.html" class="back-btn">⬅ Games Hub</a>
             <div class="score-board">
                 <span>Score: <b id="current-score" style="color:var(--yel)">0</b></span>
                 <span style="margin: 0 15px;">Streak: <b id="streak-score" style="color:#ff6b6b">0 🔥</b></span>
@@ -53,14 +52,14 @@
         </main>
     </div>
 
-    <!-- Φόρτωση των δεδομένων -->
-    <script src="../data/TC.js"></script>
-    <script src="../data/pokemon-core.js"></script>
-    <script src="../data/base_stats.js"></script>
-    <script src="../data/sprites.js"></script>
-    <script src="../utils.js"></script>
+    <!-- Φόρτωση των δεδομένων με τα σωστά paths (../../ για τον root φάκελο) -->
+    <script src="../../data/TC.js"></script>
+    <script src="../../data/pokemon-core.js"></script>
+    <script src="../../data/base_stats.js"></script>
+    <script src="../../data/sprites.js"></script>
+    <script src="../../utils.js"></script>
     
-    <!-- Λογική Παιχνιδιού -->
+    <!-- Λογική Παιχνιδιού (βρίσκεται στον ίδιο φάκελο) -->
     <script src="stat-clash.js"></script>
 </body>
 </html>
