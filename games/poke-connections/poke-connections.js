@@ -63,11 +63,16 @@ function loadRandomDynamicPuzzle() {
     // 4. Ανακάτεμα των 16 καρτών στο grid
     shuffleArray(flatItems);
 
-    // 5. Render στο Grid
+ // 5. Render στο Grid
     const grid = document.getElementById('grid-container');
     flatItems.forEach(item => {
-        const searchName = item.name.toLowerCase().replace(/ /g, '-');
-        const pokeData = POKE.find(p => p.name === searchName) || POKE.find(p => p.name.includes(searchName));
+        // Καθαρίζουμε το όνομα από κενά, παύλες και τελείες για ασφαλή αναζήτηση
+        const cleanTarget = item.name.toLowerCase().replace(/[\s.-]/g, '');
+        
+        const pokeData = POKE.find(p => {
+            const cleanPokeName = p.name.toLowerCase().replace(/[\s.-]/g, '');
+            return cleanPokeName === cleanTarget;
+        });
         
         const btn = document.createElement('div');
         btn.className = 'conn-item';
@@ -75,13 +80,12 @@ function loadRandomDynamicPuzzle() {
         btn.dataset.diff = item.difficulty;
         btn.dataset.name = item.name;
         
-        const spriteHtml = pokeData ? spriteImg(pokeData) : `<div style="width:50px;height:50px;">?</div>`;
+        const spriteHtml = pokeData ? spriteImg(pokeData) : `<div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;">?</div>`;
         btn.innerHTML = `${spriteHtml} <span>${item.name}</span>`;
 
         btn.onclick = () => toggleSelect(btn);
         grid.appendChild(btn);
     });
-}
 
 function toggleSelect(btn) {
     if (btn.classList.contains('selected')) {
