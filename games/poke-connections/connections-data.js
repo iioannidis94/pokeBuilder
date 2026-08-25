@@ -265,10 +265,10 @@ const CONNECTIONS_QUESTIONS = [
         difficulty: "easy",
         members: ["Sceptile", "Blaziken", "Swampert", "Gardevoir"]
     },
-    {
+   {
         theme: "Sinnoh Starter Final Evolutions",
         difficulty: "easy",
-        members: ["Torterra", "Infernape", "Empoleon", "Lucario"]
+        members: ["Torterra", "Infernape", "Empoleon", "Luxray"] // ή Staraptor αντί για Lucario
     },
     {
         theme: "Unova Starter Final Evolutions",
