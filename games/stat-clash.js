@@ -1,11 +1,10 @@
-// Τα κλειδιά (keys) εδώ αντιστοιχούν ακριβώς σε αυτά του base_stats.js
 const STATS = [
     { key: 'hp', label: 'HP' },
-    { key: 'atk', label: 'Attack ⚔️' },
-    { key: 'def', label: 'Defense 🛡️' },
-    { key: 'spa', label: 'Sp. Atk ✨' },
-    { key: 'spd', label: 'Sp. Def 🔮' },
-    { key: 'spe', label: 'Speed ⚡' }
+    { key: 'atk', label: 'Attack ' },
+    { key: 'def', label: 'Defense ' },
+    { key: 'spa', label: 'Sp. Atk ' },
+    { key: 'spd', label: 'Sp. Def ' },
+    { key: 'spe', label: 'Speed ' }
 ];
 
 let score = 0;
@@ -23,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     startNewRound();
 });
 
-// Επιλογή 2 τυχαίων διαφορετικών Pokémon που ΥΠΑΡΧΟΥΝ στα BASE_STATS
+// Select 2 random different Pokémon that exist in BASE_STATS
 function getRandomPair() {
     let p1, p2;
     do {
         p1 = POKE[Math.floor(Math.random() * POKE.length)];
-    } while (!BASE_STATS[String(p1.id)]); // Σιγουρευόμαστε ότι υπάρχουν στατιστικά
+    } while (!BASE_STATS[String(p1.id)]);
 
     do {
         p2 = POKE[Math.floor(Math.random() * POKE.length)];
@@ -50,11 +49,11 @@ function startNewRound() {
     nextBtn.classList.add('hidden');
     arena.classList.add('blurred');
 
-    // Επιλογή Τυχαίου Stat
+    // Pick random stat
     currentRound.stat = STATS[Math.floor(Math.random() * STATS.length)];
     document.getElementById('target-stat').textContent = currentRound.stat.label;
 
-    // Επιλογή Pokemon (ακαριαία από τα τοπικά JS files)
+    // Pick random Pokémon pair
     const [p1, p2] = getRandomPair();
     currentRound.pokemon = [p1, p2];
 
@@ -75,13 +74,13 @@ function renderCard(idx, p) {
     cardEl.className = 'poke-card';
     nameEl.textContent = p.name.replace(/-/g, ' ').toUpperCase();
     
-    // Χρησιμοποιούμε τη συνάρτηση από το utils.js για το Sprite
+    // Uses utility from utils.js
     imgWrap.innerHTML = spriteImg(p); 
     
     statEl.textContent = '??';
     statEl.classList.remove('revealed');
 
-    // Χρησιμοποιούμε τη συνάρτηση από το utils.js για τα Types (με τα σωστά χρώματα)
+    // Uses utility from utils.js
     typesEl.innerHTML = p.types.map(t => tb(t)).join('');
 }
 
@@ -93,11 +92,10 @@ function choosePokemon(selectedIndex) {
     const p1Id = String(currentRound.pokemon[0].id);
     const p2Id = String(currentRound.pokemon[1].id);
 
-    // Διαβάζουμε απευθείας τα νούμερα από το αρχείο BASE_STATS
     const stat1 = BASE_STATS[p1Id][statKey];
     const stat2 = BASE_STATS[p2Id][statKey];
 
-    // Αποκάλυψη στατιστικών στην οθόνη
+    // Reveal stats
     const statEl1 = document.getElementById('stat-val-1');
     const statEl2 = document.getElementById('stat-val-2');
     statEl1.innerHTML = `<span style="color:var(--yel); font-size:24px;">${stat1}</span>`;
@@ -109,10 +107,9 @@ function choosePokemon(selectedIndex) {
     const card2 = document.getElementById('card-2');
     const feedback = document.getElementById('feedback-msg');
 
-    // Έλεγχος σωστής απάντησης
     let isCorrect = false;
     if (stat1 === stat2) {
-        isCorrect = true; // Ισοπαλία (συμβαίνει συχνά, το δίνουμε ως win)
+        isCorrect = true; // Tie is counted as a win
     } else if (selectedIndex === 0 && stat1 > stat2) {
         isCorrect = true;
     } else if (selectedIndex === 1 && stat2 > stat1) {
@@ -122,18 +119,17 @@ function choosePokemon(selectedIndex) {
     if (isCorrect) {
         score++;
         streak++;
-        feedback.textContent = "Σωστά! 🎉";
+        feedback.textContent = "Correct! 🎉";
         feedback.classList.add('correct');
         (selectedIndex === 0 ? card1 : card2).classList.add('win');
     } else {
         streak = 0;
-        feedback.textContent = "Λάθος! ❌";
+        feedback.textContent = "Wrong! ❌";
         feedback.classList.add('wrong');
         (selectedIndex === 0 ? card1 : card2).classList.add('lose');
         (selectedIndex === 0 ? card2 : card1).classList.add('win');
     }
 
-    // Ανανέωση High Score
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('stat_clash_high', highScore);
