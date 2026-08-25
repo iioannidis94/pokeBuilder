@@ -41,6 +41,11 @@ function loadRandomDynamicPuzzle() {
     document.getElementById('next-puzzle-btn').classList.add('hidden');
     document.querySelector('.connections-controls').classList.remove('hidden');
 
+    if (typeof CONNECTIONS_QUESTIONS === 'undefined') {
+        console.error("CONNECTIONS_QUESTIONS is not defined! Check if connections-data.js is loaded correctly.");
+        return;
+    }
+
     // 1. Παίρνουμε αντίγραφο της λίστας ερωτήσεων και την ανακατεύουμε
     let pool = [...CONNECTIONS_QUESTIONS];
     shuffleArray(pool);
@@ -63,10 +68,9 @@ function loadRandomDynamicPuzzle() {
     // 4. Ανακάτεμα των 16 καρτών στο grid
     shuffleArray(flatItems);
 
- // 5. Render στο Grid
+    // 5. Render στο Grid
     const grid = document.getElementById('grid-container');
     flatItems.forEach(item => {
-        // Καθαρίζουμε το όνομα από κενά, παύλες και τελείες για ασφαλή αναζήτηση
         const cleanTarget = item.name.toLowerCase().replace(/[\s.-]/g, '');
         
         const pokeData = POKE.find(p => {
@@ -86,6 +90,7 @@ function loadRandomDynamicPuzzle() {
         btn.onclick = () => toggleSelect(btn);
         grid.appendChild(btn);
     });
+}
 
 function toggleSelect(btn) {
     if (btn.classList.contains('selected')) {
