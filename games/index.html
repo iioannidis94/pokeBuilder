@@ -1,29 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
-    
-<header>
-  <div class="logo">POKÉ<span>DEX</span></div>
-  <div class="sw">
-    <span class="si">🔍</span>
-    <input type="text" id="search" placeholder="Search: name, #number, type…" autocomplete="off" spellcheck="false">
-  </div>
-    
-  <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
-    
-  <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
-    
-  <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
-
-  <button class="teamBtn" id="trainerTowerBtn" type="button" style="border-color: #f59f00; color: #f59f00;">Trainer Tower</button>
-
-  <!-- ΤΟ ΝΕΟ ΚΟΥΜΠΙ ΠΟΥ ΣΕ ΠΑΕΙ ΣΤΑ GAMES -->
-  <button class="teamBtn" onclick="window.location.href='games/index.html'" type="button" style="border-color: #38d878; background: linear-gradient(135deg, #38d878, #28a75e); color: #171015; box-shadow: 0 0 20px rgba(56, 216, 120, 0.3); margin-left: 10px;">
-    🎮 GAMES
-  </button>
-</header>
-
-    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Games Hub</title>
+    <link rel="icon" type="image/svg+xml" href="Pikachu SVG File.svg">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="games.css">
+</head>
 <body>
     <div class="games-hub-container">
         <header class="hub-header">
@@ -48,11 +32,12 @@
                 <a href="type-matchup/index.html" class="play-btn" style="background: #8b5cf6;">Play Now</a>
             </div>
 
-            <!-- Placeholder for future games -->
-            <div class="game-card locked">
-                <h2 style="color: var(--txt);">Who's That Pokémon? ❓</h2>
-                <p style="color: var(--dim); font-size: 14px; margin: 10px 0;">Coming soon...</p>
-                <button class="play-btn" disabled style="background: var(--dim); cursor: not-allowed;">Locked</button>
+            <!-- Game 3 Card (NEW: Poké Connections) -->
+            <div class="game-card">
+                <div class="game-badge" style="background: #10b981;">New</div>
+                <h2 style="color: var(--txt);">Poké Connections 🔗</h2>
+                <p style="color: var(--dim); font-size: 14px; margin: 10px 0;">Find groups of 4 Pokémon that share something in common!</p>
+                <a href="poke-connections/index.html" class="play-btn" style="background: #10b981;">Play Now</a>
             </div>
         </div>
     </div>
