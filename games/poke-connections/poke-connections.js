@@ -73,9 +73,10 @@ function loadRandomDynamicPuzzle() {
     flatItems.forEach(item => {
         const cleanTarget = item.name.toLowerCase().replace(/[\s.-]/g, '');
         
-        const pokeData = POKE.find(p => {
+ const pokeData = POKE.find(p => {
             const cleanPokeName = p.name.toLowerCase().replace(/[\s.-]/g, '');
-            return cleanPokeName === cleanTarget;
+            // Ελέγχει είτε αν είναι ολόιδια είτε αν το όνομα περιέχει το target (π.χ. deoxys -> deoxys-normal)
+            return cleanPokeName === cleanTarget || cleanPokeName.includes(cleanTarget);
         });
         
         const btn = document.createElement('div');
