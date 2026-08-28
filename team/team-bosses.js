@@ -262,10 +262,20 @@
 
             if (!pokeEntry) continue;
 
-            // Φιλτράρισμα και αντιστοίχιση των κινήσεων (moves)
+            // Φιλτράρισμα και αντιστοίχιση των κινήσεων (moves) με υποστήριξη για πεζά/slug names
             const moveNames  = (mon.moves || []).filter(m => m && m.trim());
-            const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
-            const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
+            const moveTypes  = moveNames.map(n => {
+                if (typeof MOVE_INFO === 'undefined') return '';
+                const cleanKey = n.toLowerCase().replace(/\s+/g, '-');
+                const moveData = MOVE_INFO[n] || MOVE_INFO[cleanKey];
+                return moveData ? (moveData.type || '') : '';
+            });
+            const moveCats   = moveNames.map(n => {
+                if (typeof MOVE_INFO === 'undefined') return '';
+                const cleanKey = n.toLowerCase().replace(/\s+/g, '-');
+                const moveData = MOVE_INFO[n] || MOVE_INFO[cleanKey];
+                return moveData ? (moveData.cat || '') : '';
+            });
 
             const nature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
             const item   = isEasy ? '' : (mon.item || '');
@@ -299,6 +309,7 @@
         if (typeof renderTeamSlots === 'function') renderTeamSlots();
     }
 
+    
     // ─── Event delegation for boss list items ─────────────────────────────
     document.addEventListener('click', e => {
         const item = e.target.closest('.bossListItem[data-boss-id]');
