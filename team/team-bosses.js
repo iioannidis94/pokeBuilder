@@ -263,7 +263,7 @@
 
             if (!pokeEntry) continue;
 
-            // Καθαρισμός κινήσεων: μετατροπή σε πεζά και αντικατάσταση κενών με παύλες
+            // Καθαρισμός κινήσεων: πεζά και παύλες στα κενά
             const moveNames = (mon.moves || [])
                 .filter(m => m && m.trim())
                 .map(m => m.toLowerCase().trim().replace(/\s+/g, '-'));
@@ -271,23 +271,23 @@
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
 
-            const nature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
+            // Nature: Πρώτο γράμμα κεφαλαίο, τα υπόλοιπα πεζά (π.χ. "adamant" -> "Adamant", ταιριάζει με το TEAM_NATURES)
+            let rawNature = (mon.nature && mon.nature !== 'Random') ? mon.nature.trim() : '';
+            const nature = rawNature ? rawNature.charAt(0).toUpperCase() + rawNature.slice(1).toLowerCase() : '';
             
-            // Καθαρισμός item: πεζά και παύλες στα κενά (εκτός αν είναι easy οπότε μένει κενό)
+            // Item: Διατηρεί τα κενά και τα κεφαλαία όπως υπάρχουν στη λίστα HELD_ITEMS (π.χ. "Choice Specs")
             const rawItem = isEasy ? '' : (mon.item || '');
-            const item = (rawItem && rawItem.toLowerCase() !== 'none') 
-                ? rawItem.toLowerCase().trim().replace(/\s+/g, '-') 
-                : '';
+            const item = (rawItem && rawItem.toLowerCase() !== 'none') ? rawItem.trim() : '';
 
-            // Καθαρισμός ability: πεζά και παύλες στα κενά
+            // Ability: πεζά και παύλες στα κενά
             const rawAbility = mon.ability || '';
             const ability = rawAbility 
-                ? rawAbility.toLowerCase().trim().replace(/\s+/g, '-') 
+                ? rawAbility.toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-') 
                 : '';
 
             const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
             
-            // Αν είναι hard difficulty, τα IVs γίνονται όλα 31, αλλιώς μένουν κενά
+            // Στο hard difficulty τα IVs γίνονται όλα 31, αλλιώς μένουν κενά
             const ivVal = isHard ? 31 : '';
             const iv = { HP: ivVal, ATK: ivVal, DEF: ivVal, SPATK: ivVal, SPDEF: ivVal, SPD: ivVal };
 
@@ -295,7 +295,7 @@
                 id:        pokeEntry.id,
                 ability,
                 item,
-                level:     100,
+                level:     50,
                 nature,
                 moveNames,
                 moves:     moveTypes,
