@@ -332,9 +332,9 @@ const BOSSES = [
                     // Jessie's team
                     { name: 'porygon-z',   nature: 'Modest',  ability: 'Adaptability', item: 'Choice Specs', moves: ['Tri Attack', 'Ice Beam', 'Thunderbolt', 'Shadow Ball'] },
                     { name: 'arbok',       nature: 'Adamant', ability: 'Intimidate',   item: 'Black Sludge', moves: ['Gunk Shot', 'Coil', 'Earthquake', 'Ice Fang'] },
-                    { name: 'gourgeist',   nature: 'Timid',   ability: 'Insomnia',     item: 'Leftovers',    moves: ['Seed Bomb', 'Phantom Force', 'Will-O-Wisp', 'Leech Seed'] },
+                    { name: 'gourgeist-average',   nature: 'Timid',   ability: 'Insomnia',     item: 'Leftovers',    moves: ['Seed Bomb', 'Phantom Force', 'Will-O-Wisp', 'Leech Seed'] },
                     { name: 'yanmega',     nature: 'Modest',  ability: 'Tinted Lens',  item: 'Choice Specs', moves: ['Bug Buzz', 'Air Slash', 'Ancient Power', 'Giga Drain'] },
-                    { name: 'jellicent',   nature: 'Bold',    ability: 'Cursed Body',  item: 'Leftovers',    moves: ['Scald', 'Shadow Ball', 'Ice Beam', 'Energy Ball'] },
+                    { name: 'jellicent-male',   nature: 'Bold',    ability: 'Cursed Body',  item: 'Leftovers',    moves: ['Scald', 'Shadow Ball', 'Ice Beam', 'Energy Ball'] },
                     { name: 'seviper',     nature: 'Quiet',   ability: 'Shed Skin',    item: 'Assault Vest', moves: ['Sludge Bomb', 'Flamethrower', 'Giga Drain', 'Sucker Punch'] },
                     // James's team
                     { name: 'malamar',     nature: 'Careful', ability: 'Contrary',     item: 'Leftovers',    moves: ['Superpower', 'Knock Off', 'Psycho Cut'] },
@@ -636,7 +636,7 @@ const BOSSES = [
                     // Shaui
                     { name: 'flareon', nature: 'Adamant', ability: 'Guts', item: 'None', moves: ['Flare Blitz', 'Facade', 'Double Kick', 'Will-O-Wisp'] },
                     { name: 'mienshao', nature: 'Jolly', ability: 'Reckless', item: 'None', moves: ['Bounce', 'Jump Kick', 'Fake Out', 'Dual Chop'] },
-                    { name: 'meloetta', nature: 'Timid', ability: 'Serene Grace', item: 'None', moves: ['Psychic', 'Perish Song', 'Shock Wave', 'Hyper Voice'] },
+                    { name: 'meloetta-aria', nature: 'Timid', ability: 'Serene Grace', item: 'None', moves: ['Psychic', 'Perish Song', 'Shock Wave', 'Hyper Voice'] },
                     { name: 'latias', nature: 'Timid', ability: 'Levitate', item: 'None', moves: ['Shadow Ball', 'Icy Wind', 'Dragon Pulse', 'Psychic'] },
                     { name: 'jolteon', nature: 'Timid', ability: 'Volt Absorb', item: 'None', moves: ['Thunderbolt', 'Thunder Wave', 'Double Kick', 'Pin Missile'] },
                     { name: 'togekiss', nature: 'Timid', ability: 'Serene Grace', item: 'None', moves: ['Psychic', 'Air Slash', 'Ancient Power', 'Shadow Ball'] }
