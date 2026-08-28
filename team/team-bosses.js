@@ -131,11 +131,14 @@
 
         const pokemonHtml = teamData.map((mon, idx) => {
             // Find the ID from the POKE array if it exists
-            const pokeEntry = (typeof POKE !== 'undefined')
-                ? POKE.find(p =>
-                    p.name.toLowerCase() === (mon.name || '').toLowerCase() ||
-                    p.name.toLowerCase().replace(/-/g, ' ') === (mon.name || '').toLowerCase().replace(/-/g, ' ')
-                )
+   const pokeEntry = (typeof POKE !== 'undefined')
+                ? POKE.find(p => {
+                    const dbName = p.name.toLowerCase();
+                    const targetName = (mon.name || '').toLowerCase();
+                    return dbName === targetName ||
+                           dbName.replace(/-/g, ' ') === targetName.replace(/-/g, ' ') ||
+                           dbName.startsWith(targetName + '-');
+                })
                 : null;
 
             const spriteHtml = (pokeEntry && typeof spriteImg === 'function')
