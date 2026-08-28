@@ -163,7 +163,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'swampert',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
+                    { name: 'swampert-mega',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
                     { name: 'swellow',     nature: 'Timid',   ability: 'Guts',         item: 'Choice Specs', moves: ['Hurricane', 'Boomburst', 'Heat Wave', 'Ominous Wind'] },
                     { name: 'goodra',      nature: 'Modest',  ability: 'Sap Sipper',   item: 'Assault Vest', moves: ['Fire Blast', 'Draco Meteor', 'Thunder', 'Sludge Wave'] },
                     { name: 'lapras',      nature: 'Modest',  ability: 'Water Absorb', item: 'Mystic Water', moves: ['Hydro Pump', 'Blizzard', 'Sheer Cold', 'Sing'] },
@@ -173,7 +173,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'swampert',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
+                    { name: 'swampert-mega',    nature: 'Relaxed', ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Stone Edge', 'Earthquake', 'Waterfall', 'Ice Beam', 'Toxic', 'Superpower', 'Ice Punch'] },
                     { name: 'swellow',     nature: 'Timid',   ability: 'Guts',         item: 'Choice Specs', moves: ['Hurricane', 'Boomburst', 'Heat Wave', 'Ominous Wind'] },
                     { name: 'goodra',      nature: 'Modest',  ability: 'Sap Sipper',   item: 'Assault Vest', moves: ['Fire Blast', 'Draco Meteor', 'Thunder', 'Sludge Wave'] },
                     { name: 'lapras',      nature: 'Modest',  ability: 'Water Absorb', item: 'Mystic Water', moves: ['Hydro Pump', 'Blizzard', 'Sheer Cold', 'Sing'] },
@@ -264,7 +264,7 @@ const BOSSES = [
                     { name: 'hitmonchan',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Focus Sash',   moves: ['Counter', 'Close Combat', 'Fire Punch', 'Ice Punch'] },
                     { name: 'hitmontop',   nature: 'Impish',  ability: 'Technician',   item: 'Leftovers',    moves: ['Close Combat', 'Endeavor', 'Earthquake', 'Stone Edge'] },
                     { name: 'hitmonlee',   nature: 'Jolly',   ability: 'Reckless',     item: 'Focus Sash',   moves: ['Knock Off', 'High Jump Kick', 'Poison Jab', 'Blaze Kick'] },
-                    { name: 'gallade',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Galladite',    moves: ['Close Combat', 'Zen Headbutt', 'Leaf Blade', 'Swords Dance'] },
+                    { name: 'gallade-mega',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Galladite',    moves: ['Close Combat', 'Zen Headbutt', 'Leaf Blade', 'Swords Dance'] },
                     { name: 'pangoro',     nature: 'Adamant', ability: 'Mold Breaker', item: 'Black Glasses',moves: ['Crunch', 'Hammer Arm', 'Gunk Shot', 'Fire Punch'] },
                 ]
             },
@@ -274,7 +274,7 @@ const BOSSES = [
                     { name: 'hitmonchan',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Focus Sash',   moves: ['Counter', 'Close Combat', 'Fire Punch', 'Ice Punch'] },
                     { name: 'hitmontop',   nature: 'Impish',  ability: 'Technician',   item: 'Leftovers',    moves: ['Close Combat', 'Endeavor', 'Earthquake', 'Stone Edge'] },
                     { name: 'hitmonlee',   nature: 'Jolly',   ability: 'Reckless',     item: 'Focus Sash',   moves: ['Knock Off', 'High Jump Kick', 'Poison Jab', 'Blaze Kick'] },
-                    { name: 'gallade',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Galladite',    moves: ['Close Combat', 'Zen Headbutt', 'Leaf Blade', 'Swords Dance'] },
+                    { name: 'gallade-mega',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Galladite',    moves: ['Close Combat', 'Zen Headbutt', 'Leaf Blade', 'Swords Dance'] },
                     { name: 'pangoro',     nature: 'Adamant', ability: 'Mold Breaker', item: 'Black Glasses',moves: ['Crunch', 'Hammer Arm', 'Gunk Shot', 'Fire Punch'] },
                 ]
             }
@@ -424,7 +424,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'aerodactyl',  nature: 'Naive',   ability: 'Tough Claws',  item: 'Aerodactylite',moves: ['Stone Edge', 'Taunt', 'Fire Blast', 'Aqua Tail', 'Ice Fang', 'Pursuit', 'Earthquake'] },
+                    { name: 'aerodactyl-mega',  nature: 'Naive',   ability: 'Tough Claws',  item: 'Aerodactylite',moves: ['Stone Edge', 'Taunt', 'Fire Blast', 'Aqua Tail', 'Ice Fang', 'Pursuit', 'Earthquake'] },
                     { name: 'golem',       nature: 'Jolly',   ability: 'Sturdy',       item: 'Weakness Policy', moves: ['Stone Edge', 'Rock Polish', 'Earthquake', 'Fire Punch'] },
                     { name: 'steelix',     nature: 'Adamant', ability: 'Sturdy',       item: 'Leftovers',    moves: ['Earthquake', 'Heavy Slam', 'Stone Edge', 'Ice Fang'] },
                     { name: 'cradily',     nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Seed Bomb', 'Rock Slide', 'Toxic', 'Curse'] },
@@ -434,7 +434,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'aerodactyl',  nature: 'Naive',   ability: 'Tough Claws',  item: 'Aerodactylite',moves: ['Stone Edge', 'Taunt', 'Fire Blast', 'Aqua Tail', 'Ice Fang', 'Pursuit', 'Earthquake'] },
+                    { name: 'aerodactyl-mega',  nature: 'Naive',   ability: 'Tough Claws',  item: 'Aerodactylite',moves: ['Stone Edge', 'Taunt', 'Fire Blast', 'Aqua Tail', 'Ice Fang', 'Pursuit', 'Earthquake'] },
                     { name: 'golem',       nature: 'Jolly',   ability: 'Sturdy',       item: 'Weakness Policy', moves: ['Stone Edge', 'Rock Polish', 'Earthquake', 'Fire Punch'] },
                     { name: 'steelix',     nature: 'Adamant', ability: 'Sturdy',       item: 'Leftovers',    moves: ['Earthquake', 'Heavy Slam', 'Stone Edge', 'Ice Fang'] },
                     { name: 'cradily',     nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Seed Bomb', 'Rock Slide', 'Toxic', 'Curse'] },
@@ -556,7 +556,7 @@ const BOSSES = [
                     { name: 'luxray',      nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Superpower', 'Ice Fang', 'Wild Charge', 'Facade'] },
                     { name: 'manectric',   nature: '',        ability: 'Lightning Rod', item: 'Choice Scarf', moves: ['Overheat', 'Thunderbolt', 'Roar', 'Hidden Power'] },
                     { name: 'stoutland',   nature: '',        ability: 'Scrappy',      item: 'Choice Band',  moves: ['Superpower', 'Ice Fang', 'Thunder Fang', 'Return'] },
-                    { name: 'blastoise',   nature: '',        ability: 'Mega Launcher', item: 'Blastoisinite', moves: ['Ice Beam', 'Focus Blast', 'Hydro Pump', 'Aura Sphere', 'Dark Pulse'] },
+                    { name: 'blastoise-mega',   nature: '',        ability: 'Mega Launcher', item: 'Blastoisinite', moves: ['Ice Beam', 'Focus Blast', 'Hydro Pump', 'Aura Sphere', 'Dark Pulse'] },
                 ]
             }
         }
@@ -592,7 +592,7 @@ const BOSSES = [
                     { name: 'starmie',     nature: '',        ability: 'Analytic',     item: '',             moves: ['Hydro Pump', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'clefable',    nature: '',        ability: 'Unaware',      item: '',             moves: ['Moonblast', 'Flamethrower', 'Thunderbolt'] },
                     { name: 'scizor',      nature: '',        ability: 'Technician',   item: '',             moves: ['Pursuit', 'Superpower', 'Bug Bite', 'Bullet Punch'] },
-                    { name: 'diancie',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast'] },
+                    { name: 'diancie-mega',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast'] },
                 ]
             },
             medium: {
@@ -602,7 +602,7 @@ const BOSSES = [
                     { name: 'starmie',     nature: '',        ability: 'Analytic',     item: 'Choice Specs', moves: ['Hydro Pump', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'clefable',    nature: '',        ability: 'Unaware',      item: 'Leftovers',    moves: ['Moonblast', 'Flamethrower', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'scizor',      nature: '',        ability: 'Technician',   item: 'Choice Band',  moves: ['Pursuit', 'Superpower', 'Bug Bite', 'Bullet Punch'] },
-                    { name: 'diancie',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Earth Power', 'Psychic'] },
+                    { name: 'diancie-mega',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Earth Power', 'Psychic'] },
                 ]
             },
             hard: {
@@ -612,7 +612,7 @@ const BOSSES = [
                     { name: 'starmie',     nature: '',        ability: 'Analytic',     item: 'Choice Specs', moves: ['Hydro Pump', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'clefable',    nature: '',        ability: 'Unaware',      item: 'Leftovers',    moves: ['Moonblast', 'Flamethrower', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'scizor',      nature: '',        ability: 'Technician',   item: 'Choice Band',  moves: ['Pursuit', 'Superpower', 'Bug Bite', 'Bullet Punch'] },
-                    { name: 'diancie',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Earth Power', 'Psychic'] },
+                    { name: 'diancie-mega',     nature: '',        ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Earth Power', 'Psychic'] },
                 ]
             }
         }
@@ -648,14 +648,14 @@ const BOSSES = [
                     { name: 'flareon',         nature: 'Adamant', ability: 'Guts',         item: 'Toxic Orb',    moves: ['Flare Blitz', 'Facade', 'Superpower', 'Iron Tail'] },
                     { name: 'mienshao',        nature: 'Jolly',   ability: 'Reckless',     item: 'Black Belt',   moves: ['Stone Edge', 'Poison Jab', 'Knock Off', 'High Jump Kick'] },
                     { name: 'meloetta-aria',   nature: 'Timid',   ability: 'Serene Grace', item: 'Assault Vest', moves: ['Psychic', 'Hyper Voice', 'Focus Blast', 'Shadow Ball'] },
-                    { name: 'latias',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                    { name: 'latias-mega',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
                     { name: 'jolteon',         nature: 'Timid',   ability: 'Volt Absorb',  item: 'Choice Specs', moves: ['Thunder', 'Signal Beam', 'Shadow Ball', 'Thunder Wave'] },
                     { name: 'togekiss',        nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Aura Sphere', 'Flamethrower', 'Dazzling Gleam'] },
                     // Shaui
                     { name: 'shaymin-sky',     nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Specs', moves: ['Air Slash', 'Seed Flare', 'Earth Power'] },
                     { name: 'conkeldurr',      nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Facade', 'Knock Off', 'Ice Punch'] },
                     { name: 'dragonite',       nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Outrage', 'Fire Punch', 'Extreme Speed'] },
-                    { name: 'alakazam',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
+                    { name: 'alakazam-mega',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
                     { name: 'greninja',        nature: 'Naive',   ability: 'Protean',      item: 'Expert Belt',  moves: ['Hydro Pump', 'Gunk Shot', 'Ice Beam', 'Dark Pulse'] },
                     { name: 'azelf',           nature: 'Timid',   ability: 'Levitate',     item: 'Focus Sash',   moves: ['Psychic', 'Thunderbolt', 'Flamethrower', 'Dazzling Gleam'] },
                 ]
@@ -666,14 +666,14 @@ const BOSSES = [
                     { name: 'flareon',         nature: 'Adamant', ability: 'Guts',         item: 'Toxic Orb',    moves: ['Flare Blitz', 'Facade', 'Superpower', 'Iron Tail'] },
                     { name: 'mienshao',        nature: 'Jolly',   ability: 'Reckless',     item: 'Black Belt',   moves: ['Stone Edge', 'Poison Jab', 'Knock Off', 'High Jump Kick'] },
                     { name: 'meloetta-aria',   nature: 'Timid',   ability: 'Serene Grace', item: 'Assault Vest', moves: ['Psychic', 'Hyper Voice', 'Focus Blast', 'Shadow Ball'] },
-                    { name: 'latias',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
+                    { name: 'latias-mega',          nature: 'Timid',   ability: 'Levitate',     item: 'Latiasite',    moves: ['Draco Meteor', 'Psyshock', 'Thunderbolt', 'Surf'] },
                     { name: 'jolteon',         nature: 'Timid',   ability: 'Volt Absorb',  item: 'Choice Specs', moves: ['Thunder', 'Signal Beam', 'Shadow Ball', 'Thunder Wave'] },
                     { name: 'togekiss',        nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Aura Sphere', 'Flamethrower', 'Dazzling Gleam'] },
                     // Shaui
                     { name: 'shaymin-sky',     nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Specs', moves: ['Air Slash', 'Seed Flare', 'Earth Power'] },
                     { name: 'conkeldurr',      nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Facade', 'Knock Off', 'Ice Punch'] },
                     { name: 'dragonite',       nature: 'Adamant', ability: 'Multiscale',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Outrage', 'Fire Punch', 'Extreme Speed'] },
-                    { name: 'alakazam',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
+                    { name: 'alakazam-mega',        nature: 'Timid',   ability: 'Trace',        item: 'Alakazite',    moves: ['Focus Blast', 'Psychic', 'Shadow Ball', 'Dazzling Gleam'] },
                     { name: 'greninja',        nature: 'Naive',   ability: 'Protean',      item: 'Expert Belt',  moves: ['Hydro Pump', 'Gunk Shot', 'Ice Beam', 'Dark Pulse'] },
                     { name: 'azelf',           nature: 'Timid',   ability: 'Levitate',     item: 'Focus Sash',   moves: ['Psychic', 'Thunderbolt', 'Flamethrower', 'Dazzling Gleam'] },
                 ]
@@ -705,7 +705,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'steelix',     nature: 'Careful', ability: 'Sand Force',   item: 'Steelixite',   moves: ['Heavy Slam', 'Earthquake', 'Stone Edge', 'Ice Fang'] },
+                    { name: 'steelix-mega',     nature: 'Careful', ability: 'Sand Force',   item: 'Steelixite',   moves: ['Heavy Slam', 'Earthquake', 'Stone Edge', 'Ice Fang'] },
                     { name: 'hariyama',    nature: 'Adamant', ability: 'Thick Fat',    item: 'Choice Band',  moves: ['Close Combat', 'Heavy Slam', 'Stone Edge', 'Fire Punch'] },
                     { name: 'hitmonlee',   nature: 'Jolly',   ability: 'Reckless',     item: 'Life Orb',     moves: ['High Jump Kick', 'Stone Edge', 'Knock Off', 'Poison Jab'] },
                     { name: 'throh',       nature: 'Careful', ability: 'Guts',         item: 'Flame Orb',    moves: ['Bulk Up', 'Superpower', 'Knock Off', 'Thunder Punch'] },
@@ -715,7 +715,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'steelix',     nature: 'Careful', ability: 'Sand Force',   item: 'Steelixite',   moves: ['Heavy Slam', 'Earthquake', 'Stone Edge', 'Ice Fang'] },
+                    { name: 'steelix-mega',     nature: 'Careful', ability: 'Sand Force',   item: 'Steelixite',   moves: ['Heavy Slam', 'Earthquake', 'Stone Edge', 'Ice Fang'] },
                     { name: 'hariyama',    nature: 'Adamant', ability: 'Thick Fat',    item: 'Choice Band',  moves: ['Close Combat', 'Heavy Slam', 'Stone Edge', 'Fire Punch'] },
                     { name: 'hitmonlee',   nature: 'Jolly',   ability: 'Reckless',     item: 'Life Orb',     moves: ['High Jump Kick', 'Stone Edge', 'Knock Off', 'Poison Jab'] },
                     { name: 'throh',       nature: 'Careful', ability: 'Guts',         item: 'Flame Orb',    moves: ['Bulk Up', 'Superpower', 'Knock Off', 'Thunder Punch'] },
@@ -768,7 +768,7 @@ const BOSSES = [
                     { name: 'articuno',         nature: 'Timid',   ability: 'Pressure',     item: 'Leftovers',    moves: ['Freeze-Dry', 'Hurricane', 'Toxic', 'Blizzard'] },
                     { name: 'weavile',          nature: 'Jolly',   ability: 'Pressure',     item: 'Black Glasses', moves: ['Ice Shard', 'Knock Off', 'Icicle Crash', 'Low Kick'] },
                     { name: 'lapras',           nature: 'Calm',    ability: 'Water Absorb', item: 'Leftovers',    moves: ['Hydro Pump', 'Blizzard', 'Thunderbolt', 'Scald'] },
-                    { name: 'slowbro',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
+                    { name: 'slowbro-mega',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
                 ]
             },
             hard: {
@@ -778,7 +778,7 @@ const BOSSES = [
                     { name: 'articuno',         nature: 'Timid',   ability: 'Pressure',     item: 'Leftovers',    moves: ['Freeze-Dry', 'Hurricane', 'Toxic', 'Blizzard'] },
                     { name: 'weavile',          nature: 'Jolly',   ability: 'Pressure',     item: 'Black Glasses', moves: ['Ice Shard', 'Knock Off', 'Icicle Crash', 'Low Kick'] },
                     { name: 'lapras',           nature: 'Calm',    ability: 'Water Absorb', item: 'Leftovers',    moves: ['Hydro Pump', 'Blizzard', 'Thunderbolt', 'Scald'] },
-                    { name: 'slowbro',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
+                    { name: 'slowbro-mega',          nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Surf', 'Fire Blast', 'Psychic', 'Ice Beam'] },
                 ]
             }
         }
@@ -807,7 +807,7 @@ const BOSSES = [
                     { name: 'meganium',    nature: 'Bold',    ability: 'Overgrow',     item: 'Light Clay',   moves: ['Giga Drain', 'Toxic', 'Reflect', 'Petal Dance'] },
                     { name: 'typhlosion',  nature: 'Modest',  ability: 'Blaze',        item: 'Charcoal',     moves: ['Eruption', 'Fire Blast', 'Focus Blast', 'Roar'] },
                     { name: 'feraligatr',  nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Dragon Dance', 'Liquidation', 'Ice Punch', 'Earthquake'] },
-                    { name: 'tyranitar',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
+                    { name: 'tyranitar-mega',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
                 ]
             },
             hard: {
@@ -817,7 +817,7 @@ const BOSSES = [
                     { name: 'meganium',    nature: 'Bold',    ability: 'Overgrow',     item: 'Light Clay',   moves: ['Giga Drain', 'Toxic', 'Reflect', 'Petal Dance'] },
                     { name: 'typhlosion',  nature: 'Modest',  ability: 'Blaze',        item: 'Charcoal',     moves: ['Eruption', 'Fire Blast', 'Focus Blast', 'Roar'] },
                     { name: 'feraligatr',  nature: 'Jolly',   ability: 'Sheer Force',  item: 'Life Orb',     moves: ['Dragon Dance', 'Liquidation', 'Ice Punch', 'Earthquake'] },
-                    { name: 'tyranitar',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
+                    { name: 'tyranitar-mega',   nature: 'Careful', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Fire Punch', 'Thunder Punch'] },
                 ]
             }
         }
@@ -865,13 +865,13 @@ const BOSSES = [
                     { name: 'roserade',    nature: 'Timid',   ability: 'Technician',   item: 'Choice Specs', moves: ['Hidden Power', 'Leaf Storm', 'Sludge Bomb', 'Dazzling Gleam'] },
                     { name: 'kingdra',     nature: 'Adamant', ability: 'Sniper',       item: 'Scope Lens',   moves: ['Waterfall', 'Outrage', 'Iron Head', 'Swords Dance'] },
                     { name: 'serperior',   nature: 'Timid',   ability: 'Contrary',     item: 'Choice Specs', moves: ['Leaf Storm', 'Hidden Power', 'Dragon Pulse', 'Synthesis'] },
-                    { name: 'gardevoir',   nature: 'Modest',  ability: 'Pixilate',     item: 'Gardevoirite', moves: ['Moonblast', 'Psyshock', 'Shadow Ball', 'Focus Blast'] },
+                    { name: 'gardevoir-mega',   nature: 'Modest',  ability: 'Pixilate',     item: 'Gardevoirite', moves: ['Moonblast', 'Psyshock', 'Shadow Ball', 'Focus Blast'] },
                 ]
             },
             hard: {
                 pokemon: [
                     { name: 'celebi',      nature: 'Timid',   ability: 'Natural Cure', item: 'Leftovers',    moves: ['Earth Power', 'Psyshock', 'Giga Drain', 'Ancient Power', 'Dazzling Gleam', 'Recover'] },
-                    { name: 'diancie',     nature: 'Naive',   ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Hidden Power', 'Earth Power', 'Psyshock', 'Calm Mind'] },
+                    { name: 'diancie-mega',     nature: 'Naive',   ability: 'Magic Bounce', item: 'Diancite',     moves: ['Diamond Storm', 'Moonblast', 'Hidden Power', 'Earth Power', 'Psyshock', 'Calm Mind'] },
                     { name: 'florges',     nature: 'Timid',   ability: 'Flower Veil',  item: 'Leftovers',    moves: ['Moonblast', 'Hidden Power', 'Psychic', 'Energy Ball', 'Synthesis'] },
                     { name: 'chandelure',  nature: 'Timid',   ability: 'Flash Fire',   item: 'Choice Scarf', moves: ['Shadow Ball', 'Energy Ball', 'Fire Blast', 'Hidden Power', 'Trick'] },
                     { name: 'goodra',      nature: 'Adamant', ability: 'Sap Sipper',   item: 'Choice Band',  moves: ['Outrage', 'Iron Tail', 'Power Whip', 'Earthquake', 'Fire Punch', 'Superpower', 'Aqua Tail'] },
@@ -930,7 +930,7 @@ const BOSSES = [
                     { name: 'alakazam',    nature: 'Timid',   ability: 'Magic Guard',  item: 'Focus Sash',   moves: ['Hidden Power', 'Psychic', 'Focus Blast', 'Thunder Wave', 'Psyshock', 'Signal Beam'] },
                     { name: 'slowking',    nature: 'Modest',  ability: 'Own Tempo',    item: 'Assault Vest', moves: ['Scald', 'Future Sight', 'Fire Blast', 'Psyshock', 'Dragon Tail'] },
                     { name: 'jirachi',     nature: 'Jolly',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Iron Head', 'Fire Punch', 'Zen Headbutt', 'Ice Punch', 'Thunder Punch'] },
-                    { name: 'latios',      nature: 'Modest',  ability: 'Levitate',     item: 'Latiosite',    moves: ['Draco Meteor', 'Hidden Power', 'Trick', 'Psyshock', 'Surf'] },
+                    { name: 'latios-mega',      nature: 'Modest',  ability: 'Levitate',     item: 'Latiosite',    moves: ['Draco Meteor', 'Hidden Power', 'Trick', 'Psyshock', 'Surf'] },
                     { name: 'mew',         nature: 'Jolly',   ability: 'Synchronize',  item: 'Life Orb',     moves: ['Swords Dance', 'Drain Punch', 'Zen Headbutt', 'Sucker Punch', 'Soft-Boiled'] },
                     // Gamer Diepy
                     { name: 'azumarill',   nature: 'Adamant', ability: 'Huge Power',   item: 'Choice Band',  moves: ['Aqua Jet', 'Waterfall', 'Play Rough', 'Superpower'] },
@@ -938,7 +938,7 @@ const BOSSES = [
                     { name: 'xerneas',     nature: 'Adamant', ability: 'Fairy Aura',   item: 'Choice Scarf', moves: ['Close Combat', 'Outrage', 'Night Slash', 'Rock Slide', 'Zen Headbutt', 'Horn Leech', 'Megahorn'] },
                     { name: 'sylveon',     nature: 'Timid',   ability: 'Pixilate',     item: 'Choice Scarf', moves: ['Hyper Voice', 'Psyshock', 'Shadow Ball', 'Hidden Power'] },
                     { name: 'togekiss',    nature: 'Timid',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Aura Sphere', 'Dazzling Gleam', 'Flamethrower', 'Thunder Wave'] },
-                    { name: 'diancie',     nature: 'Sassy',   ability: 'Magic Bounce', item: 'Diancite',     moves: ['Psychic', 'Moonblast', 'Diamond Storm', 'Earth Power', 'Toxic'] },
+                    { name: 'diancie-mega',     nature: 'Sassy',   ability: 'Magic Bounce', item: 'Diancite',     moves: ['Psychic', 'Moonblast', 'Diamond Storm', 'Earth Power', 'Toxic'] },
                 ]
             }
         }
@@ -963,7 +963,7 @@ const BOSSES = [
             medium: {
                 pokemon: [
                     { name: 'milotic',   nature: 'Bold',    ability: 'Competitive',  item: 'Leftovers',    moves: ['Scald', 'Ice Beam', 'Recover', 'Dragon Tail'] },
-                    { name: 'gyarados',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
+                    { name: 'gyarados-mega',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
                     { name: 'starmie',   nature: 'Timid',   ability: 'Analytic',     item: 'Choice Specs', moves: ['Surf', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'cradily',   nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Toxic', 'Curse', 'Seed Bomb', 'Ingrain'] },
                     { name: 'blastoise', nature: 'Bold',    ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Aura Sphere', 'Dark Pulse', 'Flash Cannon'] },
@@ -973,7 +973,7 @@ const BOSSES = [
             hard: {
                 pokemon: [
                     { name: 'milotic',   nature: 'Bold',    ability: 'Competitive',  item: 'Leftovers',    moves: ['Scald', 'Ice Beam', 'Recover', 'Dragon Tail'] },
-                    { name: 'gyarados',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
+                    { name: 'gyarados-mega',  nature: 'Jolly',   ability: 'Mold Breaker', item: 'Gyaradosite',  moves: ['Dragon Dance', 'Earthquake', 'Waterfall', 'Ice Fang', 'Crunch'] },
                     { name: 'starmie',   nature: 'Timid',   ability: 'Analytic',     item: 'Choice Specs', moves: ['Surf', 'Psychic', 'Thunderbolt', 'Ice Beam'] },
                     { name: 'cradily',   nature: 'Sassy',   ability: 'Storm Drain',  item: 'Leftovers',    moves: ['Toxic', 'Curse', 'Seed Bomb', 'Ingrain'] },
                     { name: 'blastoise', nature: 'Bold',    ability: 'Torrent',      item: 'Sitrus Berry', moves: ['Hydro Pump', 'Aura Sphere', 'Dark Pulse', 'Flash Cannon'] },
@@ -1012,7 +1012,7 @@ const BOSSES = [
             hard: {
                 pokemon: [
                     { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Choice Band',  moves: ['Outrage', 'Earthquake', 'Iron Head', 'Fire Punch'] },
-                    { name: 'tyranitar',   nature: 'Adamant', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Ice Punch', 'Fire Punch'] },
+                    { name: 'tyranitar-mega',   nature: 'Adamant', ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Stone Edge', 'Crunch', 'Ice Punch', 'Fire Punch'] },
                     { name: 'greninja',    nature: 'Naive',   ability: 'Protean',      item: 'Choice Specs', moves: ['Hydro Pump', 'Ice Beam', 'Low Kick', 'Gunk Shot', 'Dark Pulse', 'Grass Knot'] },
                     { name: 'zapdos',      nature: 'Modest',  ability: 'Static',       item: 'Rocky Helmet', moves: ['Discharge', 'Heat Wave', 'Hidden Power', 'Toxic'] },
                     { name: 'mamoswine',   nature: 'Jolly',   ability: 'Thick Fat',    item: 'Focus Sash',   moves: ['Earthquake', 'Icicle Crash', 'Knock Off', 'Superpower'] },
@@ -1043,7 +1043,7 @@ const BOSSES = [
                     { name: 'salamence',   nature: 'Naive',   ability: 'Intimidate',   item: 'Life Orb',     moves: ['Outrage', 'Fire Blast', 'Earthquake', 'Iron Tail'] },
                     { name: 'dialga',      nature: 'Modest',  ability: 'Pressure',     item: 'Choice Scarf', moves: ['Aura Sphere', 'Flash Cannon', 'Fire Blast', 'Thunder'] },
                     { name: 'latios',      nature: 'Timid',   ability: 'Levitate',     item: 'Choice Specs', moves: ['Draco Meteor', 'Psychic', 'Thunderbolt', 'Surf'] },
-                    { name: 'garchomp',    nature: 'Jolly',   ability: 'Sand Force',   item: 'Garchompite',  moves: ['Swords Dance', 'Earthquake', 'Outrage', 'Stone Edge'] },
+                    { name: 'garchomp-mega',    nature: 'Jolly',   ability: 'Sand Force',   item: 'Garchompite',  moves: ['Swords Dance', 'Earthquake', 'Outrage', 'Stone Edge'] },
                     { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Waterfall', 'Earthquake', 'Ice Fang'] },
                     { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Weakness Policy', moves: ['Dragon Dance', 'Outrage', 'Extreme Speed', 'Earthquake'] },
                 ]
@@ -1053,7 +1053,7 @@ const BOSSES = [
                     { name: 'salamence',   nature: 'Naive',   ability: 'Intimidate',   item: 'Life Orb',     moves: ['Outrage', 'Fire Blast', 'Earthquake', 'Iron Tail'] },
                     { name: 'dialga',      nature: 'Modest',  ability: 'Pressure',     item: 'Choice Scarf', moves: ['Aura Sphere', 'Flash Cannon', 'Fire Blast', 'Thunder'] },
                     { name: 'latios',      nature: 'Timid',   ability: 'Levitate',     item: 'Choice Specs', moves: ['Draco Meteor', 'Psychic', 'Thunderbolt', 'Surf'] },
-                    { name: 'garchomp',    nature: 'Jolly',   ability: 'Sand Force',   item: 'Garchompite',  moves: ['Swords Dance', 'Earthquake', 'Outrage', 'Stone Edge'] },
+                    { name: 'garchomp-mega',    nature: 'Jolly',   ability: 'Sand Force',   item: 'Garchompite',  moves: ['Swords Dance', 'Earthquake', 'Outrage', 'Stone Edge'] },
                     { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Lum Berry',    moves: ['Dragon Dance', 'Waterfall', 'Earthquake', 'Ice Fang'] },
                     { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Weakness Policy', moves: ['Dragon Dance', 'Outrage', 'Extreme Speed', 'Earthquake'] },
                 ]
@@ -1093,7 +1093,7 @@ const BOSSES = [
                     { name: 'reuniclus',   nature: 'Modest',  ability: 'Magic Guard',  item: 'Choice Specs', moves: ['Thunder', 'Recover', 'Energy Ball', 'Shadow Ball', 'Psyshock', 'Focus Blast'] },
                     { name: 'porygon-z',   nature: 'Timid',   ability: 'Analytic',     item: 'Choice Specs', moves: ['Signal Beam', 'Thunderbolt', 'Toxic', 'Ice Beam', 'Tri Attack'] },
                     { name: 'muk-alola',   nature: 'Adamant', ability: 'Poison Touch', item: 'Choice Band',  moves: ['Fire Punch', 'Ice Punch', 'Gunk Shot', 'Knock Off', 'Thunder Punch', 'Stone Edge'] },
-                    { name: 'latios',      nature: 'Timid',   ability: 'Levitate',     item: 'Latiosite',    moves: ['Energy Ball', 'Calm Mind', 'Dragon Pulse', 'Psyshock', 'Thunderbolt', 'Shadow Ball'] },
+                    { name: 'latios-mega',      nature: 'Timid',   ability: 'Levitate',     item: 'Latiosite',    moves: ['Energy Ball', 'Calm Mind', 'Dragon Pulse', 'Psyshock', 'Thunderbolt', 'Shadow Ball'] },
                     { name: 'genesect',    nature: 'Naughty', ability: 'Download',     item: 'Choice Band',  moves: ['X-Scissor', 'Thunderbolt', 'Zen Headbutt', 'Iron Head', 'Ice Beam', 'Flamethrower'] },
                 ]
             }
@@ -1122,7 +1122,7 @@ const BOSSES = [
                     { name: 'genesect',    nature: '',        ability: 'Download',     item: 'Choice Specs', moves: ['Bug Buzz', 'Flash Cannon', 'Ice Beam', 'Flamethrower'] },
                     { name: 'scolipede',   nature: '',        ability: 'Speed Boost',  item: 'Life Orb',     moves: ['Megahorn', 'Stone Edge', 'Poison Jab', 'Earthquake'] },
                     { name: 'volcarona',   nature: '',        ability: '',             item: 'Passho Berry', moves: ['Flamethrower', 'Quiver Dance', 'Bug Buzz', 'Roost'] },
-                    { name: 'heracross',   nature: '',        ability: 'Skill Link',   item: 'Heracronite',  moves: ['Rock Blast', 'Pin Missile', 'Bullet Seed', 'Close Combat'] },
+                    { name: 'heracross-mega',   nature: '',        ability: 'Skill Link',   item: 'Heracronite',  moves: ['Rock Blast', 'Pin Missile', 'Bullet Seed', 'Close Combat'] },
                     { name: 'ninjask',     nature: '',        ability: 'Speed Boost',  item: 'Focus Sash',   moves: ['Aerial Ace', 'Thief', 'Swords Dance', 'Leech Life'] },
                 ]
             },
@@ -1132,7 +1132,7 @@ const BOSSES = [
                     { name: 'genesect',    nature: '',        ability: 'Download',     item: 'Choice Specs', moves: ['Bug Buzz', 'Flash Cannon', 'Ice Beam', 'Flamethrower'] },
                     { name: 'scolipede',   nature: '',        ability: 'Speed Boost',  item: 'Life Orb',     moves: ['Megahorn', 'Stone Edge', 'Poison Jab', 'Earthquake'] },
                     { name: 'volcarona',   nature: '',        ability: '',             item: 'Passho Berry', moves: ['Flamethrower', 'Quiver Dance', 'Bug Buzz', 'Roost'] },
-                    { name: 'heracross',   nature: '',        ability: 'Skill Link',   item: 'Heracronite',  moves: ['Rock Blast', 'Pin Missile', 'Bullet Seed', 'Close Combat'] },
+                    { name: 'heracross-mega',   nature: '',        ability: 'Skill Link',   item: 'Heracronite',  moves: ['Rock Blast', 'Pin Missile', 'Bullet Seed', 'Close Combat'] },
                     { name: 'ninjask',     nature: '',        ability: 'Speed Boost',  item: 'Focus Sash',   moves: ['Aerial Ace', 'Thief', 'Swords Dance', 'Leech Life'] },
                 ]
             }
@@ -1172,7 +1172,7 @@ const BOSSES = [
         difficulties: {
             hard: {
                 pokemon: [
-                    { name: 'gengar',          nature: 'Timid',   ability: 'Shadow Tag',   item: 'Gengarite',    moves: ['Focus Blast', 'Icy Wind', 'Shadow Ball', 'Sludge Wave', 'Hex'] },
+                    { name: 'gengar-mega',          nature: 'Timid',   ability: 'Shadow Tag',   item: 'Gengarite',    moves: ['Focus Blast', 'Icy Wind', 'Shadow Ball', 'Sludge Wave', 'Hex'] },
                     { name: 'froslass',        nature: 'Timid',   ability: 'Cursed Body',  item: 'Life Orb',     moves: ['Shadow Ball', 'Thunder', 'Ice Beam', 'Signal Beam'] },
                     { name: 'gourgeist-average', nature: 'Relaxed', ability: 'Pickup',     item: 'Leftovers',    moves: ['Will-O-Wisp', 'Leech Seed', 'Seed Bomb', 'Rock Slide'] },
                     { name: 'golurk',          nature: 'Adamant', ability: 'No Guard',     item: 'Black Belt',   moves: ['Dynamic Punch', 'Earthquake', 'Stone Edge', 'Ice Punch'] },
@@ -1264,7 +1264,7 @@ const BOSSES = [
                     { name: 'swellow',     nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Thief', 'Brave Bird'] },
                     { name: 'pelipper',    nature: '',        ability: 'Drizzle',      item: '',             moves: ['Knock Off'] },
                     { name: 'flygon',      nature: '',        ability: 'Levitate',     item: 'Life Orb',     moves: ['Outrage'] },
-                    { name: 'swampert',    nature: '',        ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Earthquake', 'Waterfall'] },
+                    { name: 'swampert-mega',    nature: '',        ability: 'Swift Swim',   item: 'Swampertite',  moves: ['Earthquake', 'Waterfall'] },
                 ]
             },
             hard: {
@@ -1274,7 +1274,7 @@ const BOSSES = [
                     { name: 'swellow',     nature: '',        ability: 'Guts',         item: 'Flame Orb',    moves: ['Thief', 'Brave Bird', 'Return', 'U-turn'] },
                     { name: 'torkoal',     nature: '',        ability: 'Drought',      item: 'Heat Rock',    moves: ['Lava Plume', 'Solar Beam', 'Earthquake', 'Explosion'] },
                     { name: 'flygon',      nature: '',        ability: 'Levitate',     item: 'Life Orb',     moves: ['Outrage', 'Fire Blast', 'Earthquake', 'Stone Edge', 'Superpower'] },
-                    { name: 'blaziken',    nature: '',        ability: 'Speed Boost',  item: 'Blazikenite',  moves: ['Brave Bird', 'Flare Blitz', 'High Jump Kick', 'Earthquake'] },
+                    { name: 'blaziken-mega',    nature: '',        ability: 'Speed Boost',  item: 'Blazikenite',  moves: ['Brave Bird', 'Flare Blitz', 'High Jump Kick', 'Earthquake'] },
                 ]
             }
         }
@@ -1376,7 +1376,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'metagross',   nature: 'Adamant', ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Thunder Punch', 'Meteor Mash', 'Ice Punch', 'Zen Headbutt'] },
+                    { name: 'metagross-mega',   nature: 'Adamant', ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Thunder Punch', 'Meteor Mash', 'Ice Punch', 'Zen Headbutt'] },
                     { name: 'excadrill',   nature: 'Adamant', ability: 'Mold Breaker', item: 'Focus Sash',   moves: ['Earthquake', 'Iron Head', 'Rock Slide', 'Swords Dance'] },
                     { name: 'magnezone',   nature: 'Modest',  ability: 'Magnet Pull',  item: 'Choice Specs', moves: ['Hidden Power', 'Thunderbolt', 'Flash Cannon', 'Sunny Day'] },
                     { name: 'lucario',     nature: 'Adamant', ability: 'Justified',    item: 'Choice Band',  moves: ['Meteor Mash', 'Close Combat', 'Extreme Speed', 'Swords Dance'] },
@@ -1386,7 +1386,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'metagross',   nature: 'Adamant', ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Thunder Punch', 'Meteor Mash', 'Ice Punch', 'Zen Headbutt'] },
+                    { name: 'metagross-mega',   nature: 'Adamant', ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Thunder Punch', 'Meteor Mash', 'Ice Punch', 'Zen Headbutt'] },
                     { name: 'excadrill',   nature: 'Adamant', ability: 'Mold Breaker', item: 'Choice Scarf', moves: ['Earthquake', 'Iron Head', 'Rock Slide', 'Swords Dance'] },
                     { name: 'magnezone',   nature: 'Modest',  ability: 'Magnet Pull',  item: 'Choice Specs', moves: ['Hidden Power', 'Thunderbolt', 'Flash Cannon', 'Sunny Day'] },
                     { name: 'jirachi',     nature: 'Adamant', ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Iron Head', 'Ice Punch', 'Fire Punch', 'Zen Headbutt'] },
@@ -1418,7 +1418,7 @@ const BOSSES = [
                     { name: 'garchomp',    nature: 'Random',  ability: 'Rough Skin',   item: 'Choice Band',  moves: ['Outrage', 'Earthquake', 'Swords Dance', 'Fire Fang'] },
                     { name: 'miltank',     nature: 'Random',  ability: 'Thick Fat',    item: 'Rocky Helmet', moves: ['Seismic Toss', 'Toxic', 'Earthquake', 'Double-Edge'] },
                     { name: 'quagsire',    nature: 'Random',  ability: 'Unaware',      item: 'Leftovers',    moves: ['Scald', 'Earthquake', 'Toxic', 'Stockpile'] },
-                    { name: 'metagross',   nature: 'Random',  ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Ice Punch', 'Meteor Mash', 'Thunder Punch', 'Earthquake'] },
+                    { name: 'metagross-mega',   nature: 'Random',  ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Ice Punch', 'Meteor Mash', 'Thunder Punch', 'Earthquake'] },
                     { name: 'starmie',     nature: 'Random',  ability: 'Analytic',     item: 'Focus Sash',   moves: ['Thunderbolt', 'Hydro Pump', 'Ice Beam', 'Psyshock'] },
                     { name: 'diancie',     nature: 'Random',  ability: 'Clear Body',   item: 'Life Orb',     moves: ['Moonblast', 'Earth Power', 'Diamond Storm', 'Calm Mind'] },
                 ]
@@ -1428,7 +1428,7 @@ const BOSSES = [
                     { name: 'garchomp',    nature: 'Random',  ability: 'Rough Skin',   item: 'Choice Band',  moves: ['Outrage', 'Earthquake', 'Swords Dance', 'Fire Fang'] },
                     { name: 'miltank',     nature: 'Random',  ability: 'Thick Fat',    item: 'Rocky Helmet', moves: ['Seismic Toss', 'Toxic', 'Earthquake', 'Double-Edge'] },
                     { name: 'quagsire',    nature: 'Random',  ability: 'Unaware',      item: 'Leftovers',    moves: ['Scald', 'Earthquake', 'Toxic', 'Stockpile'] },
-                    { name: 'metagross',   nature: 'Random',  ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Ice Punch', 'Meteor Mash', 'Thunder Punch', 'Earthquake'] },
+                    { name: 'metagross-mega',   nature: 'Random',  ability: 'Tough Claws',  item: 'Metagrossite', moves: ['Ice Punch', 'Meteor Mash', 'Thunder Punch', 'Earthquake'] },
                     { name: 'starmie',     nature: 'Random',  ability: 'Analytic',     item: 'Focus Sash',   moves: ['Thunderbolt', 'Hydro Pump', 'Ice Beam', 'Psyshock'] },
                     { name: 'diancie',     nature: 'Random',  ability: 'Clear Body',   item: 'Life Orb',     moves: ['Moonblast', 'Earth Power', 'Diamond Storm', 'Calm Mind'] },
                 ]
@@ -1454,7 +1454,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'salamence',   nature: 'Naive',   ability: 'Aerilate',     item: 'Salamencite',  moves: ['Dragon Dance', 'Outrage', 'Fire Blast', 'Iron Tail', 'Double-Edge'] },
+                    { name: 'salamence-mega',   nature: 'Naive',   ability: 'Aerilate',     item: 'Salamencite',  moves: ['Dragon Dance', 'Outrage', 'Fire Blast', 'Iron Tail', 'Double-Edge'] },
                     { name: 'keldeo',      nature: 'Timid',   ability: 'Justified',    item: 'Choice Specs', moves: ['Hydro Pump', 'Icy Wind', 'Secret Sword'] },
                     { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Focus Sash',   moves: ['Dragon Dance', 'Dragon Claw', 'Extreme Speed', 'Waterfall'] },
                     { name: 'jirachi',     nature: 'Jolly',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Iron Head', 'Zen Headbutt', 'Ice Punch', 'Fire Punch'] },
@@ -1464,7 +1464,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'salamence',   nature: 'Naive',   ability: 'Aerilate',     item: 'Salamencite',  moves: ['Dragon Dance', 'Outrage', 'Fire Blast', 'Iron Tail', 'Double-Edge'] },
+                    { name: 'salamence-mega',   nature: 'Naive',   ability: 'Aerilate',     item: 'Salamencite',  moves: ['Dragon Dance', 'Outrage', 'Fire Blast', 'Iron Tail', 'Double-Edge'] },
                     { name: 'keldeo',      nature: 'Timid',   ability: 'Justified',    item: 'Choice Specs', moves: ['Hydro Pump', 'Icy Wind', 'Secret Sword'] },
                     { name: 'dragonite',   nature: 'Adamant', ability: 'Multiscale',   item: 'Focus Sash',   moves: ['Dragon Dance', 'Dragon Claw', 'Extreme Speed', 'Waterfall'] },
                     { name: 'jirachi',     nature: 'Jolly',   ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Iron Head', 'Zen Headbutt', 'Ice Punch', 'Fire Punch'] },
@@ -1538,7 +1538,7 @@ const BOSSES = [
             },
             medium: {
                 pokemon: [
-                    { name: 'salamence',   nature: 'Random',  ability: 'Aerilate',     item: 'Salamencite',  moves: ['Outrage', 'Fire Blast', 'Dragon Dance', 'Earthquake', 'Double-Edge'] },
+                    { name: 'salamence-mega',   nature: 'Random',  ability: 'Aerilate',     item: 'Salamencite',  moves: ['Outrage', 'Fire Blast', 'Dragon Dance', 'Earthquake', 'Double-Edge'] },
                     { name: 'meganium',    nature: 'Random',  ability: 'Overgrow',     item: 'Choice Band',  moves: ['Seed Bomb', 'Dragon Tail', 'Earthquake', 'Swords Dance'] },
                     { name: 'feraligatr',  nature: 'Random',  ability: 'Torrent',      item: 'Choice Band',  moves: ['Waterfall', 'Ice Punch', 'Low Kick', 'Swords Dance'] },
                     { name: 'typhlosion',  nature: 'Random',  ability: 'Blaze',        item: 'Choice Specs', moves: ['Solar Beam', 'Fire Blast', 'Focus Blast', 'Thunder Punch'] },
@@ -1548,7 +1548,7 @@ const BOSSES = [
             },
             hard: {
                 pokemon: [
-                    { name: 'salamence',   nature: 'Random',  ability: 'Aerilate',     item: 'Salamencite',  moves: ['Outrage', 'Fire Blast', 'Dragon Dance', 'Earthquake', 'Double-Edge'] },
+                    { name: 'salamence-mega',   nature: 'Random',  ability: 'Aerilate',     item: 'Salamencite',  moves: ['Outrage', 'Fire Blast', 'Dragon Dance', 'Earthquake', 'Double-Edge'] },
                     { name: 'meganium',    nature: 'Random',  ability: 'Overgrow',     item: 'Choice Band',  moves: ['Seed Bomb', 'Dragon Tail', 'Earthquake', 'Swords Dance'] },
                     { name: 'feraligatr',  nature: 'Random',  ability: 'Torrent',      item: 'Choice Band',  moves: ['Waterfall', 'Ice Punch', 'Low Kick', 'Swords Dance'] },
                     { name: 'typhlosion',  nature: 'Random',  ability: 'Blaze',        item: 'Choice Specs', moves: ['Solar Beam', 'Fire Blast', 'Focus Blast', 'Thunder Punch'] },
@@ -1629,14 +1629,14 @@ const BOSSES = [
                     { name: 'conkeldurr',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Assault Vest', moves: ['Drain Punch', 'Knock Off', 'Poison Jab', 'Ice Punch'] },
                     { name: 'lucario',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Choice Scarf', moves: ['Close Combat', 'Meteor Mash', 'Crunch', 'Ice Punch'] },
                     { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: 'Life Orb',     moves: ['Discharge', 'Thunder', 'Signal Beam', 'Shadow Ball'] },
-                    { name: 'garchomp',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'garchomp-mega',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
                     { name: 'reshiram',    nature: 'Modest',  ability: 'Turboblaze',   item: 'Life Orb',     moves: ['Blue Flare', 'Roost', 'Outrage', 'Earth Power'] },
                     // Eldir
                     { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Choice Band',  moves: ['Dragon Dance', 'Waterfall', 'Crunch', 'Earthquake'] },
                     { name: 'muk-alola',   nature: 'Adamant', ability: 'Poison Touch', item: 'Assault Vest', moves: ['Knock Off', 'Pursuit', 'Gunk Shot', 'Fire Punch'] },
                     { name: 'alakazam',    nature: 'Modest',  ability: 'Magic Guard',  item: 'Focus Sash',   moves: ['Hidden Power', 'Psyshock', 'Energy Ball', 'Dazzling Gleam'] },
                     { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Poison Jab', 'Earthquake', 'Fire Blast'] },
-                    { name: 'slowbro',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
+                    { name: 'slowbro-mega',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
                     { name: 'zekrom',      nature: 'Adamant', ability: 'Teravolt',     item: 'Life Orb',     moves: ['Bolt Strike', 'Dragon Claw', 'Outrage', 'Roost'] },
                 ]
             },
@@ -1647,14 +1647,14 @@ const BOSSES = [
                     { name: 'conkeldurr',  nature: 'Adamant', ability: 'Iron Fist',    item: 'Assault Vest', moves: ['Drain Punch', 'Knock Off', 'Poison Jab', 'Ice Punch'] },
                     { name: 'lucario',     nature: 'Jolly',   ability: 'Inner Focus',  item: 'Choice Scarf', moves: ['Close Combat', 'Meteor Mash', 'Crunch', 'Ice Punch'] },
                     { name: 'jolteon',     nature: 'Timid',   ability: 'Volt Absorb',  item: 'Life Orb',     moves: ['Discharge', 'Thunder', 'Signal Beam', 'Shadow Ball'] },
-                    { name: 'garchomp',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'garchomp-mega',    nature: 'Relaxed', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Dragon Tail', 'Earthquake', 'Iron Head', 'Fire Fang', 'Fire Blast', 'Stone Edge'] },
                     { name: 'reshiram',    nature: 'Modest',  ability: 'Turboblaze',   item: 'Life Orb',     moves: ['Blue Flare', 'Roost', 'Outrage', 'Earth Power'] },
                     // Eldir
                     { name: 'gyarados',    nature: 'Jolly',   ability: 'Intimidate',   item: 'Choice Band',  moves: ['Dragon Dance', 'Waterfall', 'Crunch', 'Earthquake'] },
                     { name: 'muk-alola',   nature: 'Adamant', ability: 'Poison Touch', item: 'Assault Vest', moves: ['Knock Off', 'Pursuit', 'Gunk Shot', 'Fire Punch'] },
                     { name: 'alakazam',    nature: 'Modest',  ability: 'Magic Guard',  item: 'Focus Sash',   moves: ['Hidden Power', 'Psyshock', 'Energy Ball', 'Dazzling Gleam'] },
                     { name: 'infernape',   nature: 'Naive',   ability: 'Blaze',        item: 'Life Orb',     moves: ['Close Combat', 'Poison Jab', 'Earthquake', 'Fire Blast'] },
-                    { name: 'slowbro',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
+                    { name: 'slowbro-mega',     nature: 'Bold',    ability: 'Shell Armor',  item: 'Slowbronite',  moves: ['Calm Mind', 'Psyshock', 'Slack Off', 'Scald'] },
                     { name: 'zekrom',      nature: 'Adamant', ability: 'Teravolt',     item: 'Life Orb',     moves: ['Bolt Strike', 'Dragon Claw', 'Outrage', 'Roost'] },
                 ]
             }
@@ -1680,7 +1680,7 @@ const BOSSES = [
             hard: {
                 pokemon: [
                     { name: 'sylveon',         nature: '',        ability: 'Pixilate',     item: 'Choice Specs', moves: ['Wish', 'Shadow Ball', 'Hyper Voice', 'Psyshock'] },
-                    { name: 'gallade',         nature: '',        ability: 'Inner Focus',  item: 'Galladite',    moves: ['Psycho Cut', 'Swords Dance', 'Close Combat', 'Knock Off'] },
+                    { name: 'gallade-mega',         nature: '',        ability: 'Inner Focus',  item: 'Galladite',    moves: ['Psycho Cut', 'Swords Dance', 'Close Combat', 'Knock Off'] },
                     { name: 'volcarona',       nature: '',        ability: 'Flame Body',   item: 'Choice Specs', moves: ['Flamethrower', 'Giga Drain', 'Bug Buzz', 'Quiver Dance', 'Hidden Power'] },
                     { name: 'keldeo-ordinary', nature: '',        ability: 'Justified',    item: 'Choice Specs', moves: ['Hydro Pump', 'Focus Blast', 'Calm Mind'] },
                     { name: 'arcanine',        nature: '',        ability: 'Intimidate',   item: 'Choice Band',  moves: ['Flare Blitz', 'Wild Charge', 'Close Combat', 'Crunch'] },
@@ -1710,7 +1710,7 @@ const BOSSES = [
                 pokemon: [
                     { name: 'togekiss',    nature: 'Modest',  ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Flamethrower', 'Aura Sphere', 'Dazzling Gleam'] },
                     { name: 'conkeldurr',  nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Knock Off', 'Ice Punch', 'Facade'] },
-                    { name: 'tyranitar',   nature: 'Naive',   ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Pursuit', 'Stone Edge', 'Fire Blast', 'Ice Beam'] },
+                    { name: 'tyranitar-mega',   nature: 'Naive',   ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Pursuit', 'Stone Edge', 'Fire Blast', 'Ice Beam'] },
                     { name: 'excadrill',   nature: 'Adamant', ability: 'Mold Breaker', item: 'Focus Sash',   moves: ['Earthquake', 'Iron Head', 'Rock Slide', 'Rapid Spin'] },
                     { name: 'hydreigon',   nature: 'Naive',   ability: 'Levitate',     item: 'Life Orb',     moves: ['Dark Pulse', 'Flash Cannon', 'Draco Meteor', 'Superpower'] },
                     { name: 'kyogre',      nature: 'Modest',  ability: 'Drizzle',      item: 'Choice Specs', moves: ['Hydro Pump', 'Ice Beam', 'Thunder', 'Calm Mind'] },
@@ -1720,7 +1720,7 @@ const BOSSES = [
                 pokemon: [
                     { name: 'togekiss',    nature: 'Modest',  ability: 'Serene Grace', item: 'Choice Scarf', moves: ['Air Slash', 'Flamethrower', 'Aura Sphere', 'Dazzling Gleam'] },
                     { name: 'conkeldurr',  nature: 'Adamant', ability: 'Guts',         item: 'Flame Orb',    moves: ['Drain Punch', 'Knock Off', 'Ice Punch', 'Facade'] },
-                    { name: 'tyranitar',   nature: 'Naive',   ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Pursuit', 'Stone Edge', 'Fire Punch', 'Fire Blast', 'Ice Beam', 'Earthquake'] },
+                    { name: 'tyranitar-mega',   nature: 'Naive',   ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Pursuit', 'Stone Edge', 'Fire Punch', 'Fire Blast', 'Ice Beam', 'Earthquake'] },
                     { name: 'excadrill',   nature: 'Adamant', ability: 'Mold Breaker', item: 'Focus Sash',   moves: ['Earthquake', 'Iron Head', 'Rock Slide', 'Rapid Spin'] },
                     { name: 'hydreigon',   nature: 'Naive',   ability: 'Levitate',     item: 'Life Orb',     moves: ['Dark Pulse', 'Flash Cannon', 'Draco Meteor', 'Superpower'] },
                     { name: 'kyogre',      nature: 'Modest',  ability: 'Drizzle',      item: 'Choice Specs', moves: ['Hydro Pump', 'Ice Beam', 'Thunder', 'Calm Mind'] },
@@ -1751,7 +1751,7 @@ const BOSSES = [
                     { name: 'gliscor',     nature: '',        ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Facade', 'Earthquake', 'Roost', 'Swords Dance'] },
                     { name: 'serperior',   nature: '',        ability: 'Contrary',     item: 'Choice Specs', moves: ['Leech Seed', 'Hidden Power', 'Leaf Storm', 'Dragon Pulse'] },
                     { name: 'rotom-wash',  nature: '',        ability: 'Levitate',     item: 'Leftovers',    moves: ['Hydro Pump', 'Discharge', 'Will-O-Wisp', 'Pain Split'] },
-                    { name: 'tyranitar',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
+                    { name: 'tyranitar-mega',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
                     { name: 'dialga',      nature: '',        ability: 'Pressure',     item: 'Shuca Berry',  moves: ['Thunder', 'Dragon Pulse', 'Fire Blast', 'Earth Power'] },
                 ]
             },
@@ -1761,7 +1761,7 @@ const BOSSES = [
                     { name: 'gliscor',     nature: '',        ability: 'Poison Heal',  item: 'Toxic Orb',    moves: ['Facade', 'Earthquake', 'Roost', 'Swords Dance', 'Rock Slide'] },
                     { name: 'serperior',   nature: '',        ability: 'Contrary',     item: 'Choice Specs', moves: ['Leech Seed', 'Hidden Power', 'Leaf Storm', 'Dragon Pulse'] },
                     { name: 'rotom-wash',  nature: '',        ability: 'Levitate',     item: 'Leftovers',    moves: ['Hydro Pump', 'Discharge', 'Will-O-Wisp', 'Pain Split'] },
-                    { name: 'tyranitar',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
+                    { name: 'tyranitar-mega',   nature: '',        ability: 'Sand Stream',  item: 'Tyranitarite', moves: ['Superpower', 'Stone Edge', 'Crunch', 'Earthquake'] },
                     { name: 'dialga',      nature: '',        ability: 'Pressure',     item: 'Shuca Berry',  moves: [] },
                 ]
             }
@@ -1826,7 +1826,7 @@ const BOSSES = [
             hard: {
                 pokemon: [
                     { name: 'groudon',     nature: 'Adamant', ability: 'Drought',      item: 'Choice Band',  moves: ['Earthquake', 'Stone Edge', 'Fire Blast', 'Dragon Tail'] },
-                    { name: 'garchomp',    nature: 'Adamant', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Earthquake', 'Outrage', 'Fire Blast', 'Stone Edge'] },
+                    { name: 'garchomp-mega',    nature: 'Adamant', ability: 'Sand Force',   item: 'Garchompite',  moves: ['Earthquake', 'Outrage', 'Fire Blast', 'Stone Edge'] },
                     { name: 'tangrowth',   nature: 'Modest',  ability: 'Chlorophyll',  item: 'Choice Specs', moves: ['Solar Beam', 'Ancient Power', 'Sludge Bomb', 'Focus Blast'] },
                     { name: 'torkoal',     nature: 'Bold',    ability: 'Drought',      item: 'Leftovers',    moves: ['Shell Smash', 'Fire Blast', 'Earth Power', 'Yawn'] },
                     { name: 'volcarona',   nature: 'Modest',  ability: 'Flame Body',   item: 'Choice Specs', moves: ['Fire Blast', 'Giga Drain', 'Bug Buzz', 'Roost'] },
