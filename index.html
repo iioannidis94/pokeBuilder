@@ -5,61 +5,62 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="theme-color" content="#0d0d1a">
 
-<!-- ΑΡΧΗ GOOGLE ANALYTICS -->
-  <!-- 
-    
+    <!-- ΑΡΧΗ GOOGLE ANALYTICS (Απενεργοποιημένο προσωρινά) -->
+    <!-- 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-XXXXXXXXXX');
     </script>   
-    
     -->
     <!-- ΤΕΛΟΣ GOOGLE ANALYTICS -->
 
-
-    
-    
     <title>Pokédex — Type Chart</title>
+    <!-- Εικονίδιο (Favicon) της σελίδας σε μορφή Base64 -->
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAClElEQVR4nO2bO1bDMBBFX3LovQOnoHdLzw5YKTugT+ueItlBVhAKzuSIsX6jz0gyeR2Obek+zUijBAH/XAfNxuZ5vsfee71eVfpWtREO/CV49p39XcuQ4i81oSXAIZmGlDSj2ItqgXOVNiL7BQReE9olMiPHiGNOB1rCm+1KJleuZOfmeb63ArfpHWmRIH6g9aj7lJISohToGR5IS4loA3qHJ0lNiDJgFHiSxISgAaPBk2JNiIqA0eBJMf32zpYpS93r5fLBr32fTp/C1xSVb4l0RkApeN91LX3BnQpWA1IqqxBkaxMAO5czAkbNe5dcPBsDeitxS8qWClmbIVOhia71ROjSHwNydlWAG7I3eJPzwD/Ya/ibMpfFYikwqh4RoD36/EtPQHfloSh4UWzz0XDoM00j1Azwgbvu1TBCxQAb/Lqum2vLsmyeq23CEdDPfxu873oNUVFUfRXgo0+Q0zSdp2k68/u5CZLUSdEByC+AYmXCm9dvt9sbv5enQy2p1QHS8NZKhyaFkDnittHXlHodQGoNTvr3pfDTAK2GpLO61irwWAZrzbocJKadlGdStCxL/QjgnQ+NrBY86Qj8bgu1Qg5wm6DdB7Xt8LquG7gYWI1iSK0OIJhewEnqhZDPCE1w0uZL0Rad0BblP/AshLYGaM7ELcT5/hig9f+5rWVyPlOAX9AuijRlTn4kZwTszQQXj9WAvc4FNi5nBOwpFWyhT/JOgnswwQcPRK4Co5oQ0++gAeTeaCZQf0PzWVQEjGZCLDwgKIRGMUECDwgrwd5NkMIDmSdGeto6h2Z7l7IKHvpRtaURKaNuKmsz1DolcuGBSucGa0aEaXYX5wa5ahlRGpykenZYYghPq2HODvvU4+nxH0NuMn0Jo27yAAAAAElFTkSuQmCC">
+    
+    <!-- Σύνδεση με το Manifest για Progressive Web App (PWA) -->
     <link rel="manifest" href="manifest.json">
+    
+    <!-- Εισαγωγή γραμματοσειρών από Google Fonts (Press Start 2P & Nunito) -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Κύριο αρχείο εμφάνισης και στυλ CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<!-- ΚΥΡΙΑ ΜΠΑΡΑ ΠΛΟΗΣΗΣ (HEADER) -->
 <header>
+  <!-- Λογότυπο εφαρμογής -->
   <div class="logo">POKÉ<span>DEX</span></div>
+  
+  <!-- Μπάρα αναζήτησης Pokémon -->
   <div class="sw">
     <span class="si">🔍</span>
     <input type="text" id="search" placeholder="Search: name, #number, type…" autocomplete="off" spellcheck="false">
   </div>
     
-  <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
-    
-  <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
-    
-  <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
-
-  <button class="teamBtn" id="trainerTowerBtn" type="button" style="border-color: #f59f00; color: #f59f00;">Trainer Tower</button>
-
-    <!-- Πρόσθεσε αυτό το κουμπί στο navbar ή στο κεντρικό μενού -->
-<button class="teamBtn" onclick="window.location.href='games/index.html'" type="button" style="border-color: #38d878; background: linear-gradient(135deg, #38d878, #28a75e); color: #171015; box-shadow: 0 0 20px rgba(56, 216, 120, 0.3);">
-  🎮 GAMES
-</button>
- 
+  <!-- ΚΟΥΜΠΙΑ ΠΛΟΗΣΗΣ (Ομαδοποιημένα δεξιά με .nav-buttons) -->
+  <div class="nav-buttons">
+    <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
+    <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
+    <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
+    <button class="teamBtn" id="trainerTowerBtn" type="button" style="border-color: #f59f00; color: #f59f00;">Trainer Tower</button>
+    <button class="teamBtn" onclick="window.location.href='games/index.html'" type="button" style="border-color: #38d878; background: linear-gradient(135deg, #38d878, #28a75e); color: #171015; box-shadow: 0 0 20px rgba(56, 216, 120, 0.3);">
+      🎮 GAMES
+    </button>
+  </div>
 </header>
 
-    
-<!-- FILTERS WRAPPER -->
+<!-- ΦΙΛΤΡΑ ΑΝΑΖΗΤΗΣΗΣ & ΤΥΠΩΝ (TYPES & FORMS) -->
 <div class="filters-wrapper">
-  <!-- Types (Γεμίζουν αυτόματα από το dex.js) -->
+  <!-- Κουμπιά τύπων Pokémon (Γεμίζουν αυτόματα δυναμικά από το dex.js) -->
   <div class="tfs" id="tf"></div>
   
-  <!-- Special Forms -->
+  <!-- Φίλτρα ειδικών μορφών (Mega, Alola, Galar, κλπ.) -->
   <div class="form-filters">
     <button class="form-btn" data-form="mega">Mega</button>
     <button class="form-btn" data-form="alola">Alola</button>
@@ -70,13 +71,16 @@
   </div>
 </div>
 
-    
+<!-- ΜΠΑΡΑ ΣΤΑΤΙΣΤΙΚΩΝ & ΠΛΗΡΟΦΟΡΙΩΝ -->
 <div class="sb"><span id="cnt">Loading...</span></div>
+
+<!-- ΚΥΡΙΟΣ ΚΟΡΜΟΣ ΕΜΦΑΝΙΣΗΣ CARDS POKÉMON -->
 <main><div id="grid"></div></main>
 
-<!-- TEAM BUILDER OVERLAY -->
+<!-- PARTE 1: TEAM BUILDER OVERLAY (Διαχείριση Ομάδας) -->
 <div class="teamOverlay" id="teamOverlay" aria-hidden="true">
   <section class="teamPanel" role="dialog" aria-modal="true" aria-labelledby="teamTitle">
+    <!-- Μπάρα εργαλείων Team Builder -->
     <div class="teamTop">
       <h2 class="teamTitle" id="teamTitle">TEAM BUILDER</h2>
       
@@ -92,6 +96,7 @@
       <button class="teamReset" id="teamReset" type="button">Clear Team</button>
       <button class="teamClose" id="teamClose" type="button">Close</button>
     </div> 
+    <!-- Περιεχόμενο Team Builder (Λίστα επιλογής & Slots ομάδας) -->
     <div class="teamBody">
         <aside class="teamPicker">
             <input class="teamSearch" id="teamSearch" type="text" placeholder="Search Pokémon to add..." autocomplete="off" spellcheck="false">
@@ -102,7 +107,7 @@
   </section>
 </div>
 
-<!-- CALCULATOR OVERLAY -->
+<!-- PART 2: BATTLE CALCULATOR OVERLAY (Υπολογιστής Μάχης) -->
 <div class="calcOverlay" id="calcOverlay" aria-hidden="true">
   <section class="calcViewPanel" aria-labelledby="calcViewTitle">
     <div class="teamTop">
@@ -113,7 +118,7 @@
   </section>
 </div>
 
-<!-- ΝΕΟ: TRAINER TOWER OVERLAY -->
+<!-- PART 3: TRAINER TOWER OVERLAY (Αυτόνομο παράθυρο Trainer Tower) -->
 <div class="calcOverlay" id="trainerTowerOverlay">
   <section class="calcViewPanel" aria-labelledby="trainerTowerTitle">
     <div class="teamTop">
@@ -121,12 +126,12 @@
       <button class="calcClose" id="trainerTowerClose" type="button">Close</button>
     </div>
     <div class="calcViewBody" id="trainerTowerContent" style="padding: 20px; display: block;">
-      <!-- Εδώ θα κάνει render το UI το trainer_tower.js -->
+      <!-- Εδώ κάνει render δυναμικά το UI το script του trainer_tower.js -->
     </div>
   </section>
 </div>
 
-<!-- Bosses Modal -->
+<!-- PART 4: BOSSES MODAL (Παράθυρο επιλογής Bosses) -->
 <div id="bossesOverlay" aria-hidden="true" style="
     position:fixed; inset:0; z-index:9999;
     background:#05050c; align-items:center; justify-content:center;
@@ -137,68 +142,75 @@
     width:min(96vw, 900px); max-height:90vh; display:flex; flex-direction:column;
     overflow:hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   ">
-    <!-- Header -->
+    <!-- Επικεφαλίδα Modal -->
     <div style="display:flex; align-items:center; padding:14px 20px; border-bottom:1px solid var(--brd); gap:10px; flex-shrink:0;">
       <span style="font-size:20px;">⚔️</span>
       <h2 id="bossesTitle" style="margin:0; font-size:16px; font-weight:900; color:var(--txt); flex:1;">Boss Trainers</h2>
       <button type="button" onclick="closeBossesModal()" style="background:none; border:none; color:var(--dim); font-size:22px; cursor:pointer; line-height:1; padding:0 4px;" aria-label="Close">×</button>
     </div>
-    <!-- Body -->
+    <!-- Κεντρικό περιεχόμενο Bosses (Λίστα & Λεπτομέρειες) -->
     <div style="display:flex; flex:1; overflow:hidden;">
-      <!-- Boss List -->
-      <div id="bossListPanel" style="
-        width:220px; flex-shrink:0; overflow-y:auto; border-right:1px solid var(--brd);
-        background:var(--bg);
-      "></div>
-      <!-- Boss Detail -->
+      <div id="bossListPanel" style="width:220px; flex-shrink:0; overflow-y:auto; border-right:1px solid var(--brd); background:var(--bg);"></div>
       <div id="bossDetailPanel" style="flex:1; overflow-y:auto;"></div>
     </div>
   </section>
 </div>
 
-<!-- 1. Data Layer (Load constants first) -->
+<!-- ΦΟΡΤΩΣΗ SCRIPTS & ΑΡΧΕΙΩΝ ΔΕΔΟΜΕΝΩΝ -->
+
+<!-- 1. Βασικά Δεδομένα (Type Chart) -->
 <script src="data/TC.js" defer></script>
 
-<!-- 2. Then the large Data objects -->
+<!-- 2. Μεγάλα αρχεία βάσης Pokémon & Στατιστικών -->
 <script src="data/pokemon-core.js" defer></script>
 <script src="data/base_stats.js" defer></script>
 <script src="data/abilities.js" defer></script>
 <script src="data/sprites.js" defer></script>
 
+<!-- 3. Δεδομένα Κινήσεων & Bosses -->
 <script src="data/moves.js" defer></script>
 <script src="data/move-info.js" defer></script>
 <script src="data/move-metadata.js" defer></script>
 <script src="data/bosses.js" defer></script>
 <script src="data/move-evolutions.js" defer></script>
 
-<!-- 3. Tools used everywhere -->
+<!-- 4. Βοθητικά εργαλεία (Utils) -->
 <script src="utils.js" defer></script>
 
-<!-- 4. Team Core Logic (must run BEFORE the UI!) -->
+<!-- 5. Λογική Ομάδας (Team Core) -->
 <script src="team/team-core.js" defer></script>
 
-<!-- 5. Last, the files that modify the HTML (UI, Events, AI) -->
+<!-- 6. Αρχεία Διεπαφής & Αναλύσεων Ομάδας -->
 <script src="team/team-io.js" defer></script>
 <script src="team/team-ai.js" defer></script>
 <script src="team/team-recommender.js" defer></script>
 <script src="team/team-analytics.js" defer></script>
-    
 <script src="team/team-ui.js" defer></script>
 <script src="team/team-oop.js" defer></script>
 <script src="team/team-bosses.js" defer></script>
 
-
-
-    <!-- ΝΕΟ SCRIPT: TRAINER TOWER -->
+<!-- 7. Αποκλειστικό Script για το Trainer Tower -->
 <script src="team/trainer_tower.js" defer></script>
 
+<!-- 8. Κύρια λογική Pokédex -->
 <script src="dex.js" defer></script>
+
+<!-- Εγγραφή Service Worker για λειτουργία Offline (PWA) -->
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
+</script>
+
+<!-- ΣΚΡΙΠΤ ΠΛΟΗΣΗΣ: Αυτόματη κύλιση (Scroll) στην κορυφή κατά την αλλαγή καρτέλας -->
+<script>
+document.querySelectorAll('header button, .nav-buttons button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+});
 </script>
 
 </body>
