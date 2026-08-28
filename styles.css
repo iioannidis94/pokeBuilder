@@ -411,3 +411,52 @@ body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
 .trainer-card .trainer-title {
   font-size: 11px; color: var(--dim); margin-bottom: 12px; min-height: 26px;
 }
+
+
+
+
+
+
+/* --- NEW FILTERS LAYOUT & FORMS --- */
+.filters-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 20px 6px;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+.filters-wrapper .tfs {
+  padding: 0; /* Ακυρώνουμε το παλιό padding γιατί το πήρε το wrapper */
+  flex: 1;
+}
+.form-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.form-btn {
+  border: 1.5px solid var(--dim);
+  background: transparent;
+  color: var(--dim);
+  border-radius: 50px;
+  padding: 4px 11px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.form-btn:hover {
+  border-color: var(--txt);
+  color: var(--txt);
+}
+.form-btn.on {
+  background: var(--txt);
+  color: var(--bg);
+  border-color: var(--txt);
+}
