@@ -131,26 +131,38 @@
 
         const pokemonHtml = teamData.map((mon, idx) => {
 
-            
-const pokeEntry = (typeof POKE !== 'undefined')
+// --- Found inside loadBossAsOpponent function (team-bosses.js) : Pokémon lookup mapping ---
+            const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p => {
                     const dbName = p.name.toLowerCase();
                     const targetName = (mon.name || '').toLowerCase();
 
-                    // 1. Έλεγχος για ακριβή αντιστοιχία ή με κενά/παύλες
-                    if (dbName === targetName || dbName.replace(/-/g, ' ') === targetName.replace(/-/g, ' ')) {
+                    // Ρητός χάρτης για τα Pokémon που θέλουν συγκεκριμένη κατάληξη στη βάση σου
+                    const explicitMap = {
+                        'gourgeist': 'gourgeist-average',
+                        'jellicent': 'jellicent-male',
+                        'meloetta': 'meloetta-aria',
+                        'frillish': 'frillish-male',
+                        'pumpkaboo': 'pumpkaboo-average'
+                    };
+
+                    const resolvedTarget = explicitMap[targetName] || targetName;
+
+                    // 1. Έλεγχος ακριβούς αντιστοιχίας (ή με resolved target)
+                    if (dbName === resolvedTarget || dbName.replace(/-/g, ' ') === resolvedTarget.replace(/-/g, ' ')) {
                         return true;
                     }
 
-                    // 2. Αυτόματος έλεγχος για Pokémon με μορφές (-male, -aria, -average, κλπ.)
-                    // Αν ψάχνουμε π.χ. "gourgeist", θα βρει όποιο ξεκινάει με "gourgeist-" στη βάση
-                    if (dbName.startsWith(targetName + '-')) {
+                    // 2. Αυτόματος έλεγχος για τα υπόλοιπα
+                    if (dbName.startsWith(resolvedTarget + '-')) {
                         return true;
                     }
 
                     return false;
                 })
                 : null;
+
+            
 
             const spriteHtml = (pokeEntry && typeof spriteImg === 'function')
                 ? spriteImg(pokeEntry)
