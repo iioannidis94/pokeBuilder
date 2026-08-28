@@ -272,7 +272,18 @@
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
 
             const nature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
-            const item   = isEasy ? '' : (mon.item || '');
+            
+            // Καθαρισμός item: πεζά και παύλες στα κενά (εκτός αν είναι easy οπότε μένει κενό)
+            const rawItem = isEasy ? '' : (mon.item || '');
+            const item = (rawItem && rawItem.toLowerCase() !== 'none') 
+                ? rawItem.toLowerCase().trim().replace(/\s+/g, '-') 
+                : '';
+
+            // Καθαρισμός ability: πεζά και παύλες στα κενά
+            const rawAbility = mon.ability || '';
+            const ability = rawAbility 
+                ? rawAbility.toLowerCase().trim().replace(/\s+/g, '-') 
+                : '';
 
             const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
             
@@ -282,7 +293,7 @@
 
             window.oppTeam.push({
                 id:        pokeEntry.id,
-                ability:   mon.ability || '',
+                ability,
                 item,
                 level:     50,
                 nature,
