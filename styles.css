@@ -124,39 +124,35 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
 
-/* MY TEAM & NAV BUTTONS */
-/* Το κουτί με τα κεντρικά κουμπιά (Team Builder κλπ) */
-.nav-buttons {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-left: auto !important; /* Αυτό τα σπρώχνει μόνιμα τέρμα δεξιά */
-}
-
+/* MY TEAM */
 .teamBtn {
-  border: 1.5px solid var(--brd);
-  background: transparent;
-  color: var(--txt);
-  border-radius: 50px;
-  padding: 9px 15px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-  cursor: pointer;
-  box-shadow: none;
-  transition: transform .15s, box-shadow .2s, border-color .15s, background .15s;
+  margin-left:auto;
+  border:1.5px solid var(--brd);
+  background:transparent;
+  color:var(--txt);
+  border-radius:50px;
+  padding:9px 15px;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  cursor:pointer;
+  box-shadow:none;
+  transition:transform .15s,box-shadow .2s, border-color .15s, background .15s;
 }
 .teamBtn:hover {
-  transform: translateY(-1px);
-  border-color: var(--yel);
+  transform:translateY(-1px);
+  border-color:var(--yel);
+}
+.dexBtn {
+  margin-left:0;
 }
 .teamBtn.on {
-  border-color: var(--yel);
-  background: linear-gradient(135deg, var(--yel), #ff8a00);
-  color: #171015;
-  box-shadow: 0 0 22px rgba(255, 204, 0, .18);
+  border-color:var(--yel);
+  background:linear-gradient(135deg,var(--yel),#ff8a00);
+  color:#171015;
+  box-shadow:0 0 22px rgba(255,204,0,.18);
 }
 .themeToggle{
   border:1.5px solid var(--brd);
@@ -180,10 +176,11 @@ body.calc-view .teamOverlay{display:none}
 body.calc-view .calcOverlay{position:relative;inset:auto;display:block;z-index:1;background:transparent;backdrop-filter:none;padding:0;overflow:visible}
 body.calc-view .calcViewPanel{box-shadow:none}
 body.calc-view #calcClose{display:none}
+body.calc-view #trainerTowerOverlay{display:none}
 body.dex-view .teamOverlay{display:none}
 body.dex-view .calcOverlay{display:none}
 body.dex-view .sw{display:block}
-@media(max-width:620px){.nav-buttons{margin-left:0;flex:1;justify-content:flex-end}.teamBtn{flex:1;text-align:center}.logo{width:100%}}
+@media(max-width:620px){.teamBtn,.dexBtn{margin-left:0;flex:1;text-align:center}.logo{width:100%}}
 .teamOverlay{position:fixed;inset:0;z-index:300;background:rgba(5,5,12,.82);backdrop-filter:blur(10px);display:none;padding:18px;overflow:auto}.teamOverlay.open{display:block}
 .teamPanel{width:100%;max-width:none;margin:0;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);box-shadow:0 22px 80px rgba(0,0,0,.55);overflow:hidden}
 .calcOverlay{position:fixed;inset:0;z-index:300;background:rgba(5,5,12,.82);backdrop-filter:blur(10px);display:none;padding:18px;overflow:auto}
@@ -339,7 +336,7 @@ header::-webkit-scrollbar-track { background: transparent; }
 header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 
 /* Force elements not to shrink */
-.logo, .sw, .teamBtn, .themeToggle {
+.logo, .sw, .teamBtn, .dexBtn, .themeToggle {
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -414,56 +411,4 @@ body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
 }
 .trainer-card .trainer-title {
   font-size: 11px; color: var(--dim); margin-bottom: 12px; min-height: 26px;
-}
-
-/* --- NEW FILTERS LAYOUT & FORMS --- */
-.filters-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 8px 20px 6px;
-  gap: 15px;
-  position: relative;
-  z-index: 1;
-}
-.filters-wrapper .tfs {
-  padding: 0; 
-  flex: 1;
-}
-.form-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-left: auto !important; /* Αυτό σπρώχνει τα φίλτρα μόνιμα τέρμα δεξιά */
-}
-.form-btn {
-  border: 1.5px solid var(--dim);
-  background: transparent;
-  color: var(--dim);
-  border-radius: 50px;
-  padding: 4px 11px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 10px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.form-btn:hover {
-  border-color: var(--txt);
-  color: var(--txt);
-}
-.form-btn.on {
-  background: var(--txt);
-  color: var(--bg);
-  border-color: var(--txt);
-}
-
-/* Κρύβει ΜΟΝΙΜΑ τα φίλτρα σε όλες τις άλλες καρτέλες */
-body.team-view .filters-wrapper,
-body.calc-view .filters-wrapper,
-body.tower-view .filters-wrapper {
-    display: none !important;
 }
