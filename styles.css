@@ -125,11 +125,12 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
 ::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
 
 /* MY TEAM & NAV BUTTONS */
+/* Το κουτί με τα κεντρικά κουμπιά (Team Builder κλπ) */
 .nav-buttons {
   display: flex;
   gap: 12px;
   align-items: center;
-  margin-left: auto; /* Αυτό σπρώχνει ΟΛΟ το γκρουπ τέρμα δεξιά */
+  margin-left: auto !important; /* Αυτό τα σπρώχνει μόνιμα τέρμα δεξιά */
 }
 
 .teamBtn {
@@ -434,6 +435,7 @@ body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin-left: auto !important; /* Αυτό σπρώχνει τα φίλτρα μόνιμα τέρμα δεξιά */
 }
 .form-btn {
   border: 1.5px solid var(--dim);
