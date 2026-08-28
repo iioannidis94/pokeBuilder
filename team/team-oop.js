@@ -49,7 +49,7 @@ window.searchAndAddOpponent = function() {
     );
 
     if(!p) return alert('Pokémon not found! Try in English (e.g. charizard) or use its ID.');
-    if(window.oppTeam.length >= 6) return alert('Opponent team is full (Max 6)!');
+    if(window.oppTeam.length >= 12) return alert('Opponent team is full (Max 12)!');
 
     window.oppTeam.push({ id: p.id, ability: '', item: '', level: 50, nature: '', iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' }, moveNames: [], moves: [], moveCats: [] });
     window.saveOpponents();
