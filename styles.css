@@ -29,14 +29,13 @@ header {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-wrap: nowrap; /* CHANGED FROM wrap TO nowrap */
-  overflow-x: auto;  /* ALLOWS HORIZONTAL SCROLL */
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 .logo{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--yel);
   text-shadow:0 0 24px rgba(255,204,0,.5);white-space:nowrap;}
 .logo span{color:var(--red)}
 .sw{flex:1;min-width:180px;max-width:460px;position:relative}
-.teamBtn:first-of-type{margin-left:auto}
 #search{
   width:100%;background:var(--surf2);border:1.5px solid var(--brd);border-radius:50px;
   color:var(--txt);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
@@ -46,8 +45,63 @@ header {
 #search::placeholder{color:var(--dim)}
 .si{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;font-size:15px}
 
+/* NAV BUTTONS CONTAINER (Σπρώχνει τα κουμπιά τέρμα δεξιά σταθερά) */
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto !important;
+}
+
+/* --- NEW FILTERS LAYOUT & FORMS --- */
+.filters-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 20px 6px;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+.filters-wrapper .tfs {
+  padding: 0; 
+  flex: 1;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.form-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto !important;
+}
+.form-btn {
+  border: 1.5px solid var(--dim);
+  background: transparent;
+  color: var(--dim);
+  border-radius: 50px;
+  padding: 4px 11px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.form-btn:hover {
+  border-color: var(--txt);
+  color: var(--txt);
+}
+.form-btn.on {
+  background: var(--txt);
+  color: var(--bg);
+  border-color: var(--txt);
+}
+
 /* TYPE FILTERS */
-.tfs{display:flex;gap:5px;flex-wrap:wrap;padding:8px 20px 6px;position:relative;z-index:1}
 .tf{
   padding:4px 11px;border-radius:50px;border:1.5px solid transparent;
   cursor:pointer;background:var(--surf2);
@@ -127,7 +181,6 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
 
 /* MY TEAM */
 .teamBtn {
-  margin-left:auto;
   border:1.5px solid var(--brd);
   background:transparent;
   color:var(--txt);
@@ -166,21 +219,25 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
 }
 .themeToggle:hover{border-color:var(--yel)}
 
-body.team-view .sw,body.team-view .tfs,body.team-view .sb,body.team-view main{display:none}
+/* VIEW HIDING RULES (Αποτροπή "πηδήματος" της σελίδας στη μέση) */
+body.team-view .sw, body.team-view .filters-wrapper, body.team-view .sb, body.team-view main { display: none !important; }
+body.team-view .teamOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
+body.team-view .teamPanel { box-shadow: none; }
+body.team-view .teamClose { display: none; }
+body.team-view .calcOverlay { display: none; }
 
-body.team-view .teamOverlay{position:relative;inset:auto;display:block;z-index:1;background:transparent;backdrop-filter:none;padding:0;overflow:visible}
-body.team-view .teamPanel{box-shadow:none}
-body.team-view .teamClose{display:none}
-body.team-view .calcOverlay{display:none}
-body.calc-view .sw,body.calc-view .tfs,body.calc-view .sb,body.calc-view main{display:none}
-body.calc-view .teamOverlay{display:none}
-body.calc-view .calcOverlay{position:relative;inset:auto;display:block;z-index:1;background:transparent;backdrop-filter:none;padding:0;overflow:visible}
-body.calc-view .calcViewPanel{box-shadow:none}
-body.calc-view #calcClose{display:none}
-body.dex-view .teamOverlay{display:none}
-body.dex-view .calcOverlay{display:none}
-body.dex-view .sw{display:block}
-@media(max-width:620px){.teamBtn,.dexBtn{margin-left:0;flex:1;text-align:center}.logo{width:100%}}
+body.calc-view .sw, body.calc-view .filters-wrapper, body.calc-view .sb, body.calc-view main { display: none !important; }
+body.calc-view .teamOverlay { display: none; }
+body.calc-view .calcOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
+body.calc-view .calcViewPanel { box-shadow: none; }
+body.calc-view #calcClose { display: none; }
+
+body.dex-view .teamOverlay { display: none; }
+body.dex-view .calcOverlay { display: none; }
+body.dex-view .sw { display: block; }
+
+@media(max-width:620px){.nav-buttons{margin-left:0;flex:1;justify-content:flex-end}.teamBtn{flex:1;text-align:center}.logo{width:100%}}
+
 .teamOverlay{position:fixed;inset:0;z-index:300;background:rgba(5,5,12,.82);backdrop-filter:blur(10px);display:none;padding:18px;overflow:auto}.teamOverlay.open{display:block}
 .teamPanel{width:100%;max-width:none;margin:0;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);box-shadow:0 22px 80px rgba(0,0,0,.55);overflow:hidden}
 .calcOverlay{position:fixed;inset:0;z-index:300;background:rgba(5,5,12,.82);backdrop-filter:blur(10px);display:none;padding:18px;overflow:auto}
@@ -368,10 +425,10 @@ header::-webkit-scrollbar-thumb { background: var(--brd); border-radius: 2px; }
 }
 
 /* Bosses Modal */
-#bossesOverlay[aria-hidden="true"] { display: none; }
-#bossesOverlay[aria-hidden="false"] { display: flex; }
-.bossListItem:hover { background: var(--brd) !important; }
-.bossListItem.active { background: var(--brd) !important; }
+#bossesOverlay[aria-hidden="true"] {display: none;}
+#bossesOverlay[aria-hidden="false"] {display: flex;}
+.bossListItem:hover {background: var(--brd) !important;}
+.bossListItem.active {background: var(--brd) !important;}
 
 /* --- TRAINER TOWER VIEW --- */
 body.tower-view .sw, 
