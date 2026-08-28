@@ -234,11 +234,10 @@
 
         window.clearOpponents();
 
-        const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
-        const isEasy   = difficulty === 'easy';
+   const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
+    const isEasy   = difficulty === 'easy';
 
-        const limited = teamData.slice(0, 6);
-        for (const mon of limited) {
+    for (const mon of teamData) { // <-- Iterates through all Pokémon in the team array without capping at 6
             const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p =>
                     p.name.toLowerCase() === (mon.name || '').toLowerCase() ||
