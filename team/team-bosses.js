@@ -132,29 +132,18 @@
         const pokemonHtml = teamData.map((mon, idx) => {
 
 // --- Found inside loadBossAsOpponent function (team-bosses.js) : Pokémon lookup mapping ---
-            const pokeEntry = (typeof POKE !== 'undefined')
+           const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p => {
                     const dbName = p.name.toLowerCase();
                     const targetName = (mon.name || '').toLowerCase();
 
-                    // Ρητός χάρτης για τα Pokémon που θέλουν συγκεκριμένη κατάληξη στη βάση σου
-                    const explicitMap = {
-                        'gourgeist': 'gourgeist-average',
-                        'jellicent': 'jellicent-male',
-                        'meloetta': 'meloetta-aria',
-                        'frillish': 'frillish-male',
-                        'pumpkaboo': 'pumpkaboo-average'
-                    };
-
-                    const resolvedTarget = explicitMap[targetName] || targetName;
-
-                    // 1. Έλεγχος ακριβούς αντιστοιχίας (ή με resolved target)
-                    if (dbName === resolvedTarget || dbName.replace(/-/g, ' ') === resolvedTarget.replace(/-/g, ' ')) {
+                    // 1. Έλεγχος για ακριβή αντιστοιχία (Πιάνει αυτόματα τα Mega, Alolan, Galar κλπ. αν είναι γραμμένα πλήρη)
+                    if (dbName === targetName || dbName.replace(/-/g, ' ') === targetName.replace(/-/g, ' ')) {
                         return true;
                     }
 
-                    // 2. Αυτόματος έλεγχος για τα υπόλοιπα
-                    if (dbName.startsWith(resolvedTarget + '-')) {
+                    // 2. Αυτόματος έλεγχος για σκέτα ονόματα που θέλουν μορφή (π.χ. gourgeist -> gourgeist-average)
+                    if (dbName.startsWith(targetName + '-')) {
                         return true;
                     }
 
