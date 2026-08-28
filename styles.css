@@ -36,6 +36,7 @@ header {
   text-shadow:0 0 24px rgba(255,204,0,.5);white-space:nowrap;}
 .logo span{color:var(--red)}
 .sw{flex:1;min-width:180px;max-width:460px;position:relative}
+.teamBtn:first-of-type{margin-left:auto}
 #search{
   width:100%;background:var(--surf2);border:1.5px solid var(--brd);border-radius:50px;
   color:var(--txt);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
@@ -176,7 +177,6 @@ body.calc-view .teamOverlay{display:none}
 body.calc-view .calcOverlay{position:relative;inset:auto;display:block;z-index:1;background:transparent;backdrop-filter:none;padding:0;overflow:visible}
 body.calc-view .calcViewPanel{box-shadow:none}
 body.calc-view #calcClose{display:none}
-body.calc-view #trainerTowerOverlay{display:none}
 body.dex-view .teamOverlay{display:none}
 body.dex-view .calcOverlay{display:none}
 body.dex-view .sw{display:block}
