@@ -445,6 +445,14 @@ body.tower-view #trainerTowerOverlay {
 }
 body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
 
+
+/**/
+body.calc-view #trainerTowerOverlay { display: none !important; }
+/**/
+
+
+
+
 /* Trainer Cards Styling */
 .trainer-card {
   background: var(--surf2); 
