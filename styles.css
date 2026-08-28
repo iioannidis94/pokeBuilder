@@ -460,3 +460,10 @@ body.tower-view #trainerTowerOverlay .calcViewPanel { box-shadow: none; }
   color: var(--bg);
   border-color: var(--txt);
 }
+
+/* Κρύβει ΜΟΝΙΜΑ τα φίλτρα σε όλες τις άλλες καρτέλες */
+body.team-view .filters-wrapper,
+body.calc-view .filters-wrapper,
+body.tower-view .filters-wrapper {
+    display: none !important;
+}
