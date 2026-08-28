@@ -212,3 +212,15 @@ That means the next work should mainly improve:
 - more accurate damage and scenario modelling
 - faster meta updates
 - easier sharing and iteration
+
+
+
+## To Be Updated (Upcoming Fixes & Features)
+
+*   **Battle Calculator Cleanup:** Remove the duplicate "Trainer Tower" section from the Battle Calculator panel, as it has been relocated to a dedicated button.
+*   **Boss Modal UI & Data:** 
+    *   Change the Bosses modal background to be completely solid (using the app's standard theme colors) to prevent background bleed-through.
+    *   Add an "Easy" difficulty tier to complement the existing Medium and Hard tiers.
+*   **Opponent Panel Data Fetching:** Ensure that when a Boss is loaded into the opponent panel, their specific moves and abilities are automatically fetched and displayed (if available in the data).
+*   **Type Filter UI Polish:** Update the active state of the type selection buttons in the Weakness/Counters panel. Selected types must have a solid background fill (matching the Optimal Coverage Checklist UI) rather than just a colored outline.
+*   **Special Forms Filtering:** Introduce new filter toggles for special/regional forms (Mega, Alolan, Hisuian, etc.) in the Weakness/Counters panel. These will be aligned to the right side of the UI, keeping the type filters on the left.
