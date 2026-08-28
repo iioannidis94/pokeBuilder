@@ -237,7 +237,7 @@
         }
     }
 
-    // ─── Load Boss Team as Opponent ───────────────────────────────────────
+// ─── Load Boss Team as Opponent ───────────────────────────────────────
     function loadBossAsOpponent(boss, difficulty) {
         if (!boss || !difficulty) return;
         const teamData = boss.difficulties[difficulty] && boss.difficulties[difficulty].pokemon;
@@ -249,10 +249,10 @@
 
         window.clearOpponents();
 
-   const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
-    const isEasy   = difficulty === 'easy';
+        const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
+        const isEasy   = difficulty === 'easy';
 
-    for (const mon of teamData) { // <-- Iterates through all Pokémon in the team array without capping at 6
+        for (const mon of teamData) {
             const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p =>
                     p.name.toLowerCase() === (mon.name || '').toLowerCase() ||
@@ -262,6 +262,7 @@
 
             if (!pokeEntry) continue;
 
+            // Φιλτράρισμα και αντιστοίχιση των κινήσεων (moves)
             const moveNames  = (mon.moves || []).filter(m => m && m.trim());
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
