@@ -295,7 +295,7 @@
                 id:        pokeEntry.id,
                 ability,
                 item,
-                level:     50,
+                level:     100,
                 nature,
                 moveNames,
                 moves:     moveTypes,
