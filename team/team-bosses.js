@@ -130,14 +130,25 @@
             : [];
 
         const pokemonHtml = teamData.map((mon, idx) => {
-            // Find the ID from the POKE array if it exists
-   const pokeEntry = (typeof POKE !== 'undefined')
+
+            
+const pokeEntry = (typeof POKE !== 'undefined')
                 ? POKE.find(p => {
                     const dbName = p.name.toLowerCase();
                     const targetName = (mon.name || '').toLowerCase();
-                    return dbName === targetName ||
-                           dbName.replace(/-/g, ' ') === targetName.replace(/-/g, ' ') ||
-                           dbName.startsWith(targetName + '-');
+
+                    // 1. Έλεγχος για ακριβή αντιστοιχία ή με κενά/παύλες
+                    if (dbName === targetName || dbName.replace(/-/g, ' ') === targetName.replace(/-/g, ' ')) {
+                        return true;
+                    }
+
+                    // 2. Αυτόματος έλεγχος για Pokémon με μορφές (-male, -aria, -average, κλπ.)
+                    // Αν ψάχνουμε π.χ. "gourgeist", θα βρει όποιο ξεκινάει με "gourgeist-" στη βάση
+                    if (dbName.startsWith(targetName + '-')) {
+                        return true;
+                    }
+
+                    return false;
                 })
                 : null;
 
