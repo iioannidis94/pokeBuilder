@@ -251,6 +251,7 @@
 
         const evValue  = DIFFICULTY_EVS[difficulty] ?? 0;
         const isEasy   = difficulty === 'easy';
+        const isHard   = difficulty === 'hard';
 
         for (const mon of teamData) {
             const pokeEntry = (typeof POKE !== 'undefined')
@@ -262,25 +263,22 @@
 
             if (!pokeEntry) continue;
 
-            // Φιλτράρισμα και αντιστοίχιση των κινήσεων (moves) με υποστήριξη για πεζά/slug names
-            const moveNames  = (mon.moves || []).filter(m => m && m.trim());
-            const moveTypes  = moveNames.map(n => {
-                if (typeof MOVE_INFO === 'undefined') return '';
-                const cleanKey = n.toLowerCase().replace(/\s+/g, '-');
-                const moveData = MOVE_INFO[n] || MOVE_INFO[cleanKey];
-                return moveData ? (moveData.type || '') : '';
-            });
-            const moveCats   = moveNames.map(n => {
-                if (typeof MOVE_INFO === 'undefined') return '';
-                const cleanKey = n.toLowerCase().replace(/\s+/g, '-');
-                const moveData = MOVE_INFO[n] || MOVE_INFO[cleanKey];
-                return moveData ? (moveData.cat || '') : '';
-            });
+            // Καθαρισμός κινήσεων: μετατροπή σε πεζά και αντικατάσταση κενών με παύλες
+            const moveNames = (mon.moves || [])
+                .filter(m => m && m.trim())
+                .map(m => m.toLowerCase().trim().replace(/\s+/g, '-'));
+
+            const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
+            const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
 
             const nature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
             const item   = isEasy ? '' : (mon.item || '');
 
             const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
+            
+            // Αν είναι hard difficulty, τα IVs γίνονται όλα 31, αλλιώς μένουν κενά
+            const ivVal = isHard ? 31 : '';
+            const iv = { HP: ivVal, ATK: ivVal, DEF: ivVal, SPATK: ivVal, SPDEF: ivVal, SPD: ivVal };
 
             window.oppTeam.push({
                 id:        pokeEntry.id,
@@ -291,7 +289,7 @@
                 moveNames,
                 moves:     moveTypes,
                 moveCats,
-                iv:  { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
+                iv,
                 ev,
             });
         }
@@ -308,7 +306,7 @@
         window.closeBossesModal();
         if (typeof renderTeamSlots === 'function') renderTeamSlots();
     }
-
+    
     
     // ─── Event delegation for boss list items ─────────────────────────────
     document.addEventListener('click', e => {
