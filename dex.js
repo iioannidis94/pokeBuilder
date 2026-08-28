@@ -35,30 +35,57 @@ function card(p) {
 
 const tfEl = document.getElementById('tf');
 let activeTypes = []; // Now an array for 2 types
+let activeForms = []; // NΕΟ: Array για τα Forms
 
 AT.forEach(t => {
     const b = document.createElement('button');
     b.className = 'tf'; b.textContent = t;
     b.style.color = TC[t]; b.style.borderColor = TC[t];
     b.dataset.t = t;
+    
     b.addEventListener('click', () => {
         if (activeTypes.includes(t)) {
             activeTypes = activeTypes.filter(x => x !== t);
             b.classList.remove('on');
+            b.style.background = 'transparent'; // ΝΕΟ: Επαναφορά χρώματος
+            b.style.color = TC[t];
         } else {
             if (activeTypes.length >= 2) {
-                // Reset if trying to add a 3rd type
-                tfEl.querySelectorAll('.tf').forEach(x => x.classList.remove('on'));
+                // Reset αν πάει να βάλει 3ο type
+                tfEl.querySelectorAll('.tf').forEach(x => {
+                    x.classList.remove('on');
+                    x.style.background = 'transparent';
+                    x.style.color = TC[x.dataset.t];
+                });
                 activeTypes = [t];
                 b.classList.add('on');
+                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
+                b.style.color = '#fff';
             } else {
                 activeTypes.push(t);
                 b.classList.add('on');
+                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
+                b.style.color = '#fff';
             }
         }
         renderDex();
     });
     tfEl.appendChild(b);
+});
+
+// ΝΕΟ: Event Listeners για τα κουμπιά των Forms
+document.querySelectorAll('.form-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const form = e.target.getAttribute('data-form');
+        e.target.classList.toggle('on');
+        
+        if (activeForms.includes(form)) {
+            activeForms = activeForms.filter(f => f !== form);
+        } else {
+            activeForms.push(form);
+        }
+        renderDex();
+    });
 });
 
 const grid = document.getElementById('grid');
@@ -90,6 +117,11 @@ function renderDex() {
     // Filter by 1 or 2 types
     if (activeTypes.length > 0) {
         list = list.filter(p => activeTypes.every(t => p.types.includes(t)));
+    }
+
+    // ΝΕΟ: Filter by Special Forms
+    if (activeForms.length > 0) {
+        list = list.filter(p => activeForms.some(form => p.name.includes(`-${form}`)));
     }
     
     cntEl.innerHTML = `Showing <strong>${list.length}</strong> / ${POKE.length} Pokémon`;
