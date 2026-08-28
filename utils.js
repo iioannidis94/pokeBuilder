@@ -35,20 +35,27 @@ function multAtkVsTypes(atk, types) {
 }
 
 function spriteImg(p, cls = '') { 
-    const b64 = SPRITES[String(p.id)] || ''; 
-    if (b64) return `<img class="${cls}" src="data:image/png;base64,${b64}" alt="${p.name}">`;
-    // Mega Evolution IDs 10062–10080 have incorrect/shifted sprites in the PokeAPI path;
-    // use Pokémon Showdown sprites (keyed by name) which are correct.
-    const isBrokenMega = p.id >= 10062 && p.id <= 10080;
+    const spriteData = SPRITES[String(p.id)] || ''; 
+    
+    // ΝΕΑ ΛΟΓΙΚΗ: Αν βρει κάτι στο sprites.js, ελέγχει αν είναι Link ή Base64
+    if (spriteData) {
+        if (spriteData.startsWith('http')) {
+            return `<img class="${cls}" src="${spriteData}" alt="${p.name}">`;
+        } else {
+            return `<img class="${cls}" src="data:image/png;base64,${spriteData}" alt="${p.name}">`;
+        }
+    }
+
+    // Mega Evolutions + Therians (10019, 10020, 10026, 10228) fix via Showdown
+    const isBrokenMega = (p.id >= 10062 && p.id <= 10080) || [10019, 10020, 10026, 10228].includes(p.id);
     if (isBrokenMega) {
-        const showdownName = p.name; // already in showdown format (e.g. "pidgeot-mega")
-        const spriteUrl = `https://play.pokemonshowdown.com/sprites/gen6/${showdownName}.png`;
+        const showdownName = p.name; // already in showdown format
+        // Αλλαγή σε φάκελο 'dex' που έχει ΟΛΑ τα pokemon (και τα καινούρια όπως το Enamorus)
+        const spriteUrl = `https://play.pokemonshowdown.com/sprites/dex/${showdownName}.png`;
         return `<img class="${cls}" src="${spriteUrl}" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
     }
-    // Alolan form IDs (10091–10108) have incorrect/duplicate sprites in the main PokeAPI path;
-    // use the generation-vii sprites which are correct for all Alolan forms.
-    // In the gen-vii/usum directory, IDs 10093–10099 are duplicates or placeholders,
-    // so the real sprites for IDs 10093–10108 are stored at offset +7 (i.e. 10100–10115).
+
+    // Alolan form IDs (10091–10108)
     const isAlolan = p.id >= 10091 && p.id <= 10108;
     const alolanUrlId = (isAlolan && p.id >= 10093) ? p.id + 7 : p.id;
     const spriteUrl = isAlolan
@@ -106,7 +113,6 @@ function showTypeChart(type) {
     overlay.style.display = 'flex';
 }
 
-
 // --- TOAST NOTIFICATION ---
 let _toastTimer = null;
 function showToast(message, duration) {
@@ -122,7 +128,6 @@ function showToast(message, duration) {
     clearTimeout(_toastTimer);
     _toastTimer = setTimeout(() => { toast.className = 'pk-toast'; }, duration);
 }
-
 
 // Dictionary: How Abilities modify Damage (0 = Immune, 0.5 = Resist, 2 = Weak)
 const ABILITY_TYPE_MODS = {
