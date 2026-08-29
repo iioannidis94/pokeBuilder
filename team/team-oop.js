@@ -198,9 +198,26 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
     const myHazards = myMoves.filter(m => HAZARD_MOVES.has(m)).length;
     const myHazardControl = myMoves.filter(m => HAZARD_CONTROL_MOVES.has(m)).length;
 
-    let opBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[oppP.id]) ? BASE_STATS[oppP.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80};
+// -- MEGA EVOLUTION FIX --
+    // Vriskoume ta swsta onomata, lambanontas upopsin ta Items!
+    const oppEffectiveName = typeof window.getEffectivePokemonName === 'function' && oppSlotData
+        ? window.getEffectivePokemonName(oppP.name, oppSlotData.item) 
+        : oppP.name;
+        
+    const myEffectiveName = typeof window.getEffectivePokemonName === 'function' 
+        ? window.getEffectivePokemonName(myCandidate.p.name, myCandidate.slot.item) 
+        : myCandidate.p.name;
 
-    let myBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[myCandidate.p.id]) ? BASE_STATS[myCandidate.p.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80};
+    // Fortwnoume ta stats me vasi ta "effective names"
+    let opBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[oppEffectiveName]) 
+        ? BASE_STATS[oppEffectiveName] 
+        : ((typeof BASE_STATS !== 'undefined' && BASE_STATS[oppP.id]) ? BASE_STATS[oppP.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80});
+
+    let myBs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[myEffectiveName]) 
+        ? BASE_STATS[myEffectiveName] 
+        : ((typeof BASE_STATS !== 'undefined' && BASE_STATS[myCandidate.p.id]) ? BASE_STATS[myCandidate.p.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80});
+    // ------------------------
+
     let myAtk = myBs.atk + Math.floor((Number(myCandidate.slot.ev.ATK) || 0) / 4);
     let mySpa = myBs.spa + Math.floor((Number(myCandidate.slot.ev.SPATK) || 0) / 4);
 
@@ -584,8 +601,13 @@ window.getMatchupsUI = function(selected) {
             // --- Battle Prep Tip ---
             let battlePrepHtml = '';
             if (typeof calcFinalStats === 'function' && typeof BASE_STATS !== 'undefined' && typeof getNatureMultiplier === 'function') {
-                const myBs  = BASE_STATS[my.p.id]  || { spe: 70 };
-                const opBs  = BASE_STATS[op.id]     || { spe: 70 };
+                const myEffectiveNamePrep = typeof window.getEffectivePokemonName === 'function' ? window.getEffectivePokemonName(my.p.name, my.slot.item) : my.p.id;
+                const oppEffectiveNamePrep = typeof window.getEffectivePokemonName === 'function' && oppSlotData ? window.getEffectivePokemonName(op.name, oppSlotData.item) : op.id;
+
+                const myBs  = BASE_STATS[myEffectiveNamePrep] || BASE_STATS[my.p.id] || { spe: 70 };
+                const opBs  = BASE_STATS[oppEffectiveNamePrep] || BASE_STATS[op.id] || { spe: 70 };
+
+                
                 const mySpeed = getEffectiveSpeedStat(Number(myBs.spe) || 70, my.slot, { side: 'me', types: my.p.types });
                 const opSpeed = getEffectiveSpeedStat(Number(opBs.spe) || 70, oppSlotData || { level: 50 }, { side: 'opponent', types: op.types, defaultLevel: 50 });
                 const trickRoomActive = typeof getBattleContext === 'function' ? getBattleContext().trickRoom : false;
