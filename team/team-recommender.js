@@ -27,7 +27,7 @@ window.showMoveRecommendations = function() {
         <div style="background:var(--bg); border:2px solid #4dabf7; border-radius:12px; max-width:850px; width:100%; max-height:90vh; overflow-y:auto; padding:25px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <button onclick="document.getElementById('moveRecModal').remove()" style="position:absolute; top:15px; right:15px; background:#ff4d4f; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; transition:0.2s;">❌ Close</button>
             <h2 style="color:#4dabf7; margin-top:0; font-size:22px;">💡 Pro-Tier Move & Item Optimizer</h2>
-            <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">The AI now analyses <strong>Strategic Roles</strong> and recommends both Moves and Held Items!</p>
+            <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">The AI now analyses <strong>Strategic Roles & Mega Evolutions</strong> and recommends both Moves and Held Items!</p>
             <div style="display:flex; flex-direction:column; gap:15px;">`;
 
     selected.forEach(x => {
@@ -36,7 +36,18 @@ window.showMoveRecommendations = function() {
             moveList = MOVES_BY_POKEMON[x.p.name] || MOVES_BY_POKEMON[x.p.name.toLowerCase()] || MOVES_BY_POKEMON[String(x.p.id)] || MOVES_BY_POKEMON[x.p.id] || [];
         }
 
-        let bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[x.p.id]) ? BASE_STATS[x.p.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80};
+        // --- MEGA EVOLUTION CHECK ---
+        // Vriskei to onoma me vasi to an exei mega stone, xrisimopoiwntas ti function apo to team-core.js
+        let effectiveName = typeof window.getEffectivePokemonName === 'function' 
+            ? window.getEffectivePokemonName(x.p.name, x.slot.item) 
+            : x.p.name;
+
+        // Travaei ta swsta stats (ta Mega an einai mega, ta apla an oxi)
+        let bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[effectiveName]) 
+            ? BASE_STATS[effectiveName] 
+            : (typeof BASE_STATS !== 'undefined' && BASE_STATS[x.p.id] ? BASE_STATS[x.p.id] : {hp:80, atk:80, def:80, spa:80, spd:80, spe:80});
+        // -----------------------------
+
         let rHP = getRealStat(bs.hp, x.slot.iv?.HP, x.slot.ev?.HP, x.slot.level, true);
         let rAtk = getRealStat(bs.atk, x.slot.iv?.ATK, x.slot.ev?.ATK, x.slot.level, false);
         let rDef = getRealStat(bs.def, x.slot.iv?.DEF, x.slot.ev?.DEF, x.slot.level, false);
@@ -51,7 +62,7 @@ window.showMoveRecommendations = function() {
         let isPhysical = rAtk > rSpa * 1.15; 
         let isSpecial = rSpa > rAtk * 1.15;  
 
-        // --- NEW: ITEM RECOMMENDATION LOGIC ---
+        // --- ITEM RECOMMENDATION LOGIC ---
         let recItems = [];
         if (isTank) {
             recItems.push("Leftovers", "Heavy-Duty Boots", "Rocky Helmet");
@@ -172,13 +183,13 @@ window.showMoveRecommendations = function() {
         <div style="border:1px solid var(--brd); padding:15px; border-radius:8px; background:rgba(0,0,0,0.15);">
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; padding-bottom:8px;">
                 ${spriteHtml}
-                <strong style="font-size:18px; color:var(--txt);">${x.p.name.replace(/-/g, ' ')}</strong> 
+                <strong style="font-size:18px; color:var(--txt);">${effectiveName.replace(/-/g, ' ')}</strong> 
                 <span style="font-size:12px; background:rgba(77, 171, 247, 0.2); color:#4dabf7; padding:3px 8px; border-radius:12px; border:1px solid #4dabf7;">${roleText}</span>
             </div>
             <div style="display:flex; flex-wrap:wrap; gap:10px;">
                 ${movesHtml}
             </div>
-            ${itemsHtml} <!-- EDW MPAINOUN TA ITEMS -->
+            ${itemsHtml}
         </div>`;
     });
 
