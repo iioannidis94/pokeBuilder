@@ -226,3 +226,4 @@ That means the next work should mainly improve:
 *   **Special Forms Filtering:** Introduce new filter toggles for special/regional forms (Mega, Alolan, Hisuian, etc.) in the Weakness/Counters panel. These will be aligned to the right side of the UI, keeping the type filters on the left.
 
 *   wrong sprites shaymin sky - stunfisk galar -> yamask galar
+*   natures + - show off and calculate it
