@@ -148,7 +148,73 @@ const ITEMS_DATA = {
   "Toxic Orb": {
     shortDesc: "Badly poisons holder at end of turn",
     mechanics: { effectType: "self_status", status: "toxic", trigger: "end_turn" }
-  }
+  },
+
+  // ==========================================
+  // MEGA STONES & PRIMAL ORBS (Kanto - Kalos)
+  // ==========================================
+  
+  // --- Kanto ---
+  "Venusaurite": { shortDesc: "Mega Evolves Venusaur", mechanics: { effectType: "mega_evolution", target: "Venusaur", suffix: "-Mega" } },
+  "Charizardite X": { shortDesc: "Mega Evolves Charizard to X", mechanics: { effectType: "mega_evolution", target: "Charizard", suffix: "-Mega-X" } },
+  "Charizardite Y": { shortDesc: "Mega Evolves Charizard to Y", mechanics: { effectType: "mega_evolution", target: "Charizard", suffix: "-Mega-Y" } },
+  "Blastoisinite": { shortDesc: "Mega Evolves Blastoise", mechanics: { effectType: "mega_evolution", target: "Blastoise", suffix: "-Mega" } },
+  "Beedrillite": { shortDesc: "Mega Evolves Beedrill", mechanics: { effectType: "mega_evolution", target: "Beedrill", suffix: "-Mega" } },
+  "Pidgeotite": { shortDesc: "Mega Evolves Pidgeot", mechanics: { effectType: "mega_evolution", target: "Pidgeot", suffix: "-Mega" } },
+  "Alakazite": { shortDesc: "Mega Evolves Alakazam", mechanics: { effectType: "mega_evolution", target: "Alakazam", suffix: "-Mega" } },
+  "Slowbronite": { shortDesc: "Mega Evolves Slowbro", mechanics: { effectType: "mega_evolution", target: "Slowbro", suffix: "-Mega" } },
+  "Gengarite": { shortDesc: "Mega Evolves Gengar", mechanics: { effectType: "mega_evolution", target: "Gengar", suffix: "-Mega" } },
+  "Kangaskhanite": { shortDesc: "Mega Evolves Kangaskhan", mechanics: { effectType: "mega_evolution", target: "Kangaskhan", suffix: "-Mega" } },
+  "Pinsirite": { shortDesc: "Mega Evolves Pinsir", mechanics: { effectType: "mega_evolution", target: "Pinsir", suffix: "-Mega" } },
+  "Gyaradosite": { shortDesc: "Mega Evolves Gyarados", mechanics: { effectType: "mega_evolution", target: "Gyarados", suffix: "-Mega" } },
+  "Aerodactylite": { shortDesc: "Mega Evolves Aerodactyl", mechanics: { effectType: "mega_evolution", target: "Aerodactyl", suffix: "-Mega" } },
+  "Mewtwonite X": { shortDesc: "Mega Evolves Mewtwo to X", mechanics: { effectType: "mega_evolution", target: "Mewtwo", suffix: "-Mega-X" } },
+  "Mewtwonite Y": { shortDesc: "Mega Evolves Mewtwo to Y", mechanics: { effectType: "mega_evolution", target: "Mewtwo", suffix: "-Mega-Y" } },
+  
+  // --- Johto ---
+  "Ampharosite": { shortDesc: "Mega Evolves Ampharos", mechanics: { effectType: "mega_evolution", target: "Ampharos", suffix: "-Mega" } },
+  "Steelixite": { shortDesc: "Mega Evolves Steelix", mechanics: { effectType: "mega_evolution", target: "Steelix", suffix: "-Mega" } },
+  "Scizorite": { shortDesc: "Mega Evolves Scizor", mechanics: { effectType: "mega_evolution", target: "Scizor", suffix: "-Mega" } },
+  "Heracronite": { shortDesc: "Mega Evolves Heracross", mechanics: { effectType: "mega_evolution", target: "Heracross", suffix: "-Mega" } },
+  "Houndoominite": { shortDesc: "Mega Evolves Houndoom", mechanics: { effectType: "mega_evolution", target: "Houndoom", suffix: "-Mega" } },
+  "Tyranitarite": { shortDesc: "Mega Evolves Tyranitar", mechanics: { effectType: "mega_evolution", target: "Tyranitar", suffix: "-Mega" } },
+  
+  // --- Hoenn ---
+  "Sceptilite": { shortDesc: "Mega Evolves Sceptile", mechanics: { effectType: "mega_evolution", target: "Sceptile", suffix: "-Mega" } },
+  "Blazikenite": { shortDesc: "Mega Evolves Blaziken", mechanics: { effectType: "mega_evolution", target: "Blaziken", suffix: "-Mega" } },
+  "Swampertite": { shortDesc: "Mega Evolves Swampert", mechanics: { effectType: "mega_evolution", target: "Swampert", suffix: "-Mega" } },
+  "Gardevoirite": { shortDesc: "Mega Evolves Gardevoir", mechanics: { effectType: "mega_evolution", target: "Gardevoir", suffix: "-Mega" } },
+  "Sablenite": { shortDesc: "Mega Evolves Sableye", mechanics: { effectType: "mega_evolution", target: "Sableye", suffix: "-Mega" } },
+  "Mawilite": { shortDesc: "Mega Evolves Mawile", mechanics: { effectType: "mega_evolution", target: "Mawile", suffix: "-Mega" } },
+  "Aggronite": { shortDesc: "Mega Evolves Aggron", mechanics: { effectType: "mega_evolution", target: "Aggron", suffix: "-Mega" } },
+  "Medichamite": { shortDesc: "Mega Evolves Medicham", mechanics: { effectType: "mega_evolution", target: "Medicham", suffix: "-Mega" } },
+  "Manectite": { shortDesc: "Mega Evolves Manectric", mechanics: { effectType: "mega_evolution", target: "Manectric", suffix: "-Mega" } },
+  "Sharpedonite": { shortDesc: "Mega Evolves Sharpedo", mechanics: { effectType: "mega_evolution", target: "Sharpedo", suffix: "-Mega" } },
+  "Cameruptite": { shortDesc: "Mega Evolves Camerupt", mechanics: { effectType: "mega_evolution", target: "Camerupt", suffix: "-Mega" } },
+  "Altarianite": { shortDesc: "Mega Evolves Altaria", mechanics: { effectType: "mega_evolution", target: "Altaria", suffix: "-Mega" } },
+  "Banettite": { shortDesc: "Mega Evolves Banette", mechanics: { effectType: "mega_evolution", target: "Banette", suffix: "-Mega" } },
+  "Absolite": { shortDesc: "Mega Evolves Absol", mechanics: { effectType: "mega_evolution", target: "Absol", suffix: "-Mega" } },
+  "Glalitite": { shortDesc: "Mega Evolves Glalie", mechanics: { effectType: "mega_evolution", target: "Glalie", suffix: "-Mega" } },
+  "Salamencite": { shortDesc: "Mega Evolves Salamence", mechanics: { effectType: "mega_evolution", target: "Salamence", suffix: "-Mega" } },
+  "Metagrossite": { shortDesc: "Mega Evolves Metagross", mechanics: { effectType: "mega_evolution", target: "Metagross", suffix: "-Mega" } },
+  "Latiasite": { shortDesc: "Mega Evolves Latias", mechanics: { effectType: "mega_evolution", target: "Latias", suffix: "-Mega" } },
+  "Latiosite": { shortDesc: "Mega Evolves Latios", mechanics: { effectType: "mega_evolution", target: "Latios", suffix: "-Mega" } },
+  
+  // --- Sinnoh ---
+  "Lopunnite": { shortDesc: "Mega Evolves Lopunny", mechanics: { effectType: "mega_evolution", target: "Lopunny", suffix: "-Mega" } },
+  "Garchompite": { shortDesc: "Mega Evolves Garchomp", mechanics: { effectType: "mega_evolution", target: "Garchomp", suffix: "-Mega" } },
+  "Lucarionite": { shortDesc: "Mega Evolves Lucario", mechanics: { effectType: "mega_evolution", target: "Lucario", suffix: "-Mega" } },
+  "Abomasite": { shortDesc: "Mega Evolves Abomasnow", mechanics: { effectType: "mega_evolution", target: "Abomasnow", suffix: "-Mega" } },
+  "Galladite": { shortDesc: "Mega Evolves Gallade", mechanics: { effectType: "mega_evolution", target: "Gallade", suffix: "-Mega" } },
+  
+  // --- Unova & Kalos ---
+  "Audinite": { shortDesc: "Mega Evolves Audino", mechanics: { effectType: "mega_evolution", target: "Audino", suffix: "-Mega" } },
+  "Diancite": { shortDesc: "Mega Evolves Diancie", mechanics: { effectType: "mega_evolution", target: "Diancie", suffix: "-Mega" } },
+
+  // --- Primal Reversions ---
+  "Blue Orb": { shortDesc: "Primal Reverts Kyogre", mechanics: { effectType: "primal_reversion", target: "Kyogre", suffix: "-Primal" } },
+  "Red Orb": { shortDesc: "Primal Reverts Groudon", mechanics: { effectType: "primal_reversion", target: "Groudon", suffix: "-Primal" } }
+  
 };
 
 // Gia symvatotita me ta imports sou:
