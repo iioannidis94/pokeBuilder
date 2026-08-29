@@ -236,4 +236,23 @@ function saveTeam() {
     localStorage.setItem(MULTI_TEAM_KEY, JSON.stringify(allData));
 }
 
+// --- MEGA EVOLUTION HELPER ---
+// Pairnei to arxiko onoma tou Pokemon kai to Item pou krataei
+// kai epistrefei to Mega onoma an ginetai Mega Evolve, alliws to arxiko.
+window.getEffectivePokemonName = function(baseName, itemName) {
+    if (!baseName) return '';
+    if (!itemName || typeof ITEMS_DATA === 'undefined') return baseName;
+    
+    const itemData = ITEMS_DATA[itemName];
+    if (itemData && itemData.mechanics && 
+       (itemData.mechanics.effectType === 'mega_evolution' || itemData.mechanics.effectType === 'primal_reversion')) {
+        
+        // Ean to target Pokemon tairiazei me auto pou foraei to stone
+        if (baseName === itemData.mechanics.target) {
+            return baseName + itemData.mechanics.suffix; // px: "Charizard" + "-Mega-X" = "Charizard-Mega-X"
+        }
+    }
+    return baseName;
+};
+
 initTeamState();
