@@ -1,6 +1,5 @@
 
 // --- team-core.js : Team State & Memory Management ---
-
 const TEAM_KEY = 'pokedex_my_team_v1';
 const MULTI_TEAM_KEY = 'pokedex_multiteam_v1';
 const BATTLE_CONTEXT_KEY = 'tb_battle_context_v1';
@@ -9,13 +8,14 @@ const TEAM_SIZE = 50;
 const TEAM_STATS = ['HP', 'ATK', 'DEF', 'SPATK', 'SPDEF', 'SPD'];
 const TEAM_NATURES = ['Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish', 'Lax', 'Timid', 'Hasty', 'Serious', 'Jolly', 'Naive', 'Modest', 'Mild', 'Quiet', 'Bashful', 'Rash', 'Calm', 'Gentle', 'Sassy', 'Careful', 'Quirky'];
 
-// Diavazei ta onomata twn items kateu8eian apo to ITEMS_DATA keys (kratame ena default list gia fallback)
+// SVISTA OLA TA ALLA HELD_ITEMS. KRATA MONO AUTO:
 const HELD_ITEMS = typeof ITEMS_DATA !== 'undefined' 
     ? Object.keys(ITEMS_DATA) 
-    : ['Leftovers', 'Choice Band', 'Choice Scarf']; // <--- To fallback an den forto8ei to items.js
+    : ['Leftovers', 'Choice Band', 'Choice Scarf', 'Life Orb', 'Focus Sash']; 
 
-const TEAM_NATURE_EFFECTS = { Lonely: ['ATK', 'DEF'], Brave: ['ATK', 'SPD'], Adamant: ['ATK', 'SPATK'], Naughty: ['ATK', 'SPDEF'], Bold: ['DEF', 'ATK'], Relaxed: ['DEF', 'SPD'], Impish: ['DEF', 'SPATK'], Lax: ['DEF', 'SPDEF'], Timid: ['SPD', 'ATK'], Hasty: ['SPD', 'DEF'], Jolly: ['SPD', 'SPATK'], Naive: ['SPD', 'SPDEF'], Modest: ['SPATK', 'ATK'], Mild: ['SPATK', 'DEF'], Quiet: ['SPATK', 'SPD'], Rash: ['SPATK', 'SPDEF'], Calm: ['SPDEF', 'ATK'], Gentle: ['SPDEF', 'DEF'], Sassy: ['SPDEF', 'SPD'], Careful: ['SPDEF', 'SPATK'] };
-const DEFAULT_HELD_ITEMS = [...HELD_ITEMS];
+const TEAM_NATURE_EFFECTS = { /* ... ta natures ... */ };
+const DEFAULT_HELD_ITEMS = [...HELD_ITEMS]; // Twra auto 8a diavasei sosta thn apo panw lista
+
 const DEFAULT_BATTLE_CONTEXT = {
     weather: 'none',
     terrain: 'none',
