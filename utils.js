@@ -49,7 +49,7 @@ function spriteImg(p, cls = '') {
     // Forms whose PokéAPI numeric IDs do not provide the correct artwork.
     const formSpriteUrls = {
         10027: 'https://play.pokemonshowdown.com/sprites/dex/shaymin-sky.png',
-        10178: 'https://play.pokemonshowdown.com/sprites/dex/yamask-galar.png',
+        10178: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10178.png',
         10179: 'https://play.pokemonshowdown.com/sprites/dex/stunfisk-galar.png'
     };
     if (formSpriteUrls[p.id]) {

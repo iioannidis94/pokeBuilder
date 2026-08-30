@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokebuilder-v9';
+const CACHE_NAME = 'pokebuilder-v10';
 
 const APP_SHELL = [
   './',
