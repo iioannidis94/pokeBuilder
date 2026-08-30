@@ -85,20 +85,14 @@ The goal is not just to list Pokémon, but to help the user:
 
 ## Structure For Easier Future Updates
 
-The project is already in a good split for future maintenance, so no extra redistribution was necessary right now.
-
 - `index.html` → app shell and script loading order
-- `dex.js` → Pokédex view, search, theme handling
-- `utils.js` → type, damage, sprite, and shared helpers
-- `team/` → Team Builder logic split by responsibility:
-  - `team-core.js` → state and persistence
-  - `team-io.js` → import/export, Showdown, share links
-  - `team-ai.js` → Auto-Build scoring
-  - `team-analytics.js` → archetypes, meta checks, damage estimates
-  - `team-ui.js` / `team-oop.js` → UI rendering and opponent tools
+- `features/weakness-counters/` → Pokédex view, search, filters, and theme handling
+- `features/team-builder/` → team state, import/export, AI builder, recommendations, and UI
+- `features/battle-calculator/` → damage analysis, opponent tools, and boss modal
+- `features/trainer-tower/` → Trainer Tower UI and logic
+- `games/` → games hub and each mini-game in its own folder
+- `utils.js` and `styles.css` → shared helpers and styles
 - `data/` → stats, moves, abilities, sprites, type chart data
-
-If the app grows further, the next clean split should be **inside analytics/AI by feature**, not a broad rewrite now.
 
 ---
 

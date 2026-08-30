@@ -45,6 +45,7 @@
     
   <!-- ΚΟΥΜΠΙΑ ΠΛΟΗΣΗΣ (Ομαδοποιημένα δεξιά με .nav-buttons) -->
   <div class="nav-buttons">
+    <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle light and dark theme">🌙</button>
     <button class="teamBtn" id="myTeamBtn" type="button">Team Builder</button>
     <button class="teamBtn dexBtn" id="dexViewBtn" type="button">Weaknesses / Counters</button>
     <button class="teamBtn" id="calcViewBtn" type="button">Battle Calculator</button>
@@ -126,7 +127,7 @@
       <button class="calcClose" id="trainerTowerClose" type="button">Close</button>
     </div>
     <div class="calcViewBody" id="trainerTowerContent" style="padding: 20px; display: block;">
-      <!-- Εδώ κάνει render δυναμικά το UI το script του trainer_tower.js -->
+      <!-- Εδώ κάνει render δυναμικά το UI το script του trainer-tower.js -->
     </div>
   </section>
 </div>
@@ -173,27 +174,27 @@
 <script src="data/move-metadata.js" defer></script>
 <script src="data/bosses.js" defer></script>
 <script src="data/move-evolutions.js" defer></script>
-<script src="data/items.js"></script>
+<script src="data/items.js" defer></script>
 <!-- 4. Βοθητικά εργαλεία (Utils) -->
 <script src="utils.js" defer></script>
 
 <!-- 5. Λογική Ομάδας (Team Core) -->
-<script src="team/team-core.js" defer></script>
+<script src="features/team-builder/team-core.js" defer></script>
 
 <!-- 6. Αρχεία Διεπαφής & Αναλύσεων Ομάδας -->
-<script src="team/team-io.js" defer></script>
-<script src="team/team-ai.js" defer></script>
-<script src="team/team-recommender.js" defer></script>
-<script src="team/team-analytics.js" defer></script>
-<script src="team/team-ui.js" defer></script>
-<script src="team/team-oop.js" defer></script>
-<script src="team/team-bosses.js" defer></script>
+<script src="features/team-builder/team-io.js" defer></script>
+<script src="features/team-builder/team-ai.js" defer></script>
+<script src="features/team-builder/team-recommender.js" defer></script>
+<script src="features/battle-calculator/team-analytics.js" defer></script>
+<script src="features/team-builder/team-ui.js" defer></script>
+<script src="features/battle-calculator/team-oop.js" defer></script>
+<script src="features/battle-calculator/team-bosses.js" defer></script>
 
 <!-- 7. Αποκλειστικό Script για το Trainer Tower -->
-<script src="team/trainer_tower.js" defer></script>
+<script src="features/trainer-tower/trainer-tower.js" defer></script>
 
 <!-- 8. Κύρια λογική Pokédex -->
-<script src="dex.js" defer></script>
+<script src="features/weakness-counters/dex.js" defer></script>
 
 <!-- Εγγραφή Service Worker για λειτουργία Offline (PWA) -->
 <script>

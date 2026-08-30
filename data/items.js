@@ -52,6 +52,10 @@ const ITEMS_DATA = {
     shortDesc: "+100% Atk & SpA (Pikachu only)",
     mechanics: { effectType: "stat_multiplier", stat: ["atk", "spa"], multiplier: 2.0, condition: "species_pikachu" }
   },
+  "Thick Club": {
+    shortDesc: "+100% Atk (Cubone/Marowak only)",
+    mechanics: { effectType: "stat_multiplier", stat: "atk", multiplier: 2.0, condition: "species_cubone_or_marowak" }
+  },
 
   // ==========================================
   // DAMAGE MODIFIERS (Applied to final damage)
@@ -101,6 +105,27 @@ const ITEMS_DATA = {
   "Dragon Fang": { shortDesc: "+20% Dragon Damage", mechanics: { effectType: "type_multiplier", type: "Dragon", multiplier: 1.2 } },
   "Black Glasses": { shortDesc: "+20% Dark Damage", mechanics: { effectType: "type_multiplier", type: "Dark", multiplier: 1.2 } },
   "Metal Coat": { shortDesc: "+20% Steel Damage", mechanics: { effectType: "type_multiplier", type: "Steel", multiplier: 1.2 } },
+  "Fairy Feather": { shortDesc: "+20% Fairy Damage", mechanics: { effectType: "type_multiplier", type: "Fairy", multiplier: 1.2 } },
+
+  // Arceus Plates
+  "Blank Plate": { shortDesc: "+20% Normal Damage", mechanics: { effectType: "type_multiplier", type: "Normal", multiplier: 1.2 } },
+  "Flame Plate": { shortDesc: "+20% Fire Damage", mechanics: { effectType: "type_multiplier", type: "Fire", multiplier: 1.2 } },
+  "Splash Plate": { shortDesc: "+20% Water Damage", mechanics: { effectType: "type_multiplier", type: "Water", multiplier: 1.2 } },
+  "Zap Plate": { shortDesc: "+20% Electric Damage", mechanics: { effectType: "type_multiplier", type: "Electric", multiplier: 1.2 } },
+  "Meadow Plate": { shortDesc: "+20% Grass Damage", mechanics: { effectType: "type_multiplier", type: "Grass", multiplier: 1.2 } },
+  "Icicle Plate": { shortDesc: "+20% Ice Damage", mechanics: { effectType: "type_multiplier", type: "Ice", multiplier: 1.2 } },
+  "Fist Plate": { shortDesc: "+20% Fighting Damage", mechanics: { effectType: "type_multiplier", type: "Fighting", multiplier: 1.2 } },
+  "Toxic Plate": { shortDesc: "+20% Poison Damage", mechanics: { effectType: "type_multiplier", type: "Poison", multiplier: 1.2 } },
+  "Earth Plate": { shortDesc: "+20% Ground Damage", mechanics: { effectType: "type_multiplier", type: "Ground", multiplier: 1.2 } },
+  "Sky Plate": { shortDesc: "+20% Flying Damage", mechanics: { effectType: "type_multiplier", type: "Flying", multiplier: 1.2 } },
+  "Mind Plate": { shortDesc: "+20% Psychic Damage", mechanics: { effectType: "type_multiplier", type: "Psychic", multiplier: 1.2 } },
+  "Insect Plate": { shortDesc: "+20% Bug Damage", mechanics: { effectType: "type_multiplier", type: "Bug", multiplier: 1.2 } },
+  "Stone Plate": { shortDesc: "+20% Rock Damage", mechanics: { effectType: "type_multiplier", type: "Rock", multiplier: 1.2 } },
+  "Spooky Plate": { shortDesc: "+20% Ghost Damage", mechanics: { effectType: "type_multiplier", type: "Ghost", multiplier: 1.2 } },
+  "Draco Plate": { shortDesc: "+20% Dragon Damage", mechanics: { effectType: "type_multiplier", type: "Dragon", multiplier: 1.2 } },
+  "Dread Plate": { shortDesc: "+20% Dark Damage", mechanics: { effectType: "type_multiplier", type: "Dark", multiplier: 1.2 } },
+  "Iron Plate": { shortDesc: "+20% Steel Damage", mechanics: { effectType: "type_multiplier", type: "Steel", multiplier: 1.2 } },
+  "Pixie Plate": { shortDesc: "+20% Fairy Damage", mechanics: { effectType: "type_multiplier", type: "Fairy", multiplier: 1.2 } },
 
   // ==========================================
   // UTILITY / BATTLE MECHANICS

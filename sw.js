@@ -1,10 +1,10 @@
-const CACHE_NAME = 'pokebuilder-v5'; // <--- 1. Αλλαγή έκδοσης σε v3 (ή ό,τι θες)
+const CACHE_NAME = 'pokebuilder-v8';
 
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
-  './dex.js',
+  './features/weakness-counters/dex.js',
   './utils.js',
   './manifest.json',
   './icon.svg',
@@ -18,15 +18,16 @@ const APP_SHELL = [
   './data/move-metadata.js',
   './data/move-evolutions.js',
   './data/bosses.js',
-  './team/team-core.js',
-  './team/trainer_tower.js',
-  './team/team-io.js',
-  './team/team-ai.js',
-  './team/team-recommender.js',
-  './team/team-analytics.js',
-  './team/team-ui.js',
-  './team/team-oop.js',
-  './team/team-bosses.js'
+  './data/items.js',
+  './features/team-builder/team-core.js',
+  './features/team-builder/team-io.js',
+  './features/team-builder/team-ai.js',
+  './features/team-builder/team-recommender.js',
+  './features/battle-calculator/team-analytics.js',
+  './features/team-builder/team-ui.js',
+  './features/battle-calculator/team-oop.js',
+  './features/battle-calculator/team-bosses.js',
+  './features/trainer-tower/trainer-tower.js'
 ];
 
 self.addEventListener('install', event => {

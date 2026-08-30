@@ -46,6 +46,16 @@ function spriteImg(p, cls = '') {
         }
     }
 
+    // Forms whose PokéAPI numeric IDs do not provide the correct artwork.
+    const formSpriteUrls = {
+        10027: 'https://play.pokemonshowdown.com/sprites/dex/shaymin-sky.png',
+        10178: 'https://play.pokemonshowdown.com/sprites/dex/yamask-galar.png',
+        10179: 'https://play.pokemonshowdown.com/sprites/dex/stunfisk-galar.png'
+    };
+    if (formSpriteUrls[p.id]) {
+        return `<img class="${cls}" src="${formSpriteUrls[p.id]}" alt="${p.name}" onerror="this.parentElement.textContent='?'">`;
+    }
+
     // Mega Evolutions + Therians (10019, 10020, 10026, 10228) fix via Showdown
     const isBrokenMega = (p.id >= 10062 && p.id <= 10080) || [10019, 10020, 10026, 10228].includes(p.id);
     if (isBrokenMega) {
