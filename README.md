@@ -219,5 +219,5 @@ That means the next work should mainly improve:
 *   **Type Filter UI Polish:** Update the active state of the type selection buttons in the Weakness/Counters panel. Selected types must have a solid background fill (matching the Optimal Coverage Checklist UI) rather than just a colored outline.
 *   **Special Forms Filtering:** Introduce new filter toggles for special/regional forms (Mega, Alolan, Hisuian, etc.) in the Weakness/Counters panel. These will be aligned to the right side of the UI, keeping the type filters on the left.
 
-*   wrong sprites shaymin sky - stunfisk galar -> yamask galar
-*   natures + - show off and calculate it
+*   wrong sprites -> yamask galar
+
