@@ -173,7 +173,7 @@
             const effectiveNature = (mon.nature && mon.nature !== 'Random') ? mon.nature : '';
 
             const typeChip = type => `<span style="background:${(typeof TC !== 'undefined' && TC[type]) || '#888'}; color:#fff; border-radius:10px; padding:2px 7px; font-size:10px; font-weight:800; text-transform:capitalize;">${type}</span>`;
-            const weaknessChip = (type, multiplier) => `<span style="background:rgba(255,107,107,.14); border:1px solid #ff6b6b; color:#ff8787; border-radius:10px; padding:2px 7px; font-size:10px; font-weight:800; text-transform:capitalize;">${type} ×${multiplier}</span>`;
+            const weaknessChip = (type, multiplier) => `<span style="background:${(typeof TC !== 'undefined' && TC[type]) || '#888'}; color:#fff; border-radius:10px; padding:2px 7px; font-size:10px; font-weight:800; text-transform:capitalize;">${type} ×${multiplier}</span>`;
             const weaknesses = (pokeEntry && Array.isArray(pokeEntry.types) && typeof AT !== 'undefined')
                 ? AT.map(type => {
                     const multiplier = typeof multAtkVsTypes === 'function'
