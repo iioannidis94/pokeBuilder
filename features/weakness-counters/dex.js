@@ -48,10 +48,12 @@ function setTypeButtonState(btn, type, isActive) {
 
 const FORM_FILTER_ALIASES = {
     mega: ['mega'],
+    alola: ['alola', 'alolan'],
     alolan: ['alola', 'alolan'],
     galar: ['galar', 'galarian'],
+    hisui: ['hisui', 'hisuian'],
     hisuian: ['hisui', 'hisuian'],
-    paldea: ['paldea', 'paldean'],
+    paldea: ['paldea', 'paldean', 'paldea-combat-breed', 'paldea-blaze-breed', 'paldea-aqua-breed'],
     therian: ['therian'],
 };
 
@@ -131,10 +133,13 @@ function renderDex() {
 
     // ΝΕΟ: Filter by Special Forms
     if (activeForms.length > 0) {
-        list = list.filter(p => activeForms.some(form => {
-            const suffixes = FORM_FILTER_ALIASES[form] || [form];
-            return suffixes.some(suffix => p.name.includes(`-${suffix}`));
-        }));
+        list = list.filter(p => {
+            const formPart = p.name.includes('-') ? p.name.split('-').slice(1).join('-') : '';
+            return activeForms.some(form => {
+                const suffixes = FORM_FILTER_ALIASES[form] || [form];
+                return suffixes.some(suffix => formPart === suffix || formPart.startsWith(`${suffix}-`));
+            });
+        });
     }
     
     cntEl.innerHTML = `Showing <strong>${list.length}</strong> / ${POKE.length} Pokémon`;

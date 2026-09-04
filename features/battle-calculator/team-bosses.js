@@ -34,11 +34,19 @@
     };
 
     function toMoveKey(move) {
-        return String(move || '').toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-');
+        return String(move || '')
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
     }
 
     function toAbilityKey(ability) {
-        return String(ability || '').toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-');
+        return String(ability || '')
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
     }
 
     function getResolvedDifficultyData(boss, difficulty) {
@@ -46,20 +54,32 @@
         const direct = boss.difficulties[difficulty]?.pokemon;
         if (Array.isArray(direct) && direct.length) return direct;
         if (difficulty === 'easy') {
-            const medium = boss.difficulties.medium?.pokemon;
-            if (Array.isArray(medium) && medium.length) return medium;
-            const hard = boss.difficulties.hard?.pokemon;
-            if (Array.isArray(hard) && hard.length) return hard;
+            const fallbackSource = [boss.difficulties.medium?.pokemon, boss.difficulties.hard?.pokemon]
+                .find(team => Array.isArray(team) && team.length);
+            if (fallbackSource) return fallbackSource.map(mon => ({ ...mon, item: '' }));
         }
         return [];
     }
 
-    function getAvailableDiffKeys(boss) {
+    function isGeneratedEasyTier(boss) {
+        if (!boss || !boss.difficulties) return false;
+        const hasEasy = Array.isArray(boss.difficulties.easy?.pokemon) && boss.difficulties.easy.pokemon.length;
+        const hasFallbackSource = (Array.isArray(boss.difficulties.medium?.pokemon) && boss.difficulties.medium.pokemon.length)
+            || (Array.isArray(boss.difficulties.hard?.pokemon) && boss.difficulties.hard.pokemon.length);
+        return !hasEasy && hasFallbackSource;
+    }
+
+    function getAvailableDiffMeta(boss) {
         if (!boss || !boss.difficulties) return [];
-        const existing = DIFFICULTY_ORDER.filter(d => Array.isArray(boss.difficulties[d]?.pokemon) && boss.difficulties[d].pokemon.length);
-        if (!existing.length) return [];
-        if (!existing.includes('easy')) existing.unshift('easy');
-        return DIFFICULTY_ORDER.filter(d => existing.includes(d));
+        const keys = DIFFICULTY_ORDER.filter(d => !!boss.difficulties[d]);
+        const meta = keys.map(key => ({ key, generated: key === 'easy' && isGeneratedEasyTier(boss) }));
+        if (!keys.length) return [];
+        if (!keys.includes('easy') && isGeneratedEasyTier(boss)) {
+            meta.unshift({ key: 'easy', generated: true });
+        }
+        return DIFFICULTY_ORDER
+            .map(key => meta.find(entry => entry.key === key))
+            .filter(Boolean);
     }
 
     // ─── Open / Close ─────────────────────────────────────────────────────
@@ -102,9 +122,10 @@
         listEl.innerHTML = regionKeys.map(region => {
             const color    = REGION_COLORS[region] || '#aaa';
             const bossRows = grouped[region].map(boss => {
-                const diffKeys   = getAvailableDiffKeys(boss);
-                const diffBadges = diffKeys.map(d =>
-                    `<span style="font-size:10px; color:${DIFFICULTY_COLORS[d]}; background:${DIFFICULTY_COLORS[d]}22; border:1px solid ${DIFFICULTY_COLORS[d]}; border-radius:10px; padding:2px 7px; font-weight:bold;">${d}</span>`
+                const diffMeta   = getAvailableDiffMeta(boss);
+                const diffBadges = diffMeta.map(({ key, generated }) => {
+                    return `<span style="font-size:10px; color:${DIFFICULTY_COLORS[key]}; background:${DIFFICULTY_COLORS[key]}22; border:1px solid ${DIFFICULTY_COLORS[key]}; border-radius:10px; padding:2px 7px; font-weight:bold;">${key}${generated ? '*' : ''}</span>`;
+                }
                 ).join('');
                 const isActive = selectedBossId === boss.id;
                 return `<button class="bossListItem${isActive ? ' active' : ''}" type="button" data-boss-id="${boss.id}" style="
@@ -145,20 +166,21 @@
             return;
         }
 
-        const diffKeys = getAvailableDiffKeys(boss);
+        const diffMeta = getAvailableDiffMeta(boss);
+        const diffKeys = diffMeta.map(d => d.key);
         // Auto-select first available difficulty if none selected or current not available
         if (!selectedDifficulty || !diffKeys.includes(selectedDifficulty)) {
             selectedDifficulty = diffKeys[0] || null;
         }
 
-        const tabsHtml = diffKeys.map(d => {
-            const isActive = d === selectedDifficulty;
-            const color    = DIFFICULTY_COLORS[d];
-            return `<button type="button" data-diff="${d}" style="
+        const tabsHtml = diffMeta.map(({ key, generated }) => {
+            const isActive = key === selectedDifficulty;
+            const color    = DIFFICULTY_COLORS[key];
+            return `<button type="button" data-diff="${key}" style="
                 padding:6px 18px; border-radius:20px; border:1px solid ${isActive ? color : '#555'};
                 background:${isActive ? color + '28' : 'transparent'}; color:${isActive ? color : 'var(--dim)'};
                 cursor:pointer; font-size:12px; font-weight:bold; transition:.15s;
-            ">${DIFFICULTY_LABELS[d]}</button>`;
+            ">${DIFFICULTY_LABELS[key]}${generated ? '*' : ''}</button>`;
         }).join('');
 
         const teamData = selectedDifficulty
@@ -254,6 +276,10 @@
         }).join('');
 
         const loadBtnDisabled = !teamData.length ? 'disabled' : '';
+        const generatedEasyNote = (selectedDifficulty === 'easy' && isGeneratedEasyTier(boss))
+            ? ' <span style="color:#ffc107;">(generated from available roster)</span>'
+            : '';
+
         detailEl.innerHTML = `
             <div style="padding:16px 20px; display:flex; flex-direction:column; gap:14px; height:100%; box-sizing:border-box; overflow-y:auto;">
                 <div>
@@ -269,7 +295,7 @@
                         cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s; white-space:nowrap;
                     ">⚔️ Load as Opponent</button>
                 </div>
-                ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}</div>` : ''}
+                ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}${generatedEasyNote}</div>` : ''}
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     ${teamData.length ? pokemonHtml : '<div style="color:var(--dim); font-size:13px;">No Pokémon available for this difficulty.</div>'}
                 </div>
@@ -320,14 +346,9 @@
             if (!pokeEntry) continue;
 
             // Καθαρισμός κινήσεων: πεζά και παύλες στα κενά
-            let moveNames = (mon.moves || [])
+            const moveNames = (mon.moves || [])
                 .filter(m => m && m.trim())
                 .map(toMoveKey);
-
-            if (!moveNames.length && typeof MOVES_BY_POKEMON !== 'undefined') {
-                const fallbackMoves = MOVES_BY_POKEMON[String(pokeEntry.id)] || [];
-                moveNames = fallbackMoves.slice(0, 4).map(toMoveKey).filter(Boolean);
-            }
 
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
