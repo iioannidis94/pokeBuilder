@@ -265,11 +265,10 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
     </div>`;
 
 // --- FILLED STATE (When you have selected Pokémon) ---
-    // Analytics (Archetype, Speed Control, Meta Threats)
+    // Analytics (Archetype, Speed Control, Live Matchups)
     const archetypeHTML   = (typeof getArchetypeHTML  === 'function') ? getArchetypeHTML(selected)  : '';
     const speedWarnHTML   = (typeof getSpeedWarningHTML === 'function') ? getSpeedWarningHTML(selected) : '';
     const battleContextHTML = (typeof getBattleContextHTML === 'function') ? getBattleContextHTML() : '';
-    const metaThreatHTML  = (typeof getMetaThreatHTML  === 'function') ? getMetaThreatHTML(selected)  : '';
     const matchupSummaryHTML = (typeof getMatchupSummaryHTML === 'function') ? getMatchupSummaryHTML(selected) : '';
     const statCompareHTML = (typeof getStatComparisonHTML === 'function') ? getStatComparisonHTML(selected) : '';
     const teraDefenseHTML = (typeof getTeraDefenseHTML === 'function') ? getTeraDefenseHTML(selected) : '';
@@ -298,7 +297,7 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
         ${leadPairHTML}
         ${scenarioHTML}
 
-        <!-- Stat Comparison (My Team + Opponent Max) -->
+        <!-- Stat Comparison (My Team + Loaded Opponent Setup) -->
         ${statCompareHTML}
 
         <!-- THE NEW BUTTON FOR MOVES (Move Optimizer) -->
@@ -324,9 +323,6 @@ const selectedHtml = `<div class="calcSelected" style="display:flex; flex-wrap:w
             <div><b>Attack struggles</b><div class="calcBadges">${moveTypes.length ? chips(struggle) : '<span class="calcNone">Choose damaging move types first.</span>'}</div></div>
             <div><b>Defensive threats</b><div class="calcBadges">${threatHtml}</div></div>
         </div>
-
-        <!-- Meta Threat Check -->
-        ${metaThreatHTML}
 
         <!-- Tera Defense Impact -->
         ${teraDefenseHTML}

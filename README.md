@@ -48,10 +48,10 @@ The goal is not just to list Pokémon, but to help the user:
 ### Battle Analysis
 - Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
 - Speed-control warnings when a team is too slow
-- Meta Threat Check against the **PRO PvP** 3-tier threat model (Sweepers / Pivots / Walls)
+- Live matchup summaries against the opponent roster you actually load into the calculator
 - Battle context controls for weather, terrain, screens, and hazard chip during damage analysis
 - **Speed Tier Comparison** versus current meta threats
-- **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel, right next to Speed Tier — my team shown in **green** using actual EV/IV/level/nature, opponent shown in **red** at maximum potential (31 IV · 252 EV · Lv 100); switch between stats with pill buttons
+- **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel — my team shown in **green** using actual EV/IV/level/nature/item data, opponent shown in **red** using the exact loaded boss/custom setup when available; switch between stats with pill buttons
 - Assassin / Target Mode with editable opponent team
 - Exact defender setup editor for imported threats (level, nature, IVs, EVs)
 - Opponent Showdown paste support
@@ -220,4 +220,3 @@ That means the next work should mainly improve:
 *   **Special Forms Filtering:** Introduce new filter toggles for special/regional forms (Mega, Alolan, Hisuian, etc.) in the Weakness/Counters panel. These will be aligned to the right side of the UI, keeping the type filters on the left.
 
 *   wrong sprites -> yamask galar
-

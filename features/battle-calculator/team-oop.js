@@ -288,7 +288,7 @@ window.getCombatScore = function(myCandidate, oppP, oppSlotData) {
         if (!(oppP.types || []).includes('flying')) score += 16 * myHazards;
     }
     if (myHazardControl && oppMoves.some(m => HAZARD_MOVES.has(m))) score += 24 * myHazardControl;
-    if (getRecoveryNote && getRecoveryNote(myCandidate.slot)) score += 18;
+    if (getRecoveryNote && getRecoveryNote(myCandidate.slot, myCandidate.p)) score += 18;
     if (getSafeItemName(myCandidate.slot.item) === 'heavy-duty boots' && oppMoves.some(m => HAZARD_MOVES.has(m))) score += 20;
     if (getSafeAbilityName(myCandidate.slot.ability) === 'regenerator') score += 28;
 
