@@ -41,9 +41,8 @@ function setTypeButtonState(btn, type, isActive) {
     const color = TC[type] || '#888';
     btn.classList.toggle('on', isActive);
     btn.style.setProperty('--tf-active', color);
-    btn.style.color = isActive ? '#fff' : color;
-    btn.style.borderColor = color;
-    btn.style.background = isActive ? color : 'transparent';
+    btn.style.setProperty('--tf-color', color);
+    btn.setAttribute('aria-pressed', String(isActive));
 }
 
 const FORM_FILTER_ALIASES = {
@@ -60,8 +59,9 @@ const FORM_FILTER_ALIASES = {
 AT.forEach(t => {
     const b = document.createElement('button');
     b.className = 'tf'; b.textContent = t;
-    b.style.color = TC[t]; b.style.borderColor = TC[t];
     b.dataset.t = t;
+    b.setAttribute('aria-label', `Toggle ${t} type filter`);
+    setTypeButtonState(b, t, false);
     
     b.addEventListener('click', () => {
         if (activeTypes.includes(t)) {
@@ -87,9 +87,11 @@ AT.forEach(t => {
 
 // ΝΕΟ: Event Listeners για τα κουμπιά των Forms
 document.querySelectorAll('.form-btn').forEach(btn => {
+    btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', (e) => {
         const form = e.target.getAttribute('data-form');
         e.target.classList.toggle('on');
+        e.target.setAttribute('aria-pressed', String(e.target.classList.contains('on')));
         
         if (activeForms.includes(form)) {
             activeForms = activeForms.filter(f => f !== form);
@@ -135,9 +137,16 @@ function renderDex() {
     if (activeForms.length > 0) {
         list = list.filter(p => {
             const formPart = p.name.includes('-') ? p.name.split('-').slice(1).join('-') : '';
+            const formSegments = formPart ? formPart.split('-') : [];
             return activeForms.some(form => {
                 const suffixes = FORM_FILTER_ALIASES[form] || [form];
-                return suffixes.some(suffix => formPart === suffix || formPart.startsWith(`${suffix}-`));
+                return suffixes.some(suffix =>
+                    formPart === suffix ||
+                    formPart.startsWith(`${suffix}-`) ||
+                    formPart.endsWith(`-${suffix}`) ||
+                    formPart.includes(`-${suffix}-`) ||
+                    formSegments.includes(suffix)
+                );
             });
         });
     }

@@ -11,6 +11,7 @@
     const DIFFICULTY_ORDER  = ['easy', 'medium', 'hard'];
     const DIFFICULTY_LABELS = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
     const DIFFICULTY_COLORS = { easy: '#63d471', medium: '#ffc107', hard: '#ff6b6b' };
+    const EASY_FALLBACK_SOURCE_ORDER = ['medium', 'hard'];
 
     // EVs applied per difficulty when loading as opponent
     const DIFFICULTY_EVS = {
@@ -49,14 +50,23 @@
             .replace(/^-+|-+$/g, '');
     }
 
+    function normalizeGeneratedEasyTeam(team) {
+        return (team || []).map(mon => ({
+            ...mon,
+            item: '',
+        }));
+    }
+
     function getResolvedDifficultyData(boss, difficulty) {
         if (!boss || !boss.difficulties) return [];
         const direct = boss.difficulties[difficulty]?.pokemon;
         if (Array.isArray(direct) && direct.length) return direct;
         if (difficulty === 'easy') {
-            const fallbackSource = [boss.difficulties.medium?.pokemon, boss.difficulties.hard?.pokemon]
+            // Explicit precedence: use Medium roster first, then Hard, then apply Easy normalization.
+            const fallbackSource = EASY_FALLBACK_SOURCE_ORDER
+                .map(tier => boss.difficulties[tier]?.pokemon)
                 .find(team => Array.isArray(team) && team.length);
-            if (fallbackSource) return fallbackSource.map(mon => ({ ...mon, item: '' }));
+            if (fallbackSource) return normalizeGeneratedEasyTeam(fallbackSource);
         }
         return [];
     }
@@ -71,12 +81,9 @@
 
     function getAvailableDiffMeta(boss) {
         if (!boss || !boss.difficulties) return [];
-        const keys = DIFFICULTY_ORDER.filter(d => !!boss.difficulties[d]);
+        const keys = DIFFICULTY_ORDER.filter(d => getResolvedDifficultyData(boss, d).length);
         const meta = keys.map(key => ({ key, generated: key === 'easy' && isGeneratedEasyTier(boss) }));
         if (!keys.length) return [];
-        if (!keys.includes('easy') && isGeneratedEasyTier(boss)) {
-            meta.unshift({ key: 'easy', generated: true });
-        }
         return DIFFICULTY_ORDER
             .map(key => meta.find(entry => entry.key === key))
             .filter(Boolean);
@@ -363,10 +370,9 @@
 
             // Ability: πεζά και παύλες στα κενά
             const rawAbility = mon.ability || '';
-            const fallbackAbilities = (typeof ABILITIES !== 'undefined' && ABILITIES[String(pokeEntry.id)]) ? ABILITIES[String(pokeEntry.id)] : [];
             const ability = rawAbility
                 ? toAbilityKey(rawAbility)
-                : toAbilityKey(fallbackAbilities[0] || '');
+                : '';
 
             const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
             

@@ -104,10 +104,12 @@ header {
 /* TYPE FILTERS */
 .tf{
   padding:4px 11px;border-radius:50px;border:1.5px solid transparent;
-  cursor:pointer;background:var(--surf2);
+  cursor:pointer;background:transparent;
   font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;
   text-transform:uppercase;letter-spacing:.5px;
-  transition:all .15s;opacity:.4;color:var(--txt);
+  transition:all .15s;opacity:.5;
+  color:var(--tf-color, var(--txt));
+  border-color:var(--tf-color, transparent);
 }
 .tf:hover{opacity:.78}
 .tf.on{
