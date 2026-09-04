@@ -33,6 +33,35 @@
         hard:   '31 IVs per stat · 400 EVs per stat · Items · Battle items are banned (Revives etc.)',
     };
 
+    function toMoveKey(move) {
+        return String(move || '').toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-');
+    }
+
+    function toAbilityKey(ability) {
+        return String(ability || '').toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-');
+    }
+
+    function getResolvedDifficultyData(boss, difficulty) {
+        if (!boss || !boss.difficulties) return [];
+        const direct = boss.difficulties[difficulty]?.pokemon;
+        if (Array.isArray(direct) && direct.length) return direct;
+        if (difficulty === 'easy') {
+            const medium = boss.difficulties.medium?.pokemon;
+            if (Array.isArray(medium) && medium.length) return medium;
+            const hard = boss.difficulties.hard?.pokemon;
+            if (Array.isArray(hard) && hard.length) return hard;
+        }
+        return [];
+    }
+
+    function getAvailableDiffKeys(boss) {
+        if (!boss || !boss.difficulties) return [];
+        const existing = DIFFICULTY_ORDER.filter(d => Array.isArray(boss.difficulties[d]?.pokemon) && boss.difficulties[d].pokemon.length);
+        if (!existing.length) return [];
+        if (!existing.includes('easy')) existing.unshift('easy');
+        return DIFFICULTY_ORDER.filter(d => existing.includes(d));
+    }
+
     // ─── Open / Close ─────────────────────────────────────────────────────
     window.openBossesModal = function () {
         const modal = document.getElementById('bossesOverlay');
@@ -73,7 +102,7 @@
         listEl.innerHTML = regionKeys.map(region => {
             const color    = REGION_COLORS[region] || '#aaa';
             const bossRows = grouped[region].map(boss => {
-                const diffKeys   = DIFFICULTY_ORDER.filter(d => boss.difficulties && boss.difficulties[d]);
+                const diffKeys   = getAvailableDiffKeys(boss);
                 const diffBadges = diffKeys.map(d =>
                     `<span style="font-size:10px; color:${DIFFICULTY_COLORS[d]}; background:${DIFFICULTY_COLORS[d]}22; border:1px solid ${DIFFICULTY_COLORS[d]}; border-radius:10px; padding:2px 7px; font-weight:bold;">${d}</span>`
                 ).join('');
@@ -116,7 +145,7 @@
             return;
         }
 
-        const diffKeys = DIFFICULTY_ORDER.filter(d => boss.difficulties && boss.difficulties[d]);
+        const diffKeys = getAvailableDiffKeys(boss);
         // Auto-select first available difficulty if none selected or current not available
         if (!selectedDifficulty || !diffKeys.includes(selectedDifficulty)) {
             selectedDifficulty = diffKeys[0] || null;
@@ -132,8 +161,8 @@
             ">${DIFFICULTY_LABELS[d]}</button>`;
         }).join('');
 
-        const teamData = selectedDifficulty && boss.difficulties[selectedDifficulty]
-            ? boss.difficulties[selectedDifficulty].pokemon || []
+        const teamData = selectedDifficulty
+            ? getResolvedDifficultyData(boss, selectedDifficulty)
             : [];
 
         const pokemonHtml = teamData.map((mon, idx) => {
@@ -265,7 +294,7 @@
 // ─── Load Boss Team as Opponent ───────────────────────────────────────
     function loadBossAsOpponent(boss, difficulty) {
         if (!boss || !difficulty) return;
-        const teamData = boss.difficulties[difficulty] && boss.difficulties[difficulty].pokemon;
+        const teamData = getResolvedDifficultyData(boss, difficulty);
         if (!teamData || !teamData.length) return;
         if (typeof window.clearOpponents !== 'function' || typeof window.oppTeam === 'undefined') {
             alert('Opponent feature is not available.');
@@ -291,9 +320,14 @@
             if (!pokeEntry) continue;
 
             // Καθαρισμός κινήσεων: πεζά και παύλες στα κενά
-            const moveNames = (mon.moves || [])
+            let moveNames = (mon.moves || [])
                 .filter(m => m && m.trim())
-                .map(m => m.toLowerCase().trim().replace(/\s+/g, '-'));
+                .map(toMoveKey);
+
+            if (!moveNames.length && typeof MOVES_BY_POKEMON !== 'undefined') {
+                const fallbackMoves = MOVES_BY_POKEMON[String(pokeEntry.id)] || [];
+                moveNames = fallbackMoves.slice(0, 4).map(toMoveKey).filter(Boolean);
+            }
 
             const moveTypes  = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].type || '' : ''));
             const moveCats   = moveNames.map(n => (typeof MOVE_INFO !== 'undefined' && MOVE_INFO[n] ? MOVE_INFO[n].cat  || '' : ''));
@@ -308,9 +342,10 @@
 
             // Ability: πεζά και παύλες στα κενά
             const rawAbility = mon.ability || '';
-            const ability = rawAbility 
-                ? rawAbility.toLowerCase().trim().replace(/['.]/g, '').replace(/\s+/g, '-') 
-                : '';
+            const fallbackAbilities = (typeof ABILITIES !== 'undefined' && ABILITIES[String(pokeEntry.id)]) ? ABILITIES[String(pokeEntry.id)] : [];
+            const ability = rawAbility
+                ? toAbilityKey(rawAbility)
+                : toAbilityKey(fallbackAbilities[0] || '');
 
             const ev = { HP: evValue, ATK: evValue, DEF: evValue, SPATK: evValue, SPDEF: evValue, SPD: evValue };
             

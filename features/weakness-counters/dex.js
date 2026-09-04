@@ -37,6 +37,24 @@ const tfEl = document.getElementById('tf');
 let activeTypes = []; // Now an array for 2 types
 let activeForms = []; // NΕΟ: Array για τα Forms
 
+function setTypeButtonState(btn, type, isActive) {
+    const color = TC[type] || '#888';
+    btn.classList.toggle('on', isActive);
+    btn.style.setProperty('--tf-active', color);
+    btn.style.color = isActive ? '#fff' : color;
+    btn.style.borderColor = color;
+    btn.style.background = isActive ? color : 'transparent';
+}
+
+const FORM_FILTER_ALIASES = {
+    mega: ['mega'],
+    alolan: ['alola', 'alolan'],
+    galar: ['galar', 'galarian'],
+    hisuian: ['hisui', 'hisuian'],
+    paldea: ['paldea', 'paldean'],
+    therian: ['therian'],
+};
+
 AT.forEach(t => {
     const b = document.createElement('button');
     b.className = 'tf'; b.textContent = t;
@@ -46,26 +64,18 @@ AT.forEach(t => {
     b.addEventListener('click', () => {
         if (activeTypes.includes(t)) {
             activeTypes = activeTypes.filter(x => x !== t);
-            b.classList.remove('on');
-            b.style.background = 'transparent'; // ΝΕΟ: Επαναφορά χρώματος
-            b.style.color = TC[t];
+            setTypeButtonState(b, t, false);
         } else {
             if (activeTypes.length >= 2) {
                 // Reset αν πάει να βάλει 3ο type
                 tfEl.querySelectorAll('.tf').forEach(x => {
-                    x.classList.remove('on');
-                    x.style.background = 'transparent';
-                    x.style.color = TC[x.dataset.t];
+                    setTypeButtonState(x, x.dataset.t, false);
                 });
                 activeTypes = [t];
-                b.classList.add('on');
-                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
-                b.style.color = '#fff';
+                setTypeButtonState(b, t, true);
             } else {
                 activeTypes.push(t);
-                b.classList.add('on');
-                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
-                b.style.color = '#fff';
+                setTypeButtonState(b, t, true);
             }
         }
         renderDex();
@@ -121,7 +131,10 @@ function renderDex() {
 
     // ΝΕΟ: Filter by Special Forms
     if (activeForms.length > 0) {
-        list = list.filter(p => activeForms.some(form => p.name.includes(`-${form}`)));
+        list = list.filter(p => activeForms.some(form => {
+            const suffixes = FORM_FILTER_ALIASES[form] || [form];
+            return suffixes.some(suffix => p.name.includes(`-${suffix}`));
+        }));
     }
     
     cntEl.innerHTML = `Showing <strong>${list.length}</strong> / ${POKE.length} Pokémon`;

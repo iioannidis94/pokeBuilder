@@ -64,9 +64,9 @@
   <!-- Φίλτρα ειδικών μορφών (Mega, Alola, Galar, κλπ.) -->
   <div class="form-filters">
     <button class="form-btn" data-form="mega">Mega</button>
-    <button class="form-btn" data-form="alola">Alola</button>
+    <button class="form-btn" data-form="alolan">Alolan</button>
     <button class="form-btn" data-form="galar">Galar</button>
-    <button class="form-btn" data-form="hisui">Hisui</button>
+    <button class="form-btn" data-form="hisuian">Hisuian</button>
     <button class="form-btn" data-form="paldea">Paldea</button>
     <button class="form-btn" data-form="therian">Therian</button>
   </div>
@@ -135,11 +135,11 @@
 <!-- PART 4: BOSSES MODAL (Παράθυρο επιλογής Bosses) -->
 <div id="bossesOverlay" aria-hidden="true" style="
     position:fixed; inset:0; z-index:9999;
-    background:#05050c; align-items:center; justify-content:center;
+  background:var(--bg); align-items:center; justify-content:center;
     transition:.2s;
 " role="dialog" aria-modal="true" aria-labelledby="bossesTitle">
   <section style="
-    background:var(--panel); border:1px solid var(--brd); border-radius:16px;
+    background:var(--surf); border:1px solid var(--brd); border-radius:16px;
     width:min(96vw, 900px); max-height:90vh; display:flex; flex-direction:column;
     overflow:hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   ">

@@ -110,7 +110,12 @@ header {
   transition:all .15s;opacity:.4;color:var(--txt);
 }
 .tf:hover{opacity:.78}
-.tf.on{opacity:1}
+.tf.on{
+  opacity:1;
+  color:#fff;
+  border-color:var(--tf-active, var(--yel));
+  background:var(--tf-active, var(--yel));
+}
 
 /* STATS */
 .sb{
@@ -228,7 +233,7 @@ body.team-view .calcOverlay { display: none; }
 
 body.calc-view .sw, body.calc-view .filters-wrapper, body.calc-view .sb, body.calc-view main { display: none !important; }
 body.calc-view .teamOverlay { display: none; }
-body.calc-view .calcOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
+body.calc-view #calcOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
 body.calc-view .calcViewPanel { box-shadow: none; }
 body.calc-view #calcClose { display: none; }
 

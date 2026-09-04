@@ -317,18 +317,20 @@ window.getOpponentUI = function() {
 
             const moveList     = (typeof MOVES_BY_POKEMON !== 'undefined' && MOVES_BY_POKEMON[String(op.id)]) || [];
             const abilityList  = (typeof ABILITIES        !== 'undefined' && ABILITIES[String(op.id)])        || [];
+            const moveOptions = [...new Set([...(moveList || []), ...oppMoveNames.filter(Boolean)])];
+            const abilityOptions = [...new Set([...(abilityList || []), ...(oppAbility ? [oppAbility] : [])])];
 
             const moveSelects = [0, 1, 2, 3].map(mi => {
                 const cur = oppMoveNames[mi] || '';
                 return `<select onchange="setOppMove(${idx},${mi},this.value)" title="Move ${mi+1}" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
                     <option value="">Move ${mi+1}…</option>
-                    ${moveList.map(mn => `<option value="${mn}" ${cur===mn?'selected':''}>${mn.replace(/-/g,' ')}</option>`).join('')}
+                    ${moveOptions.map(mn => `<option value="${mn}" ${cur===mn?'selected':''}>${mn.replace(/-/g,' ')}</option>`).join('')}
                 </select>`;
             }).join('');
 
             const abilitySelect = `<select onchange="setOppAbility(${idx},this.value)" title="Ability" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
                 <option value="">Ability…</option>
-                ${abilityList.map(a => `<option value="${a}" ${oppAbility===a?'selected':''}>${a.replace(/-/g,' ')}</option>`).join('')}
+                ${abilityOptions.map(a => `<option value="${a}" ${oppAbility===a?'selected':''}>${a.replace(/-/g,' ')}</option>`).join('')}
             </select>`;
 
             const itemSelect = `<select onchange="setOppItem(${idx},this.value)" title="Item" style="width:100%; font-size:10px; padding:2px 4px; border-radius:4px; border:1px solid var(--brd); background:var(--bg); color:var(--txt); cursor:pointer;">
