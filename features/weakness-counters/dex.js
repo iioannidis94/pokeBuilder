@@ -37,35 +37,47 @@ const tfEl = document.getElementById('tf');
 let activeTypes = []; // Now an array for 2 types
 let activeForms = []; // NΕΟ: Array για τα Forms
 
+function setTypeButtonState(btn, type, isActive) {
+    const color = TC[type] || '#888';
+    btn.classList.toggle('on', isActive);
+    btn.style.setProperty('--tf-active', color);
+    btn.style.setProperty('--tf-color', color);
+    btn.setAttribute('aria-pressed', String(isActive));
+}
+
+const FORM_FILTER_ALIASES = {
+    mega: ['mega'],
+    alola: ['alola', 'alolan'],
+    alolan: ['alola', 'alolan'],
+    galar: ['galar', 'galarian'],
+    hisui: ['hisui', 'hisuian'],
+    hisuian: ['hisui', 'hisuian'],
+    paldea: ['paldea', 'paldean', 'paldea-combat-breed', 'paldea-blaze-breed', 'paldea-aqua-breed'],
+    therian: ['therian'],
+};
+
 AT.forEach(t => {
     const b = document.createElement('button');
     b.className = 'tf'; b.textContent = t;
-    b.style.color = TC[t]; b.style.borderColor = TC[t];
     b.dataset.t = t;
+    b.setAttribute('aria-label', `Toggle ${t} type filter`);
+    setTypeButtonState(b, t, false);
     
     b.addEventListener('click', () => {
         if (activeTypes.includes(t)) {
             activeTypes = activeTypes.filter(x => x !== t);
-            b.classList.remove('on');
-            b.style.background = 'transparent'; // ΝΕΟ: Επαναφορά χρώματος
-            b.style.color = TC[t];
+            setTypeButtonState(b, t, false);
         } else {
             if (activeTypes.length >= 2) {
                 // Reset αν πάει να βάλει 3ο type
                 tfEl.querySelectorAll('.tf').forEach(x => {
-                    x.classList.remove('on');
-                    x.style.background = 'transparent';
-                    x.style.color = TC[x.dataset.t];
+                    setTypeButtonState(x, x.dataset.t, false);
                 });
                 activeTypes = [t];
-                b.classList.add('on');
-                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
-                b.style.color = '#fff';
+                setTypeButtonState(b, t, true);
             } else {
                 activeTypes.push(t);
-                b.classList.add('on');
-                b.style.background = TC[t]; // ΝΕΟ: Γέμισμα με το χρώμα του type
-                b.style.color = '#fff';
+                setTypeButtonState(b, t, true);
             }
         }
         renderDex();
@@ -75,9 +87,11 @@ AT.forEach(t => {
 
 // ΝΕΟ: Event Listeners για τα κουμπιά των Forms
 document.querySelectorAll('.form-btn').forEach(btn => {
+    btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', (e) => {
         const form = e.target.getAttribute('data-form');
         e.target.classList.toggle('on');
+        e.target.setAttribute('aria-pressed', String(e.target.classList.contains('on')));
         
         if (activeForms.includes(form)) {
             activeForms = activeForms.filter(f => f !== form);
@@ -121,7 +135,20 @@ function renderDex() {
 
     // ΝΕΟ: Filter by Special Forms
     if (activeForms.length > 0) {
-        list = list.filter(p => activeForms.some(form => p.name.includes(`-${form}`)));
+        list = list.filter(p => {
+            const formPart = p.name.includes('-') ? p.name.split('-').slice(1).join('-') : '';
+            const formSegments = formPart ? formPart.split('-') : [];
+            return activeForms.some(form => {
+                const suffixes = FORM_FILTER_ALIASES[form] || [form];
+                return suffixes.some(suffix =>
+                    formPart === suffix ||
+                    formPart.startsWith(`${suffix}-`) ||
+                    formPart.endsWith(`-${suffix}`) ||
+                    formPart.includes(`-${suffix}-`) ||
+                    formSegments.includes(suffix)
+                );
+            });
+        });
     }
     
     cntEl.innerHTML = `Showing <strong>${list.length}</strong> / ${POKE.length} Pokémon`;

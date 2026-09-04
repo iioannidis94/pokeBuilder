@@ -104,13 +104,20 @@ header {
 /* TYPE FILTERS */
 .tf{
   padding:4px 11px;border-radius:50px;border:1.5px solid transparent;
-  cursor:pointer;background:var(--surf2);
+  cursor:pointer;background:transparent;
   font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;
   text-transform:uppercase;letter-spacing:.5px;
-  transition:all .15s;opacity:.4;color:var(--txt);
+  transition:all .15s;opacity:.5;
+  color:var(--tf-color, var(--txt));
+  border-color:var(--tf-color, transparent);
 }
 .tf:hover{opacity:.78}
-.tf.on{opacity:1}
+.tf.on{
+  opacity:1;
+  color:#fff;
+  border-color:var(--tf-active, var(--yel));
+  background:var(--tf-active, var(--yel));
+}
 
 /* STATS */
 .sb{
@@ -228,7 +235,7 @@ body.team-view .calcOverlay { display: none; }
 
 body.calc-view .sw, body.calc-view .filters-wrapper, body.calc-view .sb, body.calc-view main { display: none !important; }
 body.calc-view .teamOverlay { display: none; }
-body.calc-view .calcOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
+body.calc-view #calcOverlay { position: relative; inset: auto; display: block; z-index: 1; background: transparent; backdrop-filter: none; padding: 0; overflow: visible; }
 body.calc-view .calcViewPanel { box-shadow: none; }
 body.calc-view #calcClose { display: none; }
 
