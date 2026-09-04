@@ -467,6 +467,37 @@ function getEffectivePokemonForItem(pokemon, slot) {
     return POKE.find(entry => entry.name === effectiveName) || pokemon;
 }
 
+function getResolvedBaseStats(pokemon, slot) {
+    const effectivePokemon = getEffectivePokemonForItem(pokemon, slot);
+    const baseStats = (typeof BASE_STATS !== 'undefined')
+        ? (BASE_STATS[effectivePokemon.id] || BASE_STATS[effectivePokemon.name] || BASE_STATS[pokemon?.id] || BASE_STATS[pokemon?.name] || {})
+        : {};
+    return { effectivePokemon, baseStats };
+}
+
+function getLoadedOpponentEntries() {
+    if (typeof window === 'undefined' || !Array.isArray(window.oppTeam) || typeof POKE === 'undefined') return [];
+    return window.oppTeam.map(opp => {
+        const slot = (typeof opp === 'object' && opp) ? opp : { id: opp };
+        const pokemon = POKE.find(p => p.id === slot.id);
+        if (!pokemon) return null;
+        return {
+            p: getEffectivePokemonForItem(pokemon, slot),
+            slot: Object.assign({
+                level: 50,
+                nature: '',
+                ability: '',
+                item: '',
+                iv: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
+                ev: { HP: '', ATK: '', DEF: '', SPATK: '', SPDEF: '', SPD: '' },
+                moveNames: [],
+                moves: [],
+                moveCats: []
+            }, slot)
+        };
+    }).filter(Boolean);
+}
+
 function itemConditionMatches(condition, pokemon) {
     if (!condition || condition === 'nfe_only') return true;
     const name = String(pokemon?.name || '').toLowerCase();
@@ -620,8 +651,33 @@ function getHazardChipPct(poke, side, slotData) {
     return Math.min(99, Math.round(pct * 10) / 10);
 }
 
-function getRecoveryNote(slot) {
+function getItemEndTurnHpDelta(slot, pokemon, maxHp) {
+    const mechanics = getItemData(slot?.item)?.mechanics;
+    if (!mechanics || !maxHp) return 0;
+    if (mechanics.effectType === 'heal' && mechanics.trigger === 'end_turn') {
+        return Math.floor(maxHp * (Number(mechanics.modifier) || 0));
+    }
+    if (mechanics.effectType === 'heal_or_damage' && mechanics.trigger === 'end_turn') {
+        const isPoisonType = (pokemon?.types || []).includes('poison');
+        const modifier = isPoisonType ? Number(mechanics.modifierPoison) || 0 : Number(mechanics.modifierOther) || 0;
+        return Math.floor(maxHp * modifier);
+    }
+    return 0;
+}
+
+function getItemAttackRecoil(slot, maxHp) {
+    const mechanics = getItemData(slot?.item)?.mechanics;
+    if (!mechanics?.recoilHp || !maxHp) return 0;
+    return Math.round(maxHp * (Number(mechanics.recoilHp) || 0));
+}
+
+function getRecoveryNote(slot, pokemon) {
     const item = getSafeItemName(slot?.item);
+    if (item === 'black sludge') {
+        return (pokemon?.types || []).includes('poison')
+            ? 'Black Sludge recovery improves longer exchanges.'
+            : 'Black Sludge damages non-Poison holders each turn.';
+    }
     if (!RECOVERY_ITEMS.has(item)) return '';
     if (item === 'shell bell') return 'Shell Bell recovery can soften recoil trades.';
     return `${String(slot.item)} recovery improves longer exchanges.`;
@@ -766,9 +822,7 @@ function estimateDamagePct(atkMon, moveInfo, defPoke, defLevel, defSlotData) {
     const hasSashOrSturdy = (typeof OHKO_BLOCKERS !== 'undefined' && OHKO_BLOCKERS.has(defAbility)) ||
                             (typeof OHKO_BLOCKER_ITEMS !== 'undefined' && OHKO_BLOCKER_ITEMS.has(defItem));
 
-    // Leftovers / Black Sludge: heals 1/16 HP per turn
-    let recoveryPerTurn = 0;
-    if (defItem === 'leftovers' || defItem === 'black sludge') recoveryPerTurn = Math.floor(defHP / 16);
+    const recoveryPerTurn = getItemEndTurnHpDelta(defSlotData, effectiveDefPokemon, defHP);
     // Express recovery-adjusted number of hits to KO
     let hitsToKO = minPct > 0 ? Math.ceil(100 / minPct) : null;
     if (recoveryPerTurn > 0 && hitsToKO && hitsToKO > 1) {
@@ -833,9 +887,9 @@ function getBestDamageEstimate(atkMon, defPoke, defSlotData) {
 
 /**
  * Calculates final battle stats for a Pokémon given base stats, IV, EV, level, nature.
- * For opponents pass iv=31, ev=252, level=100, nature=null.
  */
-function calcFinalStats(bs, iv, ev, level, nature) {
+function calcFinalStats(bs, iv, ev, level, nature, options) {
+    options = options || {};
     const lv = Number(level) || 100;
     const statKeys = [
         { key: 'hp',  label: 'HP',   mapKey: 'HP'    },
@@ -857,6 +911,7 @@ function calcFinalStats(bs, iv, ev, level, nature) {
         } else {
             const nat = getNatureMultiplier(nature, mapKey);
             final = Math.floor((rawBase + 5) * nat);
+            final = Math.floor(final * getItemStatMultiplier(options.slot, options.pokemon, key));
         }
         result[label] = final;
     });
@@ -876,23 +931,17 @@ function getStatComparisonHTML(selected) {
 
     // Compute my team final stats
     const myRows = selected.map(mon => {
-        const bs = (typeof BASE_STATS !== 'undefined' && BASE_STATS[mon.p.id]) || {};
-        const stats = calcFinalStats(bs, mon.slot.iv || {}, mon.slot.ev || {}, mon.slot.level, mon.slot.nature);
-        return { name: mon.p.name.replace(/-/g, ' '), stats, isOpp: false };
+        const { effectivePokemon, baseStats } = getResolvedBaseStats(mon.p, mon.slot);
+        const stats = calcFinalStats(baseStats, mon.slot.iv || {}, mon.slot.ev || {}, mon.slot.level, mon.slot.nature, { slot: mon.slot, pokemon: effectivePokemon });
+        return { name: effectivePokemon.name.replace(/-/g, ' '), stats, isOpp: false, level: Number(mon.slot.level) || 100, item: mon.slot.item || '', nature: mon.slot.nature || '' };
     });
 
-    // Compute opponent team at max (31 IV, 252 EV, Lv 100)
-    const oppRows = [];
-    if (typeof window !== 'undefined' && window.oppTeam && window.oppTeam.length) {
-        window.oppTeam.forEach(opp => {
-            const opId = typeof opp === 'number' ? opp : opp.id;
-            const op   = (typeof POKE !== 'undefined') ? POKE.find(p => p.id === opId) : null;
-            if (!op) return;
-            const bs   = (typeof BASE_STATS !== 'undefined' && BASE_STATS[op.id]) || {};
-            const stats = calcFinalStats(bs, 31, 252, 100, null);
-            oppRows.push({ name: op.name.replace(/-/g, ' '), stats, isOpp: true });
-        });
-    }
+    // Compute opponent team from the currently loaded setup.
+    const oppRows = getLoadedOpponentEntries().map(opp => {
+        const { effectivePokemon, baseStats } = getResolvedBaseStats(opp.p, opp.slot);
+        const stats = calcFinalStats(baseStats, opp.slot.iv || {}, opp.slot.ev || {}, opp.slot.level, opp.slot.nature, { slot: opp.slot, pokemon: effectivePokemon });
+        return { name: effectivePokemon.name.replace(/-/g, ' '), stats, isOpp: true, level: Number(opp.slot.level) || 50, item: opp.slot.item || '', nature: opp.slot.nature || '' };
+    });
 
     const allRows = [...myRows, ...oppRows];
     const maxVal  = Math.max(...allRows.map(r => r.stats[activeStat] || 0), 1);
@@ -912,7 +961,7 @@ function getStatComparisonHTML(selected) {
         const isBest = !row.isOpp && val === myMax && myMax > 0;
         const rowColor = row.isOpp ? '#ff6b6b' : '#63d471';
         const label = row.isOpp
-            ? `<span title="Max stats (31 IV / 252 EV / Lv 100)" style="font-size:9px; background:rgba(255,107,107,0.15); border:1px solid #ff6b6b; color:#ff6b6b; border-radius:2px; padding:0 4px; margin-left:3px;">MAX</span>`
+            ? `<span title="Loaded opponent setup${row.item ? ` · ${row.item}` : ''}${row.nature ? ` · ${row.nature}` : ''}" style="font-size:9px; background:rgba(255,107,107,0.15); border:1px solid #ff6b6b; color:#ff6b6b; border-radius:2px; padding:0 4px; margin-left:3px;">Lv${row.level}</span>`
             : (isBest ? `<span style="font-size:9px; background:#63d47122; border:1px solid #63d471; color:#63d471; border-radius:2px; padding:0 4px; margin-left:3px;">BEST</span>` : '');
         return `<div class="statBar">
             <span style="color:${rowColor}; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform:capitalize;">${row.name}${label}</span>
@@ -931,7 +980,7 @@ function getStatComparisonHTML(selected) {
         <div style="display:flex; flex-wrap:wrap; gap:4px; margin:8px 0 10px;">${buttons}</div>
         <div style="display:flex; flex-direction:column; gap:6px;">${mySection}</div>
         ${oppSection}
-        ${oppRows.length ? `<p style="margin:8px 0 0; font-size:10px; color:var(--dim);">🔴 Opponent stats shown at maximum (31 IV · 252 EV · Lv 100) for reference.</p>` : ''}
+        ${oppRows.length ? `<p style="margin:8px 0 0; font-size:10px; color:var(--dim);">🔴 Opponent stats use the exact loaded setup when available, including level, IVs, EVs, nature, Mega/Primal item forms, and item-based stat boosts.</p>` : ''}
     </div>`;
 }
 
@@ -1016,15 +1065,35 @@ function getBattleContextHTML() {
 
 function getMatchupSummaryHTML(selected) {
     if (!selected || !selected.length) return '';
-    const threats = getActiveThreats();
-    const meta = getMetaThreatAnalysis(selected, threats);
+    const opponents = getLoadedOpponentEntries();
     const teamWeaknesses = AT.map(t => ({
         type: t,
         count: selected.filter(x => getDynamicMult(t, x.p.types, x.slot.ability) > 1).length
     })).filter(x => x.count >= Math.max(2, Math.ceil(selected.length / 2))).sort((a, b) => b.count - a.count);
     const notes = [];
-    const uncovered = meta ? meta.results.filter(r => r.coverage < 2).slice(0, 3) : [];
-    if (uncovered.length) notes.push(`Coverage is thin into ${uncovered.map(x => x.name.replace(/-/g, ' ')).join(', ')}.`);
+    if (opponents.length && typeof getBestDamageEstimate === 'function') {
+        const hardTargets = [];
+        const dangerTargets = [];
+        const pressureTargets = [];
+        opponents.forEach(opp => {
+            let bestOutgoing = null;
+            let bestIncoming = null;
+            selected.forEach(mon => {
+                const outgoing = getBestDamageEstimate(mon, opp.p, Object.assign({}, opp.slot, { __side: 'opponent' }));
+                if (outgoing && (!bestOutgoing || outgoing.maxPct > bestOutgoing.maxPct)) bestOutgoing = outgoing;
+                if (opp.slot.moveNames?.length) {
+                    const incoming = getBestDamageEstimate({ p: opp.p, slot: opp.slot }, mon.p, Object.assign({}, mon.slot, { __side: 'me' }));
+                    if (incoming && (!bestIncoming || incoming.maxPct > bestIncoming.maxPct)) bestIncoming = incoming;
+                }
+            });
+            if (!bestOutgoing || bestOutgoing.maxPct < 50) hardTargets.push(opp.p.name.replace(/-/g, ' '));
+            if (bestIncoming && bestIncoming.minPct >= 75) dangerTargets.push(opp.p.name.replace(/-/g, ' '));
+            if (bestOutgoing && bestOutgoing.minPct >= 100) pressureTargets.push(opp.p.name.replace(/-/g, ' '));
+        });
+        if (pressureTargets.length) notes.push(`You have immediate KO pressure into ${pressureTargets.slice(0, 3).join(', ')}.`);
+        if (hardTargets.length) notes.push(`Breaking ${hardTargets.slice(0, 3).join(', ')} may require better coverage, hazards, or chip damage first.`);
+        if (dangerTargets.length) notes.push(`${dangerTargets.slice(0, 3).join(', ')} can hit back very hard if they move first or switch in safely.`);
+    }
     if (teamWeaknesses.length) notes.push(`Multiple selected Pokémon still fold to ${teamWeaknesses.slice(0, 3).map(x => x.type).join(', ')} attacks.`);
     if (selected.filter(x => (x.slot.moveNames || []).some(m => ['recover','roost','slack-off','soft-boiled','moonlight','wish'].includes(String(m).toLowerCase()))).length < 2) {
         notes.push('Long-game recovery is limited, so bulky pivots can outlast repeated trades.');
@@ -1035,7 +1104,9 @@ function getMatchupSummaryHTML(selected) {
     if (selected.filter(x => (x.slot.moveNames || []).some(m => ['stealth-rock','spikes','toxic-spikes','sticky-web'].includes(String(m).toLowerCase()))).length === 0) {
         notes.push('Hazard pressure is light, so forced switches are not punished enough yet.');
     }
-    if (!notes.length) notes.push('The selected core looks balanced for the current meta snapshot.');
+    if (!notes.length) notes.push(opponents.length
+        ? 'The selected core looks well prepared for the currently loaded opponent roster.'
+        : 'The selected core looks balanced based on its current setup.');
 
     return `<div style="margin:10px 0; padding:12px 14px; background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.35); border-radius:8px;">
         <strong style="color:#ff8080; font-size:13px;">🧠 Matchup Summary</strong>
@@ -1469,21 +1540,22 @@ function getLeadPairHTML(selected) {
 
 /**
  * 3-turn scenario simulator.
- * Shows a simple preview of HP remaining after 3 turns for the selected Pokémon vs. their best opponent threat.
- * Interactive: the user can pick which two Pokémon to compare.
+ * Shows a simple preview of HP remaining after 3 turns for the first selected Pokémon
+ * against the current opponent setup when one exists.
  */
 function getScenarioSimulatorHTML(selected) {
-    if (!selected || selected.length < 2) return '';
+    if (!selected || !selected.length) return '';
 
     const color = '#ff6b6b';
+    const opponents = getLoadedOpponentEntries();
 
-    // Build a simplified 3-turn simulation for the first two selected Pokémon
     const attacker = selected[0];
-    const defender = selected[1];
+    const defender = opponents[0] || selected[1];
+    if (!defender) return '';
 
     const ctx = getBattleContext();
-    const atkBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[attacker.p.id]) || { hp: 80, atk: 80, spa: 80, spe: 50 };
-    const defBs  = (typeof BASE_STATS !== 'undefined' && BASE_STATS[defender.p.id]) || { hp: 80, atk: 80, spa: 80, spe: 50 };
+    const { effectivePokemon: effectiveAttacker, baseStats: atkBs } = getResolvedBaseStats(attacker.p, attacker.slot);
+    const { effectivePokemon: effectiveDefender, baseStats: defBs } = getResolvedBaseStats(defender.p, defender.slot);
     const atkLv  = Number(attacker.slot.level) || 50;
     const defLv  = Number(defender.slot.level) || 50;
 
@@ -1501,17 +1573,14 @@ function getScenarioSimulatorHTML(selected) {
     const defDmg     = Math.round(atkMaxHP * defDmgPct / 100);
 
     // Per-turn recovery (Leftovers / Black Sludge only — Sitrus Berry is one-time, handled as 0 here)
-    const atkItem = String(attacker.slot.item || '').toLowerCase();
-    const defItem = String(defender.slot.item || '').toLowerCase();
-    const atkRec  = (atkItem === 'leftovers' || atkItem === 'black sludge') ? Math.floor(atkMaxHP / 16) : 0;
-    const defRec  = (defItem === 'leftovers' || defItem === 'black sludge') ? Math.floor(defMaxHP / 16) : 0;
-    // Life Orb recoil on each hit (10% of user's max HP)
-    const atkRecoil = (atkItem === 'life orb') ? Math.round(atkMaxHP * 0.1) : 0;
-    const defRecoil = (defItem === 'life orb') ? Math.round(defMaxHP * 0.1) : 0;
+    const atkRec  = getItemEndTurnHpDelta(attacker.slot, effectiveAttacker, atkMaxHP);
+    const defRec  = getItemEndTurnHpDelta(defender.slot, effectiveDefender, defMaxHP);
+    const atkRecoil = getItemAttackRecoil(attacker.slot, atkMaxHP);
+    const defRecoil = getItemAttackRecoil(defender.slot, defMaxHP);
 
     // Speed: who goes first?
-    const atkSpe = Number(atkBs.spe || atkBs.spd || 50);
-    const defSpe = Number(defBs.spe || defBs.spd || 50);
+    const atkSpe = getEffectiveSpeedStat(Number(atkBs.spe || atkBs.spd || 50), attacker.slot, { side: 'me', types: effectiveAttacker.types, defaultLevel: atkLv });
+    const defSpe = getEffectiveSpeedStat(Number(defBs.spe || defBs.spd || 50), defender.slot, { side: 'opponent', types: effectiveDefender.types, defaultLevel: defLv });
     const atkGoesFirst = ctx.trickRoom ? atkSpe < defSpe : atkSpe >= defSpe;
 
     let atkHP = atkMaxHP, defHP = defMaxHP;
@@ -1555,10 +1624,10 @@ function getScenarioSimulatorHTML(selected) {
     const outcome = turns[turns.length - 1];
     let resultLabel = '';
     if (outcome.atkPct === 0 && outcome.defPct === 0) resultLabel = '⚡ Speed tie / double KO likely';
-    else if (outcome.atkPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> KO'd`;
-    else if (outcome.defPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${defender.p.name.replace(/-/g,' ')}</b> KO'd`;
-    else if (outcome.atkPct < outcome.defPct) resultLabel = `📉 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> trading worse`;
-    else if (outcome.defPct < outcome.atkPct) resultLabel = `📈 <b style="color:var(--txt); text-transform:capitalize;">${attacker.p.name.replace(/-/g,' ')}</b> winning the trade`;
+    else if (outcome.atkPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${effectiveAttacker.name.replace(/-/g,' ')}</b> KO'd`;
+    else if (outcome.defPct === 0) resultLabel = `💀 <b style="color:var(--txt); text-transform:capitalize;">${effectiveDefender.name.replace(/-/g,' ')}</b> KO'd`;
+    else if (outcome.atkPct < outcome.defPct) resultLabel = `📉 <b style="color:var(--txt); text-transform:capitalize;">${effectiveAttacker.name.replace(/-/g,' ')}</b> trading worse`;
+    else if (outcome.defPct < outcome.atkPct) resultLabel = `📈 <b style="color:var(--txt); text-transform:capitalize;">${effectiveAttacker.name.replace(/-/g,' ')}</b> winning the trade`;
     else resultLabel = '↔ Even trade';
 
     const hpBar = (pct) => {
@@ -1573,8 +1642,11 @@ function getScenarioSimulatorHTML(selected) {
             ${hpBar(t.defPct)} <span style="color:var(--txt); font-weight:bold;">${t.defPct}%</span>
         </div>`).join('');
 
-    const atkName = attacker.p.name.replace(/-/g, ' ');
-    const defName = defender.p.name.replace(/-/g, ' ');
+    const atkName = effectiveAttacker.name.replace(/-/g, ' ');
+    const defName = effectiveDefender.name.replace(/-/g, ' ');
+    const footerNote = opponents.length
+        ? 'Based on the first selected calc Pokémon versus the first loaded opponent.'
+        : 'Based on the first two selected calc Pokémon.';
 
     return `<div style="margin:10px 0; padding:12px 14px; background:${color}0d; border:1px solid ${color}44; border-radius:8px;">
         <strong style="color:${color}; font-size:13px;">🔮 3-Turn Scenario Preview</strong>
@@ -1584,6 +1656,6 @@ function getScenarioSimulatorHTML(selected) {
         </div>
         ${turnRows}
         <div style="margin-top:8px; font-size:11px; color:var(--dim);">${resultLabel}</div>
-        <p style="font-size:10px; color:var(--dim); margin:4px 0 0;">Based on best equipped moves vs slot 1 & 2. Select different Pokémon to change preview.</p>
+        <p style="font-size:10px; color:var(--dim); margin:4px 0 0;">${footerNote}</p>
     </div>`;
 }

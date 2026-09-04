@@ -48,11 +48,13 @@ The goal is not just to list Pokémon, but to help the user:
 ### Battle Analysis
 - Archetype recognition for Rain, Sun, Sand, Snow, Trick Room, Tailwind
 - Speed-control warnings when a team is too slow
-- Meta Threat Check against the **PRO PvP** 3-tier threat model (Sweepers / Pivots / Walls)
+- Live matchup summaries against the opponent roster you actually load into the calculator
 - Battle context controls for weather, terrain, screens, and hazard chip during damage analysis
 - **Speed Tier Comparison** versus current meta threats
-- **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel, right next to Speed Tier — my team shown in **green** using actual EV/IV/level/nature, opponent shown in **red** at maximum potential (31 IV · 252 EV · Lv 100); switch between stats with pill buttons
+- **Stat Comparison** panel: HP / ATK / DEF / SpA / SpD / SPE bars displayed at the top of the Battle Calculate panel — my team shown in **green** using actual EV/IV/level/nature/item data, opponent shown in **red** using the exact loaded boss/custom setup when available; switch between stats with pill buttons
 - Assassin / Target Mode with editable opponent team
+- Boss loader applies difficulty-based setups correctly (**Easy 12 IV / 0 EV**, **Medium 22 IV / 252 EV**, **Hard 31 IV / 400 EV**)
+- Boss modal uses a solid themed background and supports generated Easy tiers when only Medium/Hard data exists
 - Exact defender setup editor for imported threats (level, nature, IVs, EVs)
 - Opponent Showdown paste support
 - Best-counter suggestions using moves, typings, and context
@@ -211,13 +213,54 @@ That means the next work should mainly improve:
 
 ## To Be Updated (Upcoming Fixes & Features)
 
-*   **Battle Calculator Cleanup:** Remove the duplicate "Trainer Tower" section from the Battle Calculator panel, as it has been relocated to a dedicated button.
-*   **Boss Modal UI & Data:** 
-    *   Change the Bosses modal background to be completely solid (using the app's standard theme colors) to prevent background bleed-through.
-    *   Add an "Easy" difficulty tier to complement the existing Medium and Hard tiers.
-*   **Opponent Panel Data Fetching:** Ensure that when a Boss is loaded into the opponent panel, their specific moves and abilities are automatically fetched and displayed (if available in the data).
 *   **Type Filter UI Polish:** Update the active state of the type selection buttons in the Weakness/Counters panel. Selected types must have a solid background fill (matching the Optimal Coverage Checklist UI) rather than just a colored outline.
 *   **Special Forms Filtering:** Introduce new filter toggles for special/regional forms (Mega, Alolan, Hisuian, etc.) in the Weakness/Counters panel. These will be aligned to the right side of the UI, keeping the type filters on the left.
 
 *   wrong sprites -> yamask galar
 
+## Next Steps — Toward a Full Battle Guide
+
+To turn the Battle Calculator into a much more complete **battle guide** that helps with real Pokémon fights step by step, the best next updates are:
+
+1. **Status tracking on both sides**
+   - Burn, poison, toxic, sleep, freeze, paralysis, confusion, and flinch impact
+   - Status-aware damage, recovery, speed, and turn-loss guidance
+
+2. **Field and side-condition depth**
+   - Aurora Veil, Safeguard, Mist, Substitute, Leech Seed, Tailwind turn counts
+   - Toxic Spikes absorption, Sticky Web speed drops, screen duration with Light Clay
+
+3. **Turn-order accuracy**
+   - Priority brackets fully applied
+   - Choice Scarf vs Tailwind vs paralysis vs Trick Room ordering in every preview
+   - Speed ties and dynamic order warnings
+
+4. **Setup and stat-stage modeling**
+   - Swords Dance, Nasty Plot, Dragon Dance, Calm Mind, Bulk Up, Iron Defense, Shell Smash
+   - Intimidate drops, Defiant/Competitive punish, Clear Amulet interaction
+
+5. **Ability trigger coverage**
+   - Sturdy, Multiscale, Regenerator, Unaware, Protosynthesis, Quark Drive, Mold Breaker
+   - Weather/terrain/entry/KO-triggered abilities reflected in summaries
+
+6. **Item trigger coverage**
+   - Focus Sash timing, berries, Weakness Policy, White Herb, Flame Orb, Toxic Orb
+   - Consumable-item state in scenario previews and matchup guidance
+
+7. **Move-effect intelligence**
+   - Protect / Detect / King's Shield / Sucker Punch mind-games
+   - Fake Out usability, spread targeting, pivot sequencing, recovery timing
+   - Secondary effects and proc-risk guidance
+
+8. **Battle-plan recommendations**
+   - Best lead into the loaded opponent team
+   - Best switch-ins per threat
+   - Safer attack / pivot / setup recommendation for the current board state
+
+9. **Multi-turn simulation upgrade**
+   - Replace the basic 3-turn preview with a more realistic turn engine
+   - Include recovery, recoil, hazards, status chip, and consumables each turn
+
+10. **Format-aware presets**
+    - PRO PvP, Singles, Doubles, VGC presets
+    - Different level caps, item rules, and common battle assumptions per format

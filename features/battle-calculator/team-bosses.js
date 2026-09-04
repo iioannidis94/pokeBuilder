@@ -22,15 +22,15 @@
 
     // Default IVs applied to every stat when loading a Boss as an opponent.
     const DIFFICULTY_IVS = {
-        easy:   10,
-        medium: 25,
+        easy:   12,
+        medium: 22,
         hard:   31,
     };
 
     // Human-readable rules shown in the detail panel per difficulty
     const DIFFICULTY_RULES = {
-        easy:   '10 IVs per stat · No EVs · No items · Weakened moves · No win-streak bonus',
-        medium: '25 IVs per stat · 252 EVs per stat · Items',
+        easy:   '12 IVs per stat · No EVs · No items · Weakened moves · No win-streak bonus',
+        medium: '22 IVs per stat · 252 EVs per stat · Items',
         hard:   '31 IVs per stat · 400 EVs per stat · Items · Battle items are banned (Revives etc.)',
     };
 
