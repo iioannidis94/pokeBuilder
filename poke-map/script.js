@@ -1470,17 +1470,34 @@ function renderUsefulRoutes(kind) {
     if (!panel) return;
 
     const entries = getUsefulRouteEntries(kind);
+    panel.innerHTML = '';
     if (!entries.length) {
-        panel.innerHTML = `<div class="useful-route-empty">Waiting for ${kind} data…</div>`;
+        const emptyState = document.createElement('div');
+        emptyState.className = 'useful-route-empty';
+        emptyState.textContent = `Waiting for ${kind} data…`;
+        panel.appendChild(emptyState);
         return;
     }
 
-    panel.innerHTML = entries.map(entry => `
-        <button class="useful-route-item" type="button" data-route-entry="${encodeURIComponent(JSON.stringify(entry))}">
-            <span class="useful-route-name">${entry.name}</span>
-            <span class="useful-route-meta">${entry.type === 'boss' ? `${entry.count} · ${entry.available ? 'Available' : 'Cooldown'}` : entry.count}</span>
-        </button>
-    `).join('');
+    entries.forEach(entry => {
+        const button = document.createElement('button');
+        button.className = 'useful-route-item';
+        button.type = 'button';
+        button.dataset.routeEntry = encodeURIComponent(JSON.stringify(entry));
+
+        const name = document.createElement('span');
+        name.className = 'useful-route-name';
+        name.textContent = entry.name;
+
+        const meta = document.createElement('span');
+        meta.className = 'useful-route-meta';
+        meta.textContent = entry.type === 'boss'
+            ? `${entry.count} · ${entry.available ? 'Available' : 'Cooldown'}`
+            : entry.count;
+
+        button.append(name, meta);
+        panel.appendChild(button);
+    });
 }
 
 window.applyWorldMapQueryState = function applyWorldMapQueryState() {
