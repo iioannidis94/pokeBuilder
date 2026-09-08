@@ -30,6 +30,17 @@ function normalizeSearchText(value) {
     return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
+function buildSearchTokenSignature(value) {
+    return String(value ?? '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .sort()
+        .join(' ');
+}
+
 function parseSpawnDataset(rawData, sourceName) {
     let parsedData = rawData;
 
@@ -1077,6 +1088,15 @@ function displayPokemonLocations(pokemonName) {
     const normalizedTarget = String(pokemonName || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
     if (!locations.length && normalizedTarget) {
         locations = allPokemonData.filter(entry => String(entry.Pokemon || '').toLowerCase().replace(/[^a-z0-9]+/g, '') === normalizedTarget);
+    }
+    if (!locations.length) {
+        const tokenSignature = buildSearchTokenSignature(pokemonName);
+        if (tokenSignature && uniquePokemonNames && uniquePokemonNames.size) {
+            const canonicalMatch = Array.from(uniquePokemonNames).find(name => buildSearchTokenSignature(name) === tokenSignature);
+            if (canonicalMatch) {
+                locations = allPokemonData.filter(entry => entry.Pokemon === canonicalMatch);
+            }
+        }
     }
 
     const repelFilter = document.getElementById('repel-filter-checkbox');
