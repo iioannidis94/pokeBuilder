@@ -22,6 +22,10 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function normalizeSearchText(value) {
+    return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
 async function initPokemonSearch() {
     console.log("Initializing Pokemon search functionality...");
 
@@ -871,6 +875,7 @@ function showInitialSuggestions() {
 function setupPokemonSearchEvents(searchInput, resultsContainer) {
     searchInput.addEventListener('input', function() {
         const searchText = this.value.toLowerCase();
+        const normalizedSearchText = normalizeSearchText(this.value);
 
         if (searchText.length < 2) {
             resultsContainer.style.display = 'none';
@@ -881,7 +886,10 @@ function setupPokemonSearchEvents(searchInput, resultsContainer) {
         const showOnlyRepel = repelFilter && repelFilter.checked;
 
         let matchingPokemon = Array.from(uniquePokemonNames)
-            .filter(name => name.toLowerCase().includes(searchText));
+            .filter(name => {
+                const lowerName = name.toLowerCase();
+                return lowerName.includes(searchText) || normalizeSearchText(name).includes(normalizedSearchText);
+            });
 
         if (showOnlyRepel) {
             matchingPokemon = matchingPokemon.filter(name => isPokemonWithRepel(name));
@@ -892,13 +900,18 @@ function setupPokemonSearchEvents(searchInput, resultsContainer) {
                 .filter(loc => {
                     const tooltip = loc.tooltip ? loc.tooltip.toLowerCase() : '';
                     const map = loc.map ? loc.map.toLowerCase() : '';
-                    return tooltip.includes(searchText) || map.includes(searchText);
+                    const normalizedTooltip = normalizeSearchText(loc.tooltip);
+                    const normalizedMap = normalizeSearchText(loc.map);
+                    return tooltip.includes(searchText) ||
+                        map.includes(searchText) ||
+                        normalizedTooltip.includes(normalizedSearchText) ||
+                        normalizedMap.includes(normalizedSearchText);
                 })
                 .map(loc => loc.tooltip || loc.map)
             : [];
 
         let dataLocations = Array.from(uniqueLocationNames)
-            .filter(loc => loc.toLowerCase().includes(searchText));
+            .filter(loc => loc.toLowerCase().includes(searchText) || normalizeSearchText(loc).includes(normalizedSearchText));
 
         if (showOnlyRepel) {
             dataLocations = dataLocations.filter(name => isLocationWithRepel(name));
@@ -911,7 +924,7 @@ function setupPokemonSearchEvents(searchInput, resultsContainer) {
         }
 
         let matchingItems = Array.from(uniqueItems)
-            .filter(item => item.toLowerCase().includes(searchText));
+            .filter(item => item.toLowerCase().includes(searchText) || normalizeSearchText(item).includes(normalizedSearchText));
 
         if (showOnlyRepel) {
             matchingItems = matchingItems.filter(name => isItemWithRepel(name));
@@ -1343,6 +1356,10 @@ function displayAllPokemonIcons(pokemonName, pokemonLocations) {
 }
 
 function findMapLocation(locationName) {
+    if (!locationName) {
+        return null;
+    }
+
     if (!window.locations || !Array.isArray(window.locations) || window.locations.length === 0) {
         console.error(`window.locations does not exist or is empty while searching: ${locationName}`);
 
@@ -1363,9 +1380,12 @@ function findMapLocation(locationName) {
 
     if (!location) {
         const locationLower = locationName.toLowerCase();
+        const normalizedLocation = normalizeSearchText(locationName);
         location = window.locations.find(loc => 
             (loc.tooltip && loc.tooltip.toLowerCase() === locationLower) || 
-            (loc.map && loc.map.toLowerCase() === locationLower)
+            (loc.map && loc.map.toLowerCase() === locationLower) ||
+            normalizeSearchText(loc.tooltip) === normalizedLocation ||
+            normalizeSearchText(loc.map) === normalizedLocation
         );
     }
 
@@ -1572,11 +1592,17 @@ function hookIntoMapRefresh() {
 function displayPokemonsByLocation(locationName) {
     const mapLoc = findMapLocation(locationName);
     const isOnMap = mapLoc && mapLoc.map_pos;
+    const normalizedLocationName = normalizeSearchText(locationName);
+    const normalizedTooltip = normalizeSearchText(mapLoc?.tooltip);
+    const normalizedMap = normalizeSearchText(mapLoc?.map);
 
     let pokemonAtLocation = allPokemonData.filter(entry => 
         entry.Map === locationName || 
         (mapLoc && entry.Map === mapLoc.tooltip) || 
-        (mapLoc && mapLoc.map && entry.Map === mapLoc.map)
+        (mapLoc && mapLoc.map && entry.Map === mapLoc.map) ||
+        normalizeSearchText(entry.Map) === normalizedLocationName ||
+        (normalizedTooltip && normalizeSearchText(entry.Map) === normalizedTooltip) ||
+        (normalizedMap && normalizeSearchText(entry.Map) === normalizedMap)
     );
 
     const repelFilter = document.getElementById('repel-filter-checkbox');
@@ -1869,6 +1895,10 @@ function displayPokemonsByItem(itemName) {
     console.log(`Searching for Pokemon with item: ${itemName}`);
 
     let pokemonWithItem = allPokemonData.filter(entry => entry.Item === itemName);
+    const normalizedItemName = normalizeSearchText(itemName);
+    if (!pokemonWithItem.length && normalizedItemName) {
+        pokemonWithItem = allPokemonData.filter(entry => normalizeSearchText(entry.Item) === normalizedItemName);
+    }
 
     const repelFilter = document.getElementById('repel-filter-checkbox');
     const showOnlyRepel = repelFilter && repelFilter.checked;
