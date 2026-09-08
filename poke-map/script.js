@@ -81,6 +81,10 @@ function setRepelFilterState(enabled) {
     checkbox.dispatchEvent(new Event('change'));
 }
 
+function isWorldMapPokemonSearchReady() {
+    return !!(window.worldMapPokemonSearchReady && Array.isArray(window.allPokemonData) && window.allPokemonData.length);
+}
+
 syncThemeFromMainApp();
 
 async function loadLocationsData() {
@@ -1532,19 +1536,31 @@ window.applyWorldMapQueryState = function applyWorldMapQueryState() {
     }
 
     const locationName = worldMapQueryParams.get('location');
-    if (locationName && typeof window.displayPokemonsByLocation !== 'function') return;
+    if (locationName && (!isWorldMapPokemonSearchReady() || typeof window.displayPokemonsByLocation !== 'function')) return;
     if (locationName && typeof window.displayPokemonsByLocation === 'function') {
+        const searchInput = document.getElementById('pokemon-search');
+        if (searchInput) searchInput.value = locationName;
         window.displayPokemonsByLocation(locationName);
         worldMapQueryApplied = true;
         return;
     }
 
     const pokemonName = worldMapQueryParams.get('pokemon');
-    if (pokemonName && typeof window.displayPokemonLocations !== 'function') return;
+    if (pokemonName && (!isWorldMapPokemonSearchReady() || typeof window.displayPokemonLocations !== 'function')) return;
     if (pokemonName && typeof window.displayPokemonLocations === 'function') {
         const searchInput = document.getElementById('pokemon-search');
         if (searchInput) searchInput.value = pokemonName;
         window.displayPokemonLocations(pokemonName);
+        worldMapQueryApplied = true;
+        return;
+    }
+
+    const itemName = worldMapQueryParams.get('item');
+    if (itemName && (!isWorldMapPokemonSearchReady() || typeof window.displayPokemonsByItem !== 'function')) return;
+    if (itemName && typeof window.displayPokemonsByItem === 'function') {
+        const searchInput = document.getElementById('pokemon-search');
+        if (searchInput) searchInput.value = itemName;
+        window.displayPokemonsByItem(itemName);
         worldMapQueryApplied = true;
         return;
     }

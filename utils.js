@@ -156,6 +156,7 @@ function buildWorldMapUrl(options = {}) {
     if (theme) params.set('theme', theme);
     if (lang) params.set('lang', lang);
     if (options.pokemon) params.set('pokemon', String(options.pokemon).replace(/-/g, ' '));
+    if (options.item) params.set('item', String(options.item));
     if (options.location) params.set('location', String(options.location));
     if (options.boss) params.set('boss', String(options.boss));
     if (options.region) params.set('region', String(options.region));
