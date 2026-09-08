@@ -107,7 +107,6 @@ async function initializeI18n() {
         }
 
         applyTranslations();
-        addLanguageSwitcher();
         
         console.log(`Initialized i18n system with language: ${currentLanguage}`);
     } catch (error) {
@@ -201,58 +200,6 @@ function applyTranslations() {
         const key = element.getAttribute('data-i18n-title');
         element.title = t(key);
     });
-}
-
-function addLanguageSwitcher() {
-    const availableLanguages = Object.keys(translations);
-    if (availableLanguages.length <= 1) return;
-
-    const sidebar = document.querySelector('.sidebar');
-    if (!sidebar) {
-        console.warn('Cannot add language switcher - sidebar not found');
-        return;
-    }
-
-    const langContainer = document.createElement('div');
-    langContainer.className = 'language-container';
-    langContainer.style.marginTop = 'auto';
-    langContainer.style.padding = '15px';
-    langContainer.style.borderTop = '1px solid #555';
-
-    const langLabel = document.createElement('div');
-    langLabel.textContent = 'Language / Język';
-    langLabel.style.fontSize = '14px';
-    langLabel.style.marginBottom = '8px';
-    langLabel.style.color = '#ccc';
-
-    const langButtons = document.createElement('div');
-    langButtons.style.display = 'flex';
-    langButtons.style.gap = '5px';
-
-    availableLanguages.forEach(lang => {
-        const button = document.createElement('button');
-        button.className = 'control-btn';
-        button.textContent = lang.toUpperCase();
-        button.style.flex = '1';
-        button.style.fontWeight = lang === currentLanguage ? 'bold' : 'normal';
-        button.style.backgroundColor = lang === currentLanguage ? '#4CAF50' : '#555';
-
-        button.addEventListener('click', () => {
-            if (setLanguage(lang)) {
-                langButtons.querySelectorAll('button').forEach(btn => {
-                    btn.style.fontWeight = btn.textContent.toLowerCase() === currentLanguage ? 'bold' : 'normal';
-                    btn.style.backgroundColor = btn.textContent.toLowerCase() === currentLanguage ? '#4CAF50' : '#555';
-                });
-            }
-        });
-        
-        langButtons.appendChild(button);
-    });
-
-    langContainer.appendChild(langLabel);
-    langContainer.appendChild(langButtons);
-
-    sidebar.appendChild(langContainer);
 }
 
 function translateText(key, replacements = {}) {

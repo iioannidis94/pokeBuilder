@@ -26,6 +26,47 @@ function normalizeSearchText(value) {
     return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
+function parseSpawnDataset(rawData, sourceName) {
+    let parsedData = rawData;
+
+    if (typeof parsedData === 'string') {
+        const trimmedData = parsedData.trim();
+
+        if (!trimmedData) {
+            throw new Error(`${sourceName} is empty`);
+        }
+
+        if (trimmedData.startsWith('<!doctype') || trimmedData.startsWith('<html')) {
+            throw new Error(`${sourceName} returned HTML instead of JSON data`);
+        }
+
+        try {
+            parsedData = JSON.parse(trimmedData);
+        } catch (error) {
+            throw new Error(`${sourceName} contains invalid JSON: ${error.message}`);
+        }
+    }
+
+    if (!Array.isArray(parsedData)) {
+        throw new Error(`${sourceName} does not contain an array of spawn entries`);
+    }
+
+    return parsedData;
+}
+
+async function loadSpawnDataset(url, sourceName, sourceType) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const rawData = await response.json();
+    return parseSpawnDataset(rawData, sourceName).map(entry => ({
+        ...entry,
+        Source: sourceType
+    }));
+}
+
 async function initPokemonSearch() {
     console.log("Initializing Pokemon search functionality...");
 
@@ -563,15 +604,7 @@ async function loadPokemonData() {
     try {
         let landData = [];
         try {
-            const landResponse = await fetch('data/land_spawns.json');
-            if (!landResponse.ok) {
-                throw new Error(`HTTP error! status: ${landResponse.status}`);
-            }
-            landData = await landResponse.json();
-            landData = landData.map(entry => ({
-                ...entry,
-                Source: 'land'
-            }));
+            landData = await loadSpawnDataset('data/land_spawns.json', 'land_spawns.json', 'land');
             console.log(`Loaded ${landData.length} land spawns`);
         } catch (error) {
             console.error("Error loading land data:", error);
@@ -579,15 +612,7 @@ async function loadPokemonData() {
 
         let surfData = [];
         try {
-            const surfResponse = await fetch('data/surf_spawns.json');
-            if (!surfResponse.ok) {
-                throw new Error(`HTTP error! status: ${surfResponse.status}`);
-            }
-            surfData = await surfResponse.json();
-            surfData = surfData.map(entry => ({
-                ...entry,
-                Source: 'surf'
-            }));
+            surfData = await loadSpawnDataset('data/surf_spawns.json', 'surf_spawns.json', 'surf');
             console.log(`Loaded ${surfData.length} water spawns`);
         } catch (error) {
             console.error("Error loading water data:", error);
