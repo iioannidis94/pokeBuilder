@@ -27,7 +27,7 @@ function initProfileSystem() {
         });
     }
     
-    const savedCurrentProfile = localStorage.getItem('currentProfile');
+    const savedCurrentProfile = window.pokeMapStorage.getItem('currentProfile');
     if (savedCurrentProfile && profiles[savedCurrentProfile]) {
         switchToProfile(savedCurrentProfile);
     } else {
@@ -129,7 +129,7 @@ function manuallyHideProfileInRouteView(profileContainer) {
 
 function loadProfiles() {
     try {
-        const savedProfiles = localStorage.getItem('profiles');
+        const savedProfiles = window.pokeMapStorage.getItem('profiles');
         if (savedProfiles) {
             profiles = JSON.parse(savedProfiles);
             console.log(`Loaded ${Object.keys(profiles).length} profiles from localStorage`);
@@ -145,7 +145,7 @@ function loadProfiles() {
 
 function saveProfiles() {
     try {
-        localStorage.setItem('profiles', JSON.stringify(profiles));
+        window.pokeMapStorage.setItem('profiles', JSON.stringify(profiles));
         console.log("Profiles saved to localStorage");
     } catch (error) {
         console.error("Error saving profiles to localStorage:", error);
@@ -157,7 +157,7 @@ function resetRouteState() {
     try {
         console.log("Resetowanie stanu tras po zmianie profilu");
         if (typeof window.routes !== 'undefined') {
-            const savedRoutes = localStorage.getItem('bossRoutes');
+            const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
             if (savedRoutes) {
                 window.routes = JSON.parse(savedRoutes);
                 console.log("Zresetowano window.routes do danych z nowego profilu");
@@ -316,7 +316,7 @@ function switchToProfile(profileId) {
     }
 
     currentProfile = profileId;
-    localStorage.setItem('currentProfile', profileId);
+    window.pokeMapStorage.setItem('currentProfile', profileId);
 
     try {
         loadProfileData(profileId);
@@ -376,7 +376,7 @@ function saveCurrentProfileData() {
     
     try {
         // Zapisz dane weeklyKillData
-        const weeklyKillData = localStorage.getItem('weeklyKillData');
+        const weeklyKillData = window.pokeMapStorage.getItem('weeklyKillData');
         if (weeklyKillData) {
             try {
                 data.weeklyKillData = JSON.parse(weeklyKillData);
@@ -392,7 +392,7 @@ function saveCurrentProfileData() {
         }
 
         // Zapisz dane lastWeeklyReset
-        const lastWeeklyReset = localStorage.getItem('lastWeeklyReset');
+        const lastWeeklyReset = window.pokeMapStorage.getItem('lastWeeklyReset');
         if (lastWeeklyReset) {
             try {
                 data.lastWeeklyReset = JSON.parse(lastWeeklyReset);
@@ -402,7 +402,7 @@ function saveCurrentProfileData() {
         }
 
         // Zapisz dane killedBosses
-        const killedBosses = localStorage.getItem('killedBosses');
+        const killedBosses = window.pokeMapStorage.getItem('killedBosses');
         if (killedBosses) {
             try {
                 data.killedBosses = JSON.parse(killedBosses);
@@ -413,7 +413,7 @@ function saveCurrentProfileData() {
         }
 
         // Zapisz dane bossRoutes
-        const bossRoutes = localStorage.getItem('bossRoutes');
+        const bossRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (bossRoutes) {
             try {
                 data.bossRoutes = JSON.parse(bossRoutes);
@@ -424,7 +424,7 @@ function saveCurrentProfileData() {
         }
 
         // Zapisz dane clickedPokestops - dodajemy obsługę pokestopów
-        const clickedPokestops = localStorage.getItem('clickedPokestops');
+        const clickedPokestops = window.pokeMapStorage.getItem('clickedPokestops');
         if (clickedPokestops) {
             try {
                 data.clickedPokestops = JSON.parse(clickedPokestops);
@@ -433,7 +433,7 @@ function saveCurrentProfileData() {
                 data.clickedPokestops = {};
             }
         }
-        const clickedExcavitions = localStorage.getItem('clickedExcavitions');
+        const clickedExcavitions = window.pokeMapStorage.getItem('clickedExcavitions');
         if (clickedExcavitions) {
             try {
                 data.clickedExcavitions = JSON.parse(clickedExcavitions);
@@ -483,36 +483,36 @@ function loadProfileData(profileId) {
         }
 
         // Wyczyść aktualny stan localStorage
-        localStorage.removeItem('weeklyKillData');
-        localStorage.removeItem('lastWeeklyReset');
-        localStorage.removeItem('killedBosses');
-        localStorage.removeItem('bossRoutes');
-        localStorage.removeItem('clickedPokestops');
-        localStorage.removeItem('clickedExcavitions');
+        window.pokeMapStorage.removeItem('weeklyKillData');
+        window.pokeMapStorage.removeItem('lastWeeklyReset');
+        window.pokeMapStorage.removeItem('killedBosses');
+        window.pokeMapStorage.removeItem('bossRoutes');
+        window.pokeMapStorage.removeItem('clickedPokestops');
+        window.pokeMapStorage.removeItem('clickedExcavitions');
 
         // Załaduj dane z profilu do localStorage
         if (profileData.weeklyKillData) {
-            localStorage.setItem('weeklyKillData', JSON.stringify(profileData.weeklyKillData));
+            window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(profileData.weeklyKillData));
         }
         
         if (profileData.lastWeeklyReset) {
-            localStorage.setItem('lastWeeklyReset', JSON.stringify(profileData.lastWeeklyReset));
+            window.pokeMapStorage.setItem('lastWeeklyReset', JSON.stringify(profileData.lastWeeklyReset));
         }
         
         if (profileData.killedBosses) {
-            localStorage.setItem('killedBosses', JSON.stringify(profileData.killedBosses));
+            window.pokeMapStorage.setItem('killedBosses', JSON.stringify(profileData.killedBosses));
         }
         
         if (profileData.bossRoutes) {
-            localStorage.setItem('bossRoutes', JSON.stringify(profileData.bossRoutes));
+            window.pokeMapStorage.setItem('bossRoutes', JSON.stringify(profileData.bossRoutes));
         }
         
         // Załaduj dane clickedPokestops
         if (profileData.clickedPokestops) {
-            localStorage.setItem('clickedPokestops', JSON.stringify(profileData.clickedPokestops));
+            window.pokeMapStorage.setItem('clickedPokestops', JSON.stringify(profileData.clickedPokestops));
         }
         if (profileData.clickedExcavitions) {
-            localStorage.setItem('clickedExcavitions', JSON.stringify(profileData.clickedExcavitions));
+            window.pokeMapStorage.setItem('clickedExcavitions', JSON.stringify(profileData.clickedExcavitions));
         }
         // Resetuj stan tras
         resetRouteState();
@@ -717,7 +717,7 @@ window.saveMapPosition = function() {
 
 function safeLoadSavedRoutes() {
     try {
-        const savedRoutes = localStorage.getItem('bossRoutes');
+        const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (savedRoutes) {
             window.routes = JSON.parse(savedRoutes);
         }
@@ -790,7 +790,7 @@ function setupLocalStorageChangeListener() {
         originalSetItem.apply(this, arguments);
         
         // Sprawdź, czy zmodyfikowane dane są związane z profilem
-        const profileKeys = ['killedBosses', 'bossRoutes', 'weeklyKillData', 'lastWeeklyReset', 'clickedPokestops', 'clickedExcavitions'];
+        const profileKeys = ['killedBosses', 'bossRoutes', 'weeklyKillData', 'lastWeeklyReset', 'clickedPokestops', 'clickedExcavitions'].map(key => window.pokeMapStorage.getKey(key));
         if (profileKeys.includes(key) && currentProfile) {
             // Zaplanuj zapisanie profilu za chwilę (aby zbiorczo zapisać wiele zmian)
             setTimeout(() => {

@@ -96,7 +96,7 @@ mapImage.onerror = function() {
 
 function getWeeklyKillData() {
     try {
-        const savedData = localStorage.getItem('weeklyKillData');
+        const savedData = window.pokeMapStorage.getItem('weeklyKillData');
         
         if (savedData) {
             const data = JSON.parse(savedData);
@@ -120,7 +120,7 @@ function getWeeklyKillData() {
                     kills: []
                 };
                 
-                localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+                window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
                 return resetData;
             }
             
@@ -139,7 +139,7 @@ function getWeeklyKillData() {
 
 function saveWeeklyKillData(data) {
     try {
-        localStorage.setItem('weeklyKillData', JSON.stringify(data));
+        window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(data));
     } catch (error) {
         console.error(window.i18n.t("log.errorSavingWeeklyKillData"), error);
     }
@@ -160,7 +160,7 @@ function addWeeklyKill(bossName) {
         timestamp: Date.now()
     });
     
-    localStorage.setItem('weeklyKillData', JSON.stringify(data));
+    window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(data));
     
     updateWeeklyKillsDisplay();
     
@@ -172,7 +172,7 @@ function shouldResetWeeklyCounter() {
     
     let lastResetTime = null;
     try {
-        const data = localStorage.getItem('lastWeeklyReset');
+        const data = window.pokeMapStorage.getItem('lastWeeklyReset');
         if (data) {
             lastResetTime = new Date(JSON.parse(data));
         }
@@ -185,7 +185,7 @@ function shouldResetWeeklyCounter() {
         initialReset.setUTCDate(initialReset.getUTCDate() - 1);
         
         try {
-            localStorage.setItem('lastWeeklyReset', JSON.stringify(initialReset));
+            window.pokeMapStorage.setItem('lastWeeklyReset', JSON.stringify(initialReset));
         } catch (error) {
             console.error(window.i18n.t("log.errorStoringInitialResetTime"), error);
         }
@@ -227,11 +227,11 @@ function resetWeeklyCounter(updateDisplay = true) {
         kills: []
     };
 
-    localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+    window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
     
     // Fix: Update lastWeeklyReset in localStorage
     const now = new Date();
-    localStorage.setItem('lastWeeklyReset', JSON.stringify(now));
+    window.pokeMapStorage.setItem('lastWeeklyReset', JSON.stringify(now));
 
     const killedButtons = document.querySelectorAll('.killed-button');
     killedButtons.forEach(button => {
@@ -340,7 +340,7 @@ function initWeeklyKillTracker() {
             lastResetTimestamp: Date.now(),
             kills: []
         };
-        localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+        window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
 
         const counterElement = document.querySelector('.weekly-kills-counter .counter');
         if (counterElement) {
@@ -443,7 +443,7 @@ function markBossAsKilled(bossName) {
 
     let killedBosses = {};
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             killedBosses = JSON.parse(savedData);
         }
@@ -458,7 +458,7 @@ function markBossAsKilled(bossName) {
     };
 
     try {
-        localStorage.setItem('killedBosses', JSON.stringify(killedBosses));
+        window.pokeMapStorage.setItem('killedBosses', JSON.stringify(killedBosses));
     } catch (error) {
         console.error(window.i18n.t("log.errorSavingToLocalStorage"), error);
     }
@@ -511,7 +511,7 @@ function restoreRouteNumbers(routeNumbersData) {
 }
 function isBossAvailable(bossName) {
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             const killedBosses = JSON.parse(savedData);
             if (killedBosses[bossName]) {
@@ -538,7 +538,7 @@ function formatTimeRemaining(milliseconds) {
 function updateBossTimers() {
     let killedBosses = {};
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             killedBosses = JSON.parse(savedData);
         }
@@ -569,7 +569,7 @@ function updateBossTimers() {
 
                 delete killedBosses[bossName];
                 try {
-                    localStorage.setItem('killedBosses', JSON.stringify(killedBosses));
+                    window.pokeMapStorage.setItem('killedBosses', JSON.stringify(killedBosses));
                 } catch (error) {
                     console.error(window.i18n.t("log.errorSavingToLocalStorage"), error);
                 }
@@ -833,7 +833,7 @@ function loadSavedRoutes() {
     }
 
     try {
-        const savedRoutes = localStorage.getItem('bossRoutes');
+        const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (savedRoutes) {
             routes = JSON.parse(savedRoutes);
             console.log(window.i18n.t("log.loadedRoutesFromLocalStorage", [routes.length]));
@@ -890,7 +890,7 @@ function loadRouteFromJson() {
                     routes.push(routeData);
                 }
 
-                localStorage.setItem('bossRoutes', JSON.stringify(routes));
+                window.pokeMapStorage.setItem('bossRoutes', JSON.stringify(routes));
                 loadSavedRoutes();
                 alert(window.i18n.t("route.routeLoaded", [routeData.name]));
 
@@ -1874,7 +1874,7 @@ function initRouteCreator() {
             bosses: currentRoute
         });
     
-        localStorage.setItem('bossRoutes', JSON.stringify(routes));
+        window.pokeMapStorage.setItem('bossRoutes', JSON.stringify(routes));
         console.log(window.i18n.t("log.routesSavedToLocalStorage"), JSON.stringify(routes));
     
         routeCreatorContainer.style.display = 'none';
@@ -1974,7 +1974,7 @@ function emergencyDisplayRouteBosses() {
         
         console.log(window.i18n.t("log.emergencyDisplayBosses"));
 
-        const savedRoutes = localStorage.getItem('bossRoutes');
+        const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (!savedRoutes) {
             console.error(window.i18n.t("log.noSavedRoutesInLocalStorage"));
             emergencyDisplayInProgress = false;
@@ -2189,7 +2189,7 @@ function emergencyDisplayRouteBosses() {
                 
                 if (!isAvailable) {
                     try {
-                        const savedData = localStorage.getItem('clickedPokestops');
+                        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
                         if (savedData) {
                             const clickedPokestops = JSON.parse(savedData);
                             if (clickedPokestops[location.name]) {
@@ -2315,7 +2315,7 @@ function emergencyDisplayRouteBosses() {
                 
                 if (!isAvailable) {
                     try {
-                        const savedData = localStorage.getItem('clickedExcavitions');
+                        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
                         if (savedData) {
                             const clickedExcavitions = JSON.parse(savedData);
                             if (clickedExcavitions[location.name]) {
@@ -2450,7 +2450,7 @@ function emergencyDisplayRouteBosses() {
             const pokestopTimers = document.querySelectorAll('.pokestop-timer');
             if (pokestopTimers.length > 0) {
                 try {
-                    const savedData = localStorage.getItem('clickedPokestops');
+                    const savedData = window.pokeMapStorage.getItem('clickedPokestops');
                     if (savedData) {
                         const clickedPokestops = JSON.parse(savedData);
                         pokestopTimers.forEach(timer => {
@@ -2472,7 +2472,7 @@ function emergencyDisplayRouteBosses() {
                                     }
                                     
                                     delete clickedPokestops[pokestopName];
-                                    localStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestops));
+                                    window.pokeMapStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestops));
                                 } else {
                                     const cooldownText = window.i18n.t("pokestop.cooldown") + ": " + 
                                         (typeof formatPokestopTimeRemaining === 'function' ? 
@@ -2493,7 +2493,7 @@ function emergencyDisplayRouteBosses() {
             const excavationTimers = document.querySelectorAll('.excavation-timer');
             if (excavationTimers.length > 0) {
                 try {
-                    const savedData = localStorage.getItem('clickedExcavitions');
+                    const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
                     if (savedData) {
                         const clickedExcavitions = JSON.parse(savedData);
                         excavationTimers.forEach(timer => {
@@ -2515,7 +2515,7 @@ function emergencyDisplayRouteBosses() {
                                     }
                                     
                                     delete clickedExcavitions[excavationName];
-                                    localStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitions));
+                                    window.pokeMapStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitions));
                                 } else {
                                     const cooldownText = window.i18n.t("excavition.cooldown") + ": " + 
                                         (typeof ex_formatTimeRemaining === 'function' ? 

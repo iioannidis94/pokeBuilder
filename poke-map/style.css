@@ -1,12 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;800;900&display=swap');
+
+:root {
+    --map-bg: #0d0d1a;
+    --map-surf: #13132a;
+    --map-surf-2: #1a1a30;
+    --map-brd: #252545;
+    --map-txt: #e8e8ff;
+    --map-dim: #8b8bb7;
+    --map-yellow: #ffcc00;
+    --map-red: #ff4466;
+    --map-blue: #4dabf7;
+    --map-green: #38d878;
+}
+
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
-    font-family: 'Arial', sans-serif;
-    color: #fff;
+    background: var(--map-bg);
+    font-family: 'Nunito', sans-serif;
+    color: var(--map-txt);
     display: flex;
     height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 15% 25%, rgba(255, 68, 102, 0.08) 0, transparent 42%),
+        radial-gradient(circle at 85% 75%, rgba(77, 171, 247, 0.08) 0, transparent 42%),
+        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
 }
 
 /* Panel boczny */
@@ -1804,4 +1833,142 @@ body {
 .route-creation-mode .excavition-icon:hover {
     transform: translate(-50%, -50%) scale(1.2) !important;
     transition: transform 0.2s ease;
+}
+
+/* pokeBuilder integration theming */
+.sidebar {
+    background: rgba(19, 19, 42, 0.96);
+    border-right: 1px solid var(--map-brd);
+    box-shadow: 18px 0 40px rgba(0, 0, 0, 0.25);
+    position: relative;
+    z-index: 1;
+}
+
+.map-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 0 18px;
+    border-bottom: 1px solid var(--map-brd);
+    margin-bottom: 18px;
+}
+
+.back-home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(77, 171, 247, 0.12);
+    border: 1px solid rgba(77, 171, 247, 0.35);
+    color: var(--map-blue);
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.back-home-btn:hover {
+    background: rgba(77, 171, 247, 0.2);
+}
+
+.map-brand-kicker {
+    color: var(--map-yellow);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    margin-bottom: 10px;
+}
+
+.map-brand h1 {
+    margin: 0;
+    color: var(--map-txt);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.map-brand p {
+    margin: 10px 0 0;
+    color: var(--map-dim);
+    font-size: 14px;
+}
+
+.sidebar h3,
+.profile-container h3 {
+    color: var(--map-txt);
+}
+
+.profile-container,
+.weekly-kills-counter,
+.search-results,
+.language-container {
+    background: var(--map-surf-2) !important;
+    border: 1px solid var(--map-brd);
+    border-radius: 12px;
+}
+
+.control-btn,
+.filter-select,
+.search-input {
+    background: var(--map-surf-2);
+    border: 1px solid var(--map-brd);
+    color: var(--map-txt);
+    font-family: 'Nunito', sans-serif;
+}
+
+.control-btn:hover,
+.filter-select:hover,
+.search-input:focus {
+    border-color: var(--map-yellow);
+}
+
+.control-btn.primary {
+    background: linear-gradient(135deg, var(--map-green), #28a75e);
+    color: #171015;
+    border-color: rgba(56, 216, 120, 0.45);
+}
+
+#boss-toggle-btn.active,
+#route-boss-toggle-btn.active,
+.pokestop-toggle-btn.active,
+.boss-toggle-btn.active {
+    box-shadow: 0 0 0 1px var(--map-yellow), 0 0 20px rgba(255, 204, 0, 0.12);
+}
+
+.page-attribution {
+    margin-top: auto;
+    padding: 14px;
+    border: 1px solid var(--map-brd);
+    border-radius: 12px;
+    background: rgba(13, 13, 26, 0.7);
+    color: var(--map-dim);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.page-attribution strong {
+    color: var(--map-txt);
+}
+
+.page-attribution a {
+    color: var(--map-blue);
+    font-weight: 800;
+}
+
+@media (max-width: 960px) {
+    body {
+        overflow: auto;
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: unset;
+    }
+
+    #map-container {
+        min-height: 70vh;
+    }
 }

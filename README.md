@@ -2,7 +2,7 @@
 
 A competitive Pokémon builder focused on **fast team creation, matchup clarity, and practical AI-assisted decisions**.
 
-The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, and a much more competitive-aware Team Builder for **PRO PvP** workflows.
+The app already combines a searchable Pokédex, weakness/counter inspection, multi-team storage, an integrated **World Map** entry point for PRO exploration, and a much more competitive-aware Team Builder for **PRO PvP** workflows.
 
 ---
 
@@ -93,6 +93,7 @@ The goal is not just to list Pokémon, but to help the user:
 - `features/battle-calculator/` → damage analysis, opponent tools, and boss modal
 - `features/trainer-tower/` → Trainer Tower UI and logic
 - `games/` → games hub and each mini-game in its own folder
+- `poke-map/` → bundled World Map app for PRO bosses, routes, and spawn lookups
 - `utils.js` and `styles.css` → shared helpers and styles
 - `data/` → stats, moves, abilities, sprites, type chart data
 

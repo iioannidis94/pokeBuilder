@@ -1,3 +1,87 @@
+const POKE_MAP_STORAGE_PREFIX = 'pb_worldmap_';
+const POKE_MAP_STORAGE_KEYS = Object.freeze({
+    appLanguage: `${POKE_MAP_STORAGE_PREFIX}appLanguage`,
+    profiles: `${POKE_MAP_STORAGE_PREFIX}profiles`,
+    currentProfile: `${POKE_MAP_STORAGE_PREFIX}currentProfile`,
+    weeklyKillData: `${POKE_MAP_STORAGE_PREFIX}weeklyKillData`,
+    lastWeeklyReset: `${POKE_MAP_STORAGE_PREFIX}lastWeeklyReset`,
+    killedBosses: `${POKE_MAP_STORAGE_PREFIX}killedBosses`,
+    bossRoutes: `${POKE_MAP_STORAGE_PREFIX}bossRoutes`,
+    clickedPokestops: `${POKE_MAP_STORAGE_PREFIX}clickedPokestops`,
+    clickedExcavitions: `${POKE_MAP_STORAGE_PREFIX}clickedExcavitions`
+});
+const POKE_MAP_LEGACY_STORAGE_KEYS = Object.freeze({
+    appLanguage: 'appLanguage',
+    profiles: 'profiles',
+    currentProfile: 'currentProfile',
+    weeklyKillData: 'weeklyKillData',
+    lastWeeklyReset: 'lastWeeklyReset',
+    killedBosses: 'killedBosses',
+    bossRoutes: 'bossRoutes',
+    clickedPokestops: 'clickedPokestops',
+    clickedExcavitions: 'clickedExcavitions'
+});
+
+function getPokeMapStorageKey(name) {
+    return POKE_MAP_STORAGE_KEYS[name] || name;
+}
+
+function getLegacyPokeMapStorageKey(name) {
+    return POKE_MAP_LEGACY_STORAGE_KEYS[name] || name;
+}
+
+function getPokeMapStorageItem(name) {
+    const key = getPokeMapStorageKey(name);
+    const value = localStorage.getItem(key);
+    if (value !== null) return value;
+
+    const legacyKey = getLegacyPokeMapStorageKey(name);
+    if (legacyKey !== key) {
+        const legacyValue = localStorage.getItem(legacyKey);
+        if (legacyValue !== null) {
+            localStorage.setItem(key, legacyValue);
+            return legacyValue;
+        }
+    }
+
+    return null;
+}
+
+function setPokeMapStorageItem(name, value) {
+    localStorage.setItem(getPokeMapStorageKey(name), value);
+}
+
+function removePokeMapStorageItem(name) {
+    localStorage.removeItem(getPokeMapStorageKey(name));
+}
+
+function migrateLegacyPokeMapStorage() {
+    Object.keys(POKE_MAP_STORAGE_KEYS).forEach(name => {
+        const key = getPokeMapStorageKey(name);
+        if (localStorage.getItem(key) !== null) return;
+
+        const legacyKey = getLegacyPokeMapStorageKey(name);
+        if (legacyKey === key) return;
+
+        const legacyValue = localStorage.getItem(legacyKey);
+        if (legacyValue !== null) {
+            localStorage.setItem(key, legacyValue);
+        }
+    });
+}
+
+window.pokeMapStorage = {
+    keys: POKE_MAP_STORAGE_KEYS,
+    legacyKeys: POKE_MAP_LEGACY_STORAGE_KEYS,
+    getKey: getPokeMapStorageKey,
+    getItem: getPokeMapStorageItem,
+    setItem: setPokeMapStorageItem,
+    removeItem: removePokeMapStorageItem,
+    migrateLegacyKeys: migrateLegacyPokeMapStorage
+};
+
+window.pokeMapStorage.migrateLegacyKeys();
+
 let currentLanguage = 'en';
 let translations = {};
 let languageChangeListeners = [];
@@ -10,12 +94,12 @@ async function initializeI18n() {
         }
         translations = await response.json();
 
-        const savedLanguage = localStorage.getItem('appLanguage');
+        const savedLanguage = window.pokeMapStorage.getItem('appLanguage');
         if (savedLanguage && translations[savedLanguage]) {
             currentLanguage = savedLanguage;
         } else {
             detectBrowserLanguage();
-            localStorage.setItem('appLanguage', currentLanguage);
+            window.pokeMapStorage.setItem('appLanguage', currentLanguage);
         }
 
         applyTranslations();
@@ -42,7 +126,7 @@ function detectBrowserLanguage() {
 function setLanguage(lang) {
     if (translations[lang]) {
         currentLanguage = lang;
-        localStorage.setItem('appLanguage', lang);
+        window.pokeMapStorage.setItem('appLanguage', lang);
         applyTranslations();
         languageChangeListeners.forEach(listener => listener(lang));
         console.log(`Language changed to: ${lang}`);
