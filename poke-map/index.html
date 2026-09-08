@@ -38,6 +38,11 @@
                 <option value="" disabled selected data-i18n="filter.selectRegion">Select region</option>
             </select>
         </div>
+        <div class="search-container pokemon-search-container">
+            <h3 data-i18n="pokesearch.pokemonTitle">Search Pokémon</h3>
+            <input type="text" id="pokemon-search" class="search-input" data-i18n-placeholder="pokesearch.pokemonPlaceholder" placeholder="Enter a Pokémon name...">
+            <div id="pokemon-search-results" class="search-results"></div>
+        </div>
         <div class="route-creator-button-container">
             <button id="route-creator-btn" class="control-btn primary" data-i18n="buttons.routes">Routes</button>
         </div>
@@ -50,11 +55,6 @@
                 <button class="control-btn route-preset-btn" type="button" data-route-preset="excavation">Excavations</button>
             </div>
             <div id="useful-routes-panel" class="useful-routes-panel"></div>
-        </div>
-        <div class="search-container pokemon-search-container">
-            <h3 data-i18n="pokesearch.pokemonTitle">Search Pokémon</h3>
-            <input type="text" id="pokemon-search" class="search-input" data-i18n-placeholder="pokesearch.pokemonPlaceholder" placeholder="Enter a Pokémon name...">
-            <div id="pokemon-search-results" class="search-results"></div>
         </div>
         <div class="repel-filter-container">
             <input type="checkbox" id="repel-filter-checkbox">

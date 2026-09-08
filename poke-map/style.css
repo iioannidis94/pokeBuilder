@@ -911,6 +911,10 @@ body::before {
     margin-bottom: 20px;
 }
 
+.pokemon-search-container h3 {
+    margin-top: 0;
+}
+
 /* Pokemon Icons on Map */
 .pokemon-icon {
     position: absolute;
@@ -2162,5 +2166,39 @@ body::before {
 
     .boss-hover-preview {
         display: none !important;
+    }
+}
+
+@media (max-height: 760px) and (min-width: 961px) {
+    .sidebar {
+        padding: 12px;
+    }
+
+    .map-page-header {
+        gap: 10px;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+    }
+
+    .pokemon-search-container {
+        position: sticky;
+        top: 0;
+        z-index: 6;
+        padding: 12px;
+        border: 1px solid var(--map-brd);
+        border-radius: 12px;
+        background: rgba(19, 19, 42, 0.98);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .route-creator-button-container,
+    .useful-routes-container,
+    .repel-filter-container,
+    .toggle-buttons-container {
+        margin-bottom: 14px;
+    }
+
+    .useful-routes-panel {
+        max-height: 150px;
     }
 }
