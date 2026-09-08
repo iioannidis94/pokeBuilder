@@ -18,6 +18,10 @@ let isRouteCreatorActive = false;
 let emergencyDisplayInProgress = false;
 let emergencyDisplayTimer = null;
 let routeSelectHandlerAttached = false;
+let worldMapQueryApplied = false;
+
+const SHARED_THEME_KEY = 'pokedex_theme_v1';
+const worldMapQueryParams = new URLSearchParams(window.location.search);
 
 const WEEKLY_BOSS_LIMIT = 20;
 const RESET_DAY = 1;
@@ -43,9 +47,41 @@ bossTooltip.className = 'boss-tooltip';
 bossTooltip.style.display = 'none';
 document.body.appendChild(bossTooltip);
 
+const bossHoverPreview = document.createElement('div');
+bossHoverPreview.className = 'boss-hover-preview';
+bossHoverPreview.style.display = 'none';
+document.body.appendChild(bossHoverPreview);
+
 const zoomInBtn = document.getElementById('zoom-in');
 const zoomOutBtn = document.getElementById('zoom-out');
 const resetBtn = document.getElementById('reset');
+
+function getNormalizedMapName(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function findBossEntryByName(name) {
+    const normalized = getNormalizedMapName(name);
+    return Object.entries(bosses).find(([bossName]) => getNormalizedMapName(bossName) === normalized) || null;
+}
+
+function applyWorldMapTheme(theme) {
+    document.body.classList.toggle('light-mode', theme === 'light');
+}
+
+function syncThemeFromMainApp() {
+    const requestedTheme = worldMapQueryParams.get('theme') || localStorage.getItem(SHARED_THEME_KEY) || 'dark';
+    applyWorldMapTheme(requestedTheme);
+}
+
+function setRepelFilterState(enabled) {
+    const checkbox = document.getElementById('repel-filter-checkbox');
+    if (!checkbox) return;
+    checkbox.checked = !!enabled;
+    checkbox.dispatchEvent(new Event('change'));
+}
+
+syncThemeFromMainApp();
 
 async function loadLocationsData() {
     try {
@@ -96,7 +132,7 @@ mapImage.onerror = function() {
 
 function getWeeklyKillData() {
     try {
-        const savedData = localStorage.getItem('weeklyKillData');
+        const savedData = window.pokeMapStorage.getItem('weeklyKillData');
         
         if (savedData) {
             const data = JSON.parse(savedData);
@@ -120,7 +156,7 @@ function getWeeklyKillData() {
                     kills: []
                 };
                 
-                localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+                window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
                 return resetData;
             }
             
@@ -139,7 +175,7 @@ function getWeeklyKillData() {
 
 function saveWeeklyKillData(data) {
     try {
-        localStorage.setItem('weeklyKillData', JSON.stringify(data));
+        window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(data));
     } catch (error) {
         console.error(window.i18n.t("log.errorSavingWeeklyKillData"), error);
     }
@@ -160,7 +196,7 @@ function addWeeklyKill(bossName) {
         timestamp: Date.now()
     });
     
-    localStorage.setItem('weeklyKillData', JSON.stringify(data));
+    window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(data));
     
     updateWeeklyKillsDisplay();
     
@@ -172,7 +208,7 @@ function shouldResetWeeklyCounter() {
     
     let lastResetTime = null;
     try {
-        const data = localStorage.getItem('lastWeeklyReset');
+        const data = window.pokeMapStorage.getItem('lastWeeklyReset');
         if (data) {
             lastResetTime = new Date(JSON.parse(data));
         }
@@ -185,7 +221,7 @@ function shouldResetWeeklyCounter() {
         initialReset.setUTCDate(initialReset.getUTCDate() - 1);
         
         try {
-            localStorage.setItem('lastWeeklyReset', JSON.stringify(initialReset));
+            window.pokeMapStorage.setItem('lastWeeklyReset', JSON.stringify(initialReset));
         } catch (error) {
             console.error(window.i18n.t("log.errorStoringInitialResetTime"), error);
         }
@@ -227,11 +263,11 @@ function resetWeeklyCounter(updateDisplay = true) {
         kills: []
     };
 
-    localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+    window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
     
     // Fix: Update lastWeeklyReset in localStorage
     const now = new Date();
-    localStorage.setItem('lastWeeklyReset', JSON.stringify(now));
+    window.pokeMapStorage.setItem('lastWeeklyReset', JSON.stringify(now));
 
     const killedButtons = document.querySelectorAll('.killed-button');
     killedButtons.forEach(button => {
@@ -340,7 +376,7 @@ function initWeeklyKillTracker() {
             lastResetTimestamp: Date.now(),
             kills: []
         };
-        localStorage.setItem('weeklyKillData', JSON.stringify(resetData));
+        window.pokeMapStorage.setItem('weeklyKillData', JSON.stringify(resetData));
 
         const counterElement = document.querySelector('.weekly-kills-counter .counter');
         if (counterElement) {
@@ -443,7 +479,7 @@ function markBossAsKilled(bossName) {
 
     let killedBosses = {};
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             killedBosses = JSON.parse(savedData);
         }
@@ -458,7 +494,7 @@ function markBossAsKilled(bossName) {
     };
 
     try {
-        localStorage.setItem('killedBosses', JSON.stringify(killedBosses));
+        window.pokeMapStorage.setItem('killedBosses', JSON.stringify(killedBosses));
     } catch (error) {
         console.error(window.i18n.t("log.errorSavingToLocalStorage"), error);
     }
@@ -511,7 +547,7 @@ function restoreRouteNumbers(routeNumbersData) {
 }
 function isBossAvailable(bossName) {
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             const killedBosses = JSON.parse(savedData);
             if (killedBosses[bossName]) {
@@ -535,10 +571,75 @@ function formatTimeRemaining(milliseconds) {
     
     return `${days}:${hours}:${minutes}:${seconds}`;
 }
+
+function getBossTimeRemaining(bossName) {
+    try {
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
+        if (!savedData) return 0;
+        const killedBosses = JSON.parse(savedData);
+        const availableAt = killedBosses?.[bossName]?.availableAt;
+        if (!availableAt) return 0;
+        return Math.max(0, availableAt - Date.now());
+    } catch (error) {
+        console.error(window.i18n.t("log.errorReadingFromLocalStorage"), error);
+        return 0;
+    }
+}
+
+function getBossRosterPreview(bossName) {
+    if (typeof BOSSES === 'undefined' || !Array.isArray(BOSSES)) return null;
+    const normalizedName = getNormalizedMapName(bossName);
+    const bossEntry = BOSSES.find(entry => getNormalizedMapName(entry.name) === normalizedName);
+    if (!bossEntry) return null;
+
+    const preferredDifficulty = ['hard', 'medium', 'easy'].find(key => Array.isArray(bossEntry.difficulties?.[key]?.pokemon) && bossEntry.difficulties[key].pokemon.length);
+    const roster = preferredDifficulty ? bossEntry.difficulties[preferredDifficulty].pokemon : [];
+    return {
+        difficulty: preferredDifficulty || '',
+        roster: roster.slice(0, 6)
+    };
+}
+
+function getBossRosterHtml(bossName, compact = false) {
+    const preview = getBossRosterPreview(bossName);
+    if (!preview || !preview.roster.length) return '';
+    const difficultyLabel = preview.difficulty ? preview.difficulty.toUpperCase() : 'BEST';
+    const itemsHtml = preview.roster.map(mon => {
+        const spriteName = String(mon.name || '').toLowerCase();
+        const displayName = String(mon.name || '?').replace(/-/g, ' ');
+        return `<div class="boss-roster-mon${compact ? ' compact' : ''}">
+            <img src="https://play.pokemonshowdown.com/sprites/dex/${spriteName}.png" alt="${displayName}" loading="lazy" onerror="this.style.display='none'">
+            <span>${displayName}</span>
+        </div>`;
+    }).join('');
+    return `<div class="boss-roster-preview">
+        <div class="boss-roster-title">Pokémon roster · ${difficultyLabel}</div>
+        <div class="boss-roster-grid">${itemsHtml}</div>
+    </div>`;
+}
+
+function showBossHoverPreview(bossName, bossData, x, y) {
+    const availabilityText = isBossAvailable(bossName)
+        ? (window.i18n?.t('boss.available') || 'Available')
+        : `${window.i18n?.t('boss.availableIn') || 'Available in'}: ${formatTimeRemaining(getBossTimeRemaining(bossName))}`;
+    bossHoverPreview.innerHTML = `
+        <div class="boss-hover-title">${bossName}</div>
+        <div class="boss-hover-meta">${bossData.region || '—'} · ${bossData.location || 'Unknown location'}</div>
+        <div class="boss-hover-meta">🕒 ${availabilityText}</div>
+        ${getBossRosterHtml(bossName, true)}
+    `;
+    bossHoverPreview.style.left = `${Math.min(window.innerWidth - 330, x + 18)}px`;
+    bossHoverPreview.style.top = `${Math.min(window.innerHeight - 220, y + 18)}px`;
+    bossHoverPreview.style.display = 'block';
+}
+
+function hideBossHoverPreview() {
+    bossHoverPreview.style.display = 'none';
+}
 function updateBossTimers() {
     let killedBosses = {};
     try {
-        const savedData = localStorage.getItem('killedBosses');
+        const savedData = window.pokeMapStorage.getItem('killedBosses');
         if (savedData) {
             killedBosses = JSON.parse(savedData);
         }
@@ -569,7 +670,7 @@ function updateBossTimers() {
 
                 delete killedBosses[bossName];
                 try {
-                    localStorage.setItem('killedBosses', JSON.stringify(killedBosses));
+                    window.pokeMapStorage.setItem('killedBosses', JSON.stringify(killedBosses));
                 } catch (error) {
                     console.error(window.i18n.t("log.errorSavingToLocalStorage"), error);
                 }
@@ -833,7 +934,7 @@ function loadSavedRoutes() {
     }
 
     try {
-        const savedRoutes = localStorage.getItem('bossRoutes');
+        const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (savedRoutes) {
             routes = JSON.parse(savedRoutes);
             console.log(window.i18n.t("log.loadedRoutesFromLocalStorage", [routes.length]));
@@ -890,7 +991,7 @@ function loadRouteFromJson() {
                     routes.push(routeData);
                 }
 
-                localStorage.setItem('bossRoutes', JSON.stringify(routes));
+                window.pokeMapStorage.setItem('bossRoutes', JSON.stringify(routes));
                 loadSavedRoutes();
                 alert(window.i18n.t("route.routeLoaded", [routeData.name]));
 
@@ -1185,13 +1286,18 @@ function displayBossIcons() {
         });
 
         bossIcon.addEventListener('mouseover', function(e) {
-            tooltip.textContent = bossName;
-            tooltip.style.left = `${e.clientX + 15}px`;
-            tooltip.style.top = `${e.clientY}px`;
-            tooltip.style.opacity = '1';
+            showBossHoverPreview(bossName, bossData, e.clientX, e.clientY);
+        });
+
+        bossIcon.addEventListener('mousemove', function(e) {
+            if (bossHoverPreview.style.display === 'block') {
+                bossHoverPreview.style.left = `${Math.min(window.innerWidth - 330, e.clientX + 18)}px`;
+                bossHoverPreview.style.top = `${Math.min(window.innerHeight - 220, e.clientY + 18)}px`;
+            }
         });
         
         bossIcon.addEventListener('mouseleave', function() {
+            hideBossHoverPreview();
             if (bossTooltip.style.display !== 'block') {
                 tooltip.style.opacity = '0';
             }
@@ -1205,8 +1311,12 @@ function displayBossIcons() {
 function showBossTooltip(bossName, x, y) {
     const bossData = bosses[bossName];
     if (!bossData) return;
+    hideBossHoverPreview();
 
     const wikiUrl = `https://wiki.pokemonrevolution.net/index.php?title=${encodeURIComponent(bossName)}_(boss)`;
+    const availabilityText = isBossAvailable(bossName)
+        ? (window.i18n.t("boss.available"))
+        : `${window.i18n.t("boss.availableIn")}: ${formatTimeRemaining(getBossTimeRemaining(bossName))}`;
 
     let tooltipContent = `
         <div class="boss-tooltip-header">
@@ -1217,6 +1327,7 @@ function showBossTooltip(bossName, x, y) {
             <p><strong>${window.i18n.t("boss.region")}:</strong> ${bossData.region || 'N/A'}</p>
             <p><strong>${window.i18n.t("boss.location")}:</strong> ${bossData.location || 'N/A'}</p>
             <p><strong>${window.i18n.t("boss.cooldown")}:</strong> ${bossData.cooldown || 'N/A'}</p>
+            <p><strong>Status:</strong> ${availabilityText}</p>
     `;
     
     if (bossData.basic_requirements) {
@@ -1234,6 +1345,8 @@ function showBossTooltip(bossName, x, y) {
         });
         tooltipContent += '</ul></div>';
     }
+
+    tooltipContent += getBossRosterHtml(bossName, false);
     
     tooltipContent += '</div>';
     bossTooltip.innerHTML = tooltipContent;
@@ -1294,6 +1407,172 @@ function showBossTooltip(bossName, x, y) {
 
     document.addEventListener('click', handleOutsideClick);
     document.addEventListener('touchstart', handleOutsideClick);
+}
+
+function buildTopLocationCounts(rows, predicate) {
+    const counts = new Map();
+    (rows || []).forEach(entry => {
+        if (!entry?.Map || (predicate && !predicate(entry))) return;
+        const bucket = counts.get(entry.Map) || { name: entry.Map, count: 0 };
+        bucket.count += 1;
+        counts.set(entry.Map, bucket);
+    });
+    return [...counts.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)).slice(0, 12);
+}
+
+function getUsefulRouteEntries(kind) {
+    if (kind === 'bosses') {
+        return Object.entries(bosses)
+            .map(([name, meta]) => ({ type: 'boss', name, meta, available: isBossAvailable(name), count: meta.region || '' }))
+            .sort((a, b) => Number(b.available) - Number(a.available) || String(a.count).localeCompare(String(b.count)) || a.name.localeCompare(b.name))
+            .slice(0, 16);
+    }
+
+    if (kind === 'repel') {
+        return buildTopLocationCounts(window.allPokemonData, entry => entry.RequiresRepel).map(entry => ({ type: 'location', name: entry.name, count: `${entry.count} repel spawns`, repel: true }));
+    }
+
+    if (kind === 'items') {
+        return buildTopLocationCounts(window.allPokemonData, entry => entry.Item).map(entry => ({ type: 'location', name: entry.name, count: `${entry.count} item drops` }));
+    }
+
+    if (kind === 'excavation' && typeof ex_excavitionSites !== 'undefined') {
+        return ex_excavitionSites.map(site => ({ type: 'excavation', name: site.name, count: 'excavation path' }));
+    }
+
+    return [];
+}
+
+function activateUsefulRouteEntry(entry) {
+    if (!entry) return;
+    if (entry.type === 'boss') {
+        centerMapOnBoss(entry.name);
+        showBossTooltip(entry.name, window.innerWidth / 2, 120);
+        return;
+    }
+
+    if (entry.type === 'location') {
+        setRepelFilterState(!!entry.repel);
+        if (typeof window.displayPokemonsByLocation === 'function') {
+            window.displayPokemonsByLocation(entry.name);
+        }
+        return;
+    }
+
+    if (entry.type === 'excavation') {
+        const match = findMapLocation(entry.name) || findMapLocation(entry.name.replace(/\s+\(.+$/, ''));
+        if (match) centerMapOnLocation(match, true);
+    }
+}
+
+function renderUsefulRoutes(kind) {
+    const panel = document.getElementById('useful-routes-panel');
+    if (!panel) return;
+
+    const entries = getUsefulRouteEntries(kind);
+    panel.innerHTML = '';
+    if (!entries.length) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'useful-route-empty';
+        emptyState.textContent = `Waiting for ${kind} data…`;
+        panel.appendChild(emptyState);
+        return;
+    }
+
+    entries.forEach(entry => {
+        const button = document.createElement('button');
+        button.className = 'useful-route-item';
+        button.type = 'button';
+        button.dataset.routeEntry = encodeURIComponent(JSON.stringify(entry));
+
+        const name = document.createElement('span');
+        name.className = 'useful-route-name';
+        name.textContent = entry.name;
+
+        const meta = document.createElement('span');
+        meta.className = 'useful-route-meta';
+        meta.textContent = entry.type === 'boss'
+            ? `${entry.count} · ${entry.available ? 'Available' : 'Cooldown'}`
+            : entry.count;
+
+        button.append(name, meta);
+        panel.appendChild(button);
+    });
+}
+
+window.applyWorldMapQueryState = function applyWorldMapQueryState() {
+    if (worldMapQueryApplied) return;
+
+    const region = worldMapQueryParams.get('region');
+    if (region) {
+        currentRegionFilter = region;
+        const regionFilterSelect = document.getElementById('region-filter');
+        if (regionFilterSelect) regionFilterSelect.value = region;
+        displayBossIcons();
+    }
+
+    if (worldMapQueryParams.get('repel') === '1') {
+        setRepelFilterState(true);
+    }
+
+    const preset = worldMapQueryParams.get('preset') || 'bosses';
+    renderUsefulRoutes(preset);
+    document.querySelectorAll('.route-preset-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.routePreset === preset));
+
+    const bossName = worldMapQueryParams.get('boss');
+    const matchedBoss = bossName ? findBossEntryByName(bossName) : null;
+    if (matchedBoss) {
+        const [resolvedBossName] = matchedBoss;
+        centerMapOnBoss(resolvedBossName);
+        if (worldMapQueryParams.get('showBossDetails') === '1') {
+            showBossTooltip(resolvedBossName, window.innerWidth / 2, 120);
+        }
+        worldMapQueryApplied = true;
+        return;
+    }
+
+    const locationName = worldMapQueryParams.get('location');
+    if (locationName && typeof window.displayPokemonsByLocation !== 'function') return;
+    if (locationName && typeof window.displayPokemonsByLocation === 'function') {
+        window.displayPokemonsByLocation(locationName);
+        worldMapQueryApplied = true;
+        return;
+    }
+
+    const pokemonName = worldMapQueryParams.get('pokemon');
+    if (pokemonName && typeof window.displayPokemonLocations !== 'function') return;
+    if (pokemonName && typeof window.displayPokemonLocations === 'function') {
+        const searchInput = document.getElementById('pokemon-search');
+        if (searchInput) searchInput.value = pokemonName;
+        window.displayPokemonLocations(pokemonName);
+        worldMapQueryApplied = true;
+        return;
+    }
+
+    worldMapQueryApplied = true;
+};
+
+function initUsefulRoutesUI() {
+    const buttons = document.querySelectorAll('.route-preset-btn');
+    if (!buttons.length) return;
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(other => other.classList.toggle('active', other === btn));
+            renderUsefulRoutes(btn.dataset.routePreset);
+        });
+    });
+
+    document.getElementById('useful-routes-panel')?.addEventListener('click', e => {
+        const item = e.target.closest('[data-route-entry]');
+        if (!item) return;
+        try {
+            activateUsefulRouteEntry(JSON.parse(decodeURIComponent(item.dataset.routeEntry)));
+        } catch (error) {
+            console.error('Failed to open preset entry', error);
+        }
+    });
+
+    renderUsefulRoutes(worldMapQueryParams.get('preset') || 'bosses');
 }
 
 zoomInBtn.addEventListener('click', () => {
@@ -1874,7 +2153,7 @@ function initRouteCreator() {
             bosses: currentRoute
         });
     
-        localStorage.setItem('bossRoutes', JSON.stringify(routes));
+        window.pokeMapStorage.setItem('bossRoutes', JSON.stringify(routes));
         console.log(window.i18n.t("log.routesSavedToLocalStorage"), JSON.stringify(routes));
     
         routeCreatorContainer.style.display = 'none';
@@ -1974,7 +2253,7 @@ function emergencyDisplayRouteBosses() {
         
         console.log(window.i18n.t("log.emergencyDisplayBosses"));
 
-        const savedRoutes = localStorage.getItem('bossRoutes');
+        const savedRoutes = window.pokeMapStorage.getItem('bossRoutes');
         if (!savedRoutes) {
             console.error(window.i18n.t("log.noSavedRoutesInLocalStorage"));
             emergencyDisplayInProgress = false;
@@ -2189,7 +2468,7 @@ function emergencyDisplayRouteBosses() {
                 
                 if (!isAvailable) {
                     try {
-                        const savedData = localStorage.getItem('clickedPokestops');
+                        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
                         if (savedData) {
                             const clickedPokestops = JSON.parse(savedData);
                             if (clickedPokestops[location.name]) {
@@ -2315,7 +2594,7 @@ function emergencyDisplayRouteBosses() {
                 
                 if (!isAvailable) {
                     try {
-                        const savedData = localStorage.getItem('clickedExcavitions');
+                        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
                         if (savedData) {
                             const clickedExcavitions = JSON.parse(savedData);
                             if (clickedExcavitions[location.name]) {
@@ -2450,7 +2729,7 @@ function emergencyDisplayRouteBosses() {
             const pokestopTimers = document.querySelectorAll('.pokestop-timer');
             if (pokestopTimers.length > 0) {
                 try {
-                    const savedData = localStorage.getItem('clickedPokestops');
+                    const savedData = window.pokeMapStorage.getItem('clickedPokestops');
                     if (savedData) {
                         const clickedPokestops = JSON.parse(savedData);
                         pokestopTimers.forEach(timer => {
@@ -2472,7 +2751,7 @@ function emergencyDisplayRouteBosses() {
                                     }
                                     
                                     delete clickedPokestops[pokestopName];
-                                    localStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestops));
+                                    window.pokeMapStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestops));
                                 } else {
                                     const cooldownText = window.i18n.t("pokestop.cooldown") + ": " + 
                                         (typeof formatPokestopTimeRemaining === 'function' ? 
@@ -2493,7 +2772,7 @@ function emergencyDisplayRouteBosses() {
             const excavationTimers = document.querySelectorAll('.excavation-timer');
             if (excavationTimers.length > 0) {
                 try {
-                    const savedData = localStorage.getItem('clickedExcavitions');
+                    const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
                     if (savedData) {
                         const clickedExcavitions = JSON.parse(savedData);
                         excavationTimers.forEach(timer => {
@@ -2515,7 +2794,7 @@ function emergencyDisplayRouteBosses() {
                                     }
                                     
                                     delete clickedExcavitions[excavationName];
-                                    localStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitions));
+                                    window.pokeMapStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitions));
                                 } else {
                                     const cooldownText = window.i18n.t("excavition.cooldown") + ": " + 
                                         (typeof ex_formatTimeRemaining === 'function' ? 
@@ -2694,6 +2973,8 @@ async function init() {
         refreshMarkers();
         initBossTimers();
         initWeeklyKillTracker();
+        initUsefulRoutesUI();
+        window.applyWorldMapQueryState();
     } catch (error) {
         console.error(window.i18n.t("log.errorDuringInitialization"), error);
     }

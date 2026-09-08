@@ -13,6 +13,15 @@ let sortDirections = {
     'tier': true
 };
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 async function initPokemonSearch() {
     console.log("Initializing Pokemon search functionality...");
 
@@ -71,6 +80,17 @@ async function initPokemonSearch() {
                 }
                 updateSortButtonsText();
             });
+        }
+
+        window.allPokemonData = allPokemonData;
+        window.displayPokemonLocations = displayPokemonLocations;
+        window.displayPokemonsByLocation = displayPokemonsByLocation;
+        const activePreset = document.querySelector('.route-preset-btn.active')?.dataset.routePreset;
+        if (activePreset && typeof renderUsefulRoutes === 'function') {
+            renderUsefulRoutes(activePreset);
+        }
+        if (typeof window.applyWorldMapQueryState === 'function') {
+            setTimeout(() => window.applyWorldMapQueryState(), 50);
         }
 
         console.log("Pokemon search initialization completed successfully.");
@@ -1007,9 +1027,11 @@ function displayPokemonLocations(pokemonName) {
 
     console.log(`Searching for locations for Pokemon: ${pokemonName}`);
 
-    currentPokemonName = pokemonName;
-
     let locations = allPokemonData.filter(entry => entry.Pokemon === pokemonName);
+    const normalizedTarget = String(pokemonName || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+    if (!locations.length && normalizedTarget) {
+        locations = allPokemonData.filter(entry => String(entry.Pokemon || '').toLowerCase().replace(/[^a-z0-9]+/g, '') === normalizedTarget);
+    }
 
     const repelFilter = document.getElementById('repel-filter-checkbox');
     const showOnlyRepel = repelFilter && repelFilter.checked;
@@ -1024,6 +1046,7 @@ function displayPokemonLocations(pokemonName) {
         return;
     }
 
+    currentPokemonName = locations[0]?.Pokemon || pokemonName;
     console.log(`Found ${locations.length} locations for ${pokemonName}`);
 
     const existingPanel = document.querySelector('.pokemon-locations-panel');
@@ -1036,6 +1059,7 @@ function displayPokemonLocations(pokemonName) {
     document.getElementById('map-container').appendChild(locationsPanel);
 
     const monsterID = locations[0].MonsterID;
+    const displayPokemonName = locations[0].Pokemon || pokemonName;
     const pokemonImageSrc = `resources/pokemons/${monsterID}.webp`;
 
     const locationsWithAvailability = locations.map(loc => {
@@ -1061,8 +1085,8 @@ function displayPokemonLocations(pokemonName) {
     locationsPanel.innerHTML = `
         <div class="pokemon-locations-header">
             <h3>
-                <img src="${pokemonImageSrc}" alt="${pokemonName}" onerror="this.src='resources/pokemons/default-poke.webp'">
-                ${pokemonName}
+                <img src="${escapeHtml(pokemonImageSrc)}" alt="${escapeHtml(displayPokemonName)}" onerror="this.src='resources/pokemons/default-poke.webp'">
+                ${escapeHtml(displayPokemonName)}
             </h3>
             <span class="close-locations-panel">&times;</span>
         </div>
@@ -1078,9 +1102,9 @@ function displayPokemonLocations(pokemonName) {
                 ${locationsWithAvailability.map(item => {
                     const levelRange = item.location.MinLVL && item.location.MaxLVL ? 
                         ` (${item.location.MinLVL}-${item.location.MaxLVL})` : '';
-                    return `<li data-location="${item.location.Map}" class="${item.isOnMap ? '' : 'not-on-map'}" title="${item.isOnMap ? window.i18n ? window.i18n.t("pokesearch.clickToCenter") : 'Click to center map' : window.i18n ? window.i18n.t("pokesearch.locationNotOnMap") : 'Location not on map'}"
+                    return `<li data-location="${escapeHtml(item.location.Map)}" class="${item.isOnMap ? '' : 'not-on-map'}" title="${escapeHtml(item.isOnMap ? window.i18n ? window.i18n.t("pokesearch.clickToCenter") : 'Click to center map' : window.i18n ? window.i18n.t("pokesearch.locationNotOnMap") : 'Location not on map')}"
                         data-min-level="${item.location.MinLVL || 0}" data-max-level="${item.location.MaxLVL || 0}" data-has-item="${item.location.Item ? '1' : '0'}">
-                        <div class="pokemon-location-name">${item.location.Map}${levelRange}</div>
+                        <div class="pokemon-location-name">${escapeHtml(item.location.Map)}${escapeHtml(levelRange)}</div>
                         <div class="pokemon-location-icons">${createLocationIconsHTML(item.location)}</div>
                     </li>`;
                 }).join('')}
@@ -1352,15 +1376,18 @@ function findMapLocation(locationName) {
         );
 
         if (possibleMatches.length > 0) {
-            console.log(`No exact match found for "${locationName}", but found ${possibleMatches.length} partial matches:`, 
-                        possibleMatches.slice(0, 3).map(l => l.tooltip || l.map));
+            console.log('No exact map location match found; using first partial match.', {
+                query: locationName,
+                partialMatchCount: possibleMatches.length,
+                previewMatches: possibleMatches.slice(0, 3).map(l => l.tooltip || l.map)
+            });
             location = possibleMatches[0]; // Use the first partial match
         }
     }
 
     if (!location) {
     } else {
-        console.log(`Location found for: "${locationName}"`, location);
+        console.log('Map location found.', { query: locationName, location });
     }
 
     return location;
@@ -1642,7 +1669,7 @@ function displayLocationPokemonPanel(locationName, pokemonList, mapLoc) {
 
     panel.innerHTML = `
         <div class="pokemon-locations-header">
-            <h3>${displayName}${!isOnMap ? ' <span class="location-not-on-map-badge" title="' + (window.i18n ? window.i18n.t("pokesearch.locationNotOnMap") : 'Location not on map') + '">!</span>' : ''}</h3>
+            <h3>${escapeHtml(displayName)}${!isOnMap ? ' <span class="location-not-on-map-badge" title="' + escapeHtml(window.i18n ? window.i18n.t("pokesearch.locationNotOnMap") : 'Location not on map') + '">!</span>' : ''}</h3>
             <span class="close-locations-panel">&times;</span>
         </div>
         <div class="pokemon-locations-content">
@@ -1657,13 +1684,13 @@ function displayLocationPokemonPanel(locationName, pokemonList, mapLoc) {
                 ${pokemonList.map(pokemon => {
                     const levelRange = pokemon.MinLVL && pokemon.MaxLVL ? 
                         ` (${pokemon.MinLVL}-${pokemon.MaxLVL})` : '';
-                    return `<li data-pokemon="${pokemon.Pokemon}" data-monster-id="${pokemon.MonsterID}" 
+                    return `<li data-pokemon="${escapeHtml(pokemon.Pokemon)}" data-monster-id="${pokemon.MonsterID}" 
                         data-min-level="${pokemon.MinLVL || 0}" data-max-level="${pokemon.MaxLVL || 0}" 
                         data-has-item="${pokemon.Item ? '1' : '0'}" 
-                        title="${window.i18n ? window.i18n.t("pokesearch.clickToShowInfo") : 'Click to show info'}">
+                        title="${escapeHtml(window.i18n ? window.i18n.t("pokesearch.clickToShowInfo") : 'Click to show info')}">
                         <div class="pokemon-location-name">
-                            <img src="resources/pokemons/${pokemon.MonsterID}.webp" class="pokemon-mini-icon" alt="${pokemon.Pokemon}" onerror="this.src='resources/pokemons/default-poke.webp'">
-                            ${pokemon.Pokemon}${levelRange}
+                            <img src="resources/pokemons/${pokemon.MonsterID}.webp" class="pokemon-mini-icon" alt="${escapeHtml(pokemon.Pokemon)}" onerror="this.src='resources/pokemons/default-poke.webp'">
+                            ${escapeHtml(pokemon.Pokemon)}${escapeHtml(levelRange)}
                         </div>
                         <div class="pokemon-location-icons">${createLocationIconsHTML(pokemon)}</div>
                     </li>`;

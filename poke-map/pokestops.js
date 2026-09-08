@@ -41,7 +41,7 @@ function createPokestopTooltipElement() {
 
 function isPokestopAvailable(pokestopName) {
     try {
-        const savedData = localStorage.getItem('clickedPokestops');
+        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
         if (savedData) {
             const clickedPokestops = JSON.parse(savedData);
             if (clickedPokestops[pokestopName]) {
@@ -120,7 +120,7 @@ function markPokestopAsClicked(pokestopName) {
 
     let clickedPokestopsData = {};
     try {
-        const savedData = localStorage.getItem('clickedPokestops');
+        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
         if (savedData) {
             clickedPokestopsData = JSON.parse(savedData);
         }
@@ -135,7 +135,7 @@ function markPokestopAsClicked(pokestopName) {
     };
 
     try {
-        localStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestopsData));
+        window.pokeMapStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestopsData));
     } catch (error) {
         console.error("Error saving to localStorage:", error);
     }
@@ -159,7 +159,7 @@ function formatPokestopTimeRemaining(milliseconds) {
 function updatePokestopTimers() {
     let clickedPokestopsData = {};
     try {
-        const savedData = localStorage.getItem('clickedPokestops');
+        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
         if (savedData) {
             clickedPokestopsData = JSON.parse(savedData);
         }
@@ -181,7 +181,7 @@ function updatePokestopTimers() {
                 
                 delete clickedPokestopsData[pokestopName];
                 try {
-                    localStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestopsData));
+                    window.pokeMapStorage.setItem('clickedPokestops', JSON.stringify(clickedPokestopsData));
                 } catch (error) {
                     console.error("Error saving to localStorage:", error);
                 }
@@ -204,7 +204,7 @@ function updateActiveTooltip() {
     }
     
     if (!isPokestopAvailable(activeTooltipPokestopName)) {
-        const savedData = localStorage.getItem('clickedPokestops');
+        const savedData = window.pokeMapStorage.getItem('clickedPokestops');
         if (savedData) {
             const clickedPokestops = JSON.parse(savedData);
             if (clickedPokestops[activeTooltipPokestopName]) {
@@ -255,7 +255,7 @@ function createPokestopTooltip(pokestopName, x, y, isRightClick = false) {
             cooldownRemainingTime = formatPokestopTimeRemaining(POKESTOP_COOLDOWN_HOURS * 60 * 60 * 1000);
             showCooldown = true;
         } else {
-            const savedData = localStorage.getItem('clickedPokestops');
+            const savedData = window.pokeMapStorage.getItem('clickedPokestops');
             if (savedData) {
                 const clickedPokestops = JSON.parse(savedData);
                 if (clickedPokestops[pokestopName]) {

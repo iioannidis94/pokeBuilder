@@ -41,7 +41,7 @@ function ex_createExcavitionTooltipElement() {
 
 function ex_isExcavitionAvailable(excavitionName) {
     try {
-        const savedData = localStorage.getItem('clickedExcavitions');
+        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
         if (savedData) {
             const clickedExcavitions = JSON.parse(savedData);
             if (clickedExcavitions[excavitionName]) {
@@ -83,7 +83,7 @@ function ex_markExcavitionAsClicked(excavitionName) {
 
     let clickedExcavitionsData = {};
     try {
-        const savedData = localStorage.getItem('clickedExcavitions');
+        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
         if (savedData) {
             clickedExcavitionsData = JSON.parse(savedData);
         }
@@ -97,7 +97,7 @@ function ex_markExcavitionAsClicked(excavitionName) {
     };
 
     try {
-        localStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitionsData));
+        window.pokeMapStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitionsData));
     } catch (error) {
         console.error("Error saving to localStorage:", error);
     }
@@ -122,7 +122,7 @@ function ex_formatTimeRemaining(milliseconds) {
 function ex_updateExcavitionTimers() {
     let clickedExcavitionsData = {};
     try {
-        const savedData = localStorage.getItem('clickedExcavitions');
+        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
         if (savedData) {
             clickedExcavitionsData = JSON.parse(savedData);
         }
@@ -144,7 +144,7 @@ function ex_updateExcavitionTimers() {
                 
                 delete clickedExcavitionsData[excavitionName];
                 try {
-                    localStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitionsData));
+                    window.pokeMapStorage.setItem('clickedExcavitions', JSON.stringify(clickedExcavitionsData));
                 } catch (error) {
                     console.error("Error saving to localStorage:", error);
                 }
@@ -170,7 +170,7 @@ function ex_updateActiveTooltip() {
     const baseExcavitionName = site ? site.name : ex_activeTooltipExcavitionName;
     
     if (!ex_isExcavitionAvailable(baseExcavitionName)) {
-        const savedData = localStorage.getItem('clickedExcavitions');
+        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
         if (savedData) {
             const clickedExcavitions = JSON.parse(savedData);
             if (clickedExcavitions[baseExcavitionName]) {
@@ -236,7 +236,7 @@ function ex_createExcavitionTooltip(excavitionName, x, y, isRightClick = false) 
             cooldownRemainingTime = ex_formatTimeRemaining(resetHour.getTime() - now.getTime());
             showCooldown = true;
         } else {
-            const savedData = localStorage.getItem('clickedExcavitions');
+            const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
             if (savedData) {
                 const clickedExcavitions = JSON.parse(savedData);
                 if (clickedExcavitions[baseExcavitionName]) {
@@ -1138,9 +1138,12 @@ window.addEventListener('load', function() {
         {name: "Route 124", tooltip: "Route 124 (6000+ discoveries)", images: ["Route 124 (6000+ discoveries).webp", "Route-124-(6000+-discoveries)_items.webp"]},
         {name: "Rusturf Tunnel", tooltip: "Rusturf Tunnel", images: ["Rusturf Tunnel.webp", "Rusturf Tunnel_items.webp"]}
     ];
+    if (typeof renderUsefulRoutes === 'function' && document.querySelector('.route-preset-btn.active')?.dataset.routePreset === 'excavation') {
+        renderUsefulRoutes('excavation');
+    }
     
     try {
-        const savedData = localStorage.getItem('clickedExcavitions');
+        const savedData = window.pokeMapStorage.getItem('clickedExcavitions');
         if (savedData) {
             ex_clickedExcavitions = JSON.parse(savedData);
         }

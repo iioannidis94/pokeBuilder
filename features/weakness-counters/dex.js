@@ -5,6 +5,7 @@ function card(p) {
     const col = TC[types[0]] || '#888';
     const num = String(id).padStart(4, '0');
     const img = spriteImg(p);
+    const mapName = encodeURIComponent(name.replace(/-/g, ' '));
 
     // Calculate Ability Notices
     const pokeAbilities = ABILITIES[String(id)] || [];
@@ -29,6 +30,9 @@ function card(p) {
       <div class="tr">${types.map(t => tb(t)).join('')}</div>
       <div class="db">${dmgH(types)}</div>
       <div class="ability-notices" style="margin-top:8px;">${abilityNotices.join('')}</div>
+      <div class="cardActions">
+        <button class="mapActionBtn" type="button" data-world-map-pokemon="${mapName}">🗺️ Open area on map</button>
+      </div>
     </div>
   </div>`;
 }
@@ -105,6 +109,12 @@ document.querySelectorAll('.form-btn').forEach(btn => {
 const grid = document.getElementById('grid');
 const cntEl = document.getElementById('cnt');
 let qDex = '';
+
+grid.addEventListener('click', e => {
+    const mapBtn = e.target.closest('[data-world-map-pokemon]');
+    if (!mapBtn || typeof openWorldMap !== 'function') return;
+    openWorldMap({ pokemon: decodeURIComponent(mapBtn.dataset.worldMapPokemon) });
+});
 
 const THEME_KEY = 'pokedex_theme_v1';
 function applyTheme(theme) {
