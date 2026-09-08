@@ -139,6 +139,43 @@ function showToast(message, duration) {
     _toastTimer = setTimeout(() => { toast.className = 'pk-toast'; }, duration);
 }
 
+function getSharedThemePreference() {
+    try {
+        return localStorage.getItem('pokedex_theme_v1') || (document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    } catch (e) {
+        return document.body.classList.contains('light-mode') ? 'light' : 'dark';
+    }
+}
+
+function buildWorldMapUrl(options = {}) {
+    const url = new URL('poke-map/index.html', window.location.href);
+    const params = url.searchParams;
+    const theme = options.theme || getSharedThemePreference();
+    const lang = options.lang || document.documentElement.lang || 'en';
+
+    if (theme) params.set('theme', theme);
+    if (lang) params.set('lang', lang);
+    if (options.pokemon) params.set('pokemon', String(options.pokemon).replace(/-/g, ' '));
+    if (options.location) params.set('location', String(options.location));
+    if (options.boss) params.set('boss', String(options.boss));
+    if (options.region) params.set('region', String(options.region));
+    if (options.repel) params.set('repel', '1');
+    if (options.showBossDetails) params.set('showBossDetails', '1');
+    if (options.preset) params.set('preset', String(options.preset));
+
+    return url.toString();
+}
+
+window.openWorldMap = function openWorldMap(options = {}) {
+    const target = options.newTab ? '_blank' : '_self';
+    const href = buildWorldMapUrl(options);
+    if (target === '_blank') {
+        window.open(href, target, 'noopener');
+        return;
+    }
+    window.location.href = href;
+};
+
 // Dictionary: How Abilities modify Damage (0 = Immune, 0.5 = Resist, 2 = Weak)
 const ABILITY_TYPE_MODS = {
     "levitate": { "ground": 0 },

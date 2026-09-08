@@ -7,6 +7,8 @@
     // ─── State ────────────────────────────────────────────────────────────
     let selectedBossId   = null;
     let selectedDifficulty = null;
+    let worldMapBossMeta = null;
+    let worldMapBossMetaPromise = null;
 
     const DIFFICULTY_ORDER  = ['easy', 'medium', 'hard'];
     const DIFFICULTY_LABELS = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
@@ -79,6 +81,35 @@
         return !hasEasy && hasFallbackSource;
     }
 
+    function normalizeBossName(name) {
+        return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+    }
+
+    function ensureWorldMapBossMeta() {
+        if (worldMapBossMeta || worldMapBossMetaPromise) return worldMapBossMetaPromise;
+        worldMapBossMetaPromise = fetch('poke-map/data/bosses.json')
+            .then(res => res.ok ? res.json() : {})
+            .then(data => {
+                worldMapBossMeta = data && typeof data === 'object' ? data : {};
+                worldMapBossMetaPromise = null;
+                renderBossDetail();
+                return worldMapBossMeta;
+            })
+            .catch(() => {
+                worldMapBossMetaPromise = null;
+                worldMapBossMeta = {};
+                return worldMapBossMeta;
+            });
+        return worldMapBossMetaPromise;
+    }
+
+    function getWorldMapBossMeta(boss) {
+        if (!boss || !worldMapBossMeta) return null;
+        if (worldMapBossMeta[boss.name]) return worldMapBossMeta[boss.name];
+        const normalized = normalizeBossName(boss.name);
+        return Object.entries(worldMapBossMeta).find(([name]) => normalizeBossName(name) === normalized)?.[1] || null;
+    }
+
     function getAvailableDiffMeta(boss) {
         if (!boss || !boss.difficulties) return [];
         const keys = DIFFICULTY_ORDER.filter(d => getResolvedDifficultyData(boss, d).length);
@@ -94,6 +125,7 @@
         const modal = document.getElementById('bossesOverlay');
         if (!modal) return;
         modal.setAttribute('aria-hidden', 'false');
+        ensureWorldMapBossMeta();
         renderBossesList();
         renderBossDetail();
     };
@@ -175,6 +207,7 @@
 
         const diffMeta = getAvailableDiffMeta(boss);
         const diffKeys = diffMeta.map(d => d.key);
+        const mapMeta = getWorldMapBossMeta(boss);
         // Auto-select first available difficulty if none selected or current not available
         if (!selectedDifficulty || !diffKeys.includes(selectedDifficulty)) {
             selectedDifficulty = diffKeys[0] || null;
@@ -278,6 +311,7 @@
                     ${typeInfoHtml}
                     <div style="display:flex; flex-wrap:wrap; gap:4px;">${movesHtml}</div>
                     ${statsHtml}
+                    ${mon.name ? `<div><button type="button" class="mapActionBtn" data-world-map-pokemon="${encodeURIComponent(mon.name.replace(/-/g, ' '))}">🗺️ Open area on map</button></div>` : ''}
                 </div>
             </div>`;
         }).join('');
@@ -293,14 +327,22 @@
                     <div style="font-size:19px; font-weight:900; color:var(--txt);">${boss.name}</div>
                     ${boss.title ? `<div style="font-size:12px; color:var(--dim); margin-top:2px;">${boss.title}</div>` : ''}
                     ${boss.region ? `<div style="font-size:11px; margin-top:4px;"><span style="color:${REGION_COLORS[boss.region] || '#aaa'}; font-weight:700;">${boss.region}</span>${boss.location ? ` <span style="color:var(--dim);">— ${boss.location}</span>` : ''}</div>` : ''}
+                    ${mapMeta?.cooldown ? `<div style="display:inline-flex; margin-top:8px; gap:6px; align-items:center; font-size:11px; color:#74c0fc; background:rgba(77,171,247,0.12); border:1px solid rgba(77,171,247,0.35); border-radius:999px; padding:4px 10px;">🕒 Cooldown: <b style="color:#e7f5ff;">${mapMeta.cooldown}</b></div>` : ''}
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between;" id="bossDiffTabs">
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">${tabsHtml}</div>
-                    <button type="button" id="bossLoadOppBtn" ${loadBtnDisabled} style="
-                        padding:6px 14px; border-radius:20px; border:1px solid #ff6b6b;
-                        background:rgba(255,107,107,0.12); color:#ff6b6b; font-size:12px; font-weight:bold;
-                        cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s; white-space:nowrap;
-                    ">⚔️ Load as Opponent</button>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" id="bossWorldMapBtn" style="
+                            padding:6px 14px; border-radius:20px; border:1px solid #4dabf7;
+                            background:rgba(77,171,247,0.12); color:#74c0fc; font-size:12px; font-weight:bold;
+                            cursor:pointer; transition:.2s; white-space:nowrap;
+                        ">🗺️ Open on World Map</button>
+                        <button type="button" id="bossLoadOppBtn" ${loadBtnDisabled} style="
+                            padding:6px 14px; border-radius:20px; border:1px solid #ff6b6b;
+                            background:rgba(255,107,107,0.12); color:#ff6b6b; font-size:12px; font-weight:bold;
+                            cursor:${loadBtnDisabled ? 'not-allowed' : 'pointer'}; opacity:${loadBtnDisabled ? '0.5' : '1'}; transition:.2s; white-space:nowrap;
+                        ">⚔️ Load as Opponent</button>
+                    </div>
                 </div>
                 ${selectedDifficulty && DIFFICULTY_RULES[selectedDifficulty] ? `<div style="font-size:11px; color:var(--dim); background:var(--brd); border-radius:6px; padding:6px 10px; line-height:1.5;">ℹ️ ${DIFFICULTY_RULES[selectedDifficulty]}${generatedEasyNote}</div>` : ''}
                 <div style="display:flex; flex-direction:column; gap:8px;">
@@ -314,6 +356,27 @@
             tabsContainer.addEventListener('click', e => {
                 const btn = e.target.closest('[data-diff]');
                 if (btn) { selectedDifficulty = btn.dataset.diff; renderBossDetail(); }
+                const mapMonBtn = e.target.closest('[data-world-map-pokemon]');
+                if (mapMonBtn && typeof openWorldMap === 'function') {
+                    openWorldMap({ pokemon: decodeURIComponent(mapMonBtn.dataset.worldMapPokemon) });
+                }
+            });
+        }
+
+        detailEl.querySelectorAll('[data-world-map-pokemon]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (typeof openWorldMap === 'function') {
+                    openWorldMap({ pokemon: decodeURIComponent(btn.dataset.worldMapPokemon) });
+                }
+            });
+        });
+
+        const worldMapBtn = document.getElementById('bossWorldMapBtn');
+        if (worldMapBtn) {
+            worldMapBtn.addEventListener('click', () => {
+                if (typeof openWorldMap === 'function') {
+                    openWorldMap({ boss: boss.name, region: boss.region, showBossDetails: true });
+                }
             });
         }
 

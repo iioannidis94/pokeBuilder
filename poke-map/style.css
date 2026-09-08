@@ -13,6 +13,19 @@
     --map-green: #38d878;
 }
 
+body.light-mode {
+    --map-bg: #f4f6ff;
+    --map-surf: #ffffff;
+    --map-surf-2: #eef1ff;
+    --map-brd: #cfd6ff;
+    --map-txt: #1e2240;
+    --map-dim: #59608f;
+    --map-yellow: #f59f00;
+    --map-red: #e03131;
+    --map-blue: #3b82f6;
+    --map-green: #2f9e44;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -267,8 +280,8 @@ body::before {
 /* Style dla tooltip'a bossów */
 .boss-tooltip {
     position: fixed;
-    background-color: rgba(40, 44, 52, 0.95);
-    color: white;
+    background-color: var(--map-surf);
+    color: var(--map-txt);
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     max-width: 400px;
@@ -282,18 +295,18 @@ body::before {
 }
 
 .boss-tooltip-header {
-    background-color: #333;
+    background-color: var(--map-surf-2);
     padding: 10px 15px;
     border-radius: 8px 8px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid var(--map-brd);
 }
 
 .boss-tooltip-header h3 {
     margin: 0;
-    color: #fff;
+    color: var(--map-txt);
     font-size: 18px;
 }
 
@@ -975,8 +988,8 @@ body::before {
     top: 70px;
     right: 15px;
     width: 300px;
-    background-color: rgba(40, 44, 52, 0.95);
-    color: white;
+    background-color: var(--map-surf);
+    color: var(--map-txt);
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 50;
@@ -986,18 +999,18 @@ body::before {
 }
 
 .pokemon-locations-header {
-    background-color: #333;
+    background-color: var(--map-surf-2);
     padding: 10px 15px;
     border-radius: 8px 8px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid var(--map-brd);
 }
 
 .pokemon-locations-header h3 {
     margin: 0;
-    color: #fff;
+    color: var(--map-txt);
     font-size: 18px;
     display: flex;
     align-items: center;
@@ -1954,6 +1967,146 @@ body::before {
     font-weight: 800;
 }
 
+.useful-routes-container {
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid var(--map-brd);
+    border-radius: 12px;
+    background: rgba(13, 13, 26, 0.55);
+}
+
+.useful-routes-container h3 {
+    margin: 0 0 10px;
+}
+
+.useful-routes-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.route-preset-btn.active {
+    border-color: var(--map-yellow);
+    color: var(--map-yellow);
+    background: rgba(255, 204, 0, 0.1);
+}
+
+.useful-routes-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.useful-route-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--map-brd);
+    background: var(--map-surf-2);
+    color: var(--map-txt);
+    text-align: left;
+    cursor: pointer;
+}
+
+.useful-route-item:hover {
+    border-color: var(--map-blue);
+    transform: translateY(-1px);
+}
+
+.useful-route-name {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.useful-route-meta,
+.useful-route-empty {
+    font-size: 11px;
+    color: var(--map-dim);
+}
+
+.boss-hover-preview {
+    position: fixed;
+    z-index: 1100;
+    width: min(320px, calc(100vw - 24px));
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--map-brd);
+    background: rgba(19, 19, 42, 0.96);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+.boss-hover-title {
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--map-txt);
+}
+
+.boss-hover-meta {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--map-dim);
+}
+
+.boss-roster-preview {
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+}
+
+.boss-roster-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--map-yellow);
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.boss-roster-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.boss-roster-mon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 6px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    text-align: center;
+}
+
+.boss-roster-mon.compact {
+    padding: 6px 4px;
+}
+
+.boss-roster-mon img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+}
+
+.boss-roster-mon.compact img {
+    width: 42px;
+    height: 42px;
+}
+
+.boss-roster-mon span {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--map-txt);
+    line-height: 1.25;
+}
+
 @media (max-width: 960px) {
     body {
         overflow: auto;
@@ -1970,5 +2123,17 @@ body::before {
 
     #map-container {
         min-height: 70vh;
+    }
+
+    .useful-routes-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    .useful-routes-panel {
+        max-height: none;
+    }
+
+    .boss-hover-preview {
+        display: none !important;
     }
 }

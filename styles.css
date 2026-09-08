@@ -138,6 +138,13 @@ main{position:relative;z-index:1;padding:14px 12px;max-width:1700px;margin:0 aut
   display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:start;
   transition:transform .15s,box-shadow .2s;position:relative;overflow:hidden;
 }
+.cardActions{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.mapActionBtn{
+  border:1px solid #4dabf7;background:rgba(77,171,247,.12);color:#74c0fc;
+  border-radius:999px;padding:6px 10px;font:900 11px 'Nunito',sans-serif;cursor:pointer;
+  transition:border-color .15s,transform .15s,background .15s;
+}
+.mapActionBtn:hover{border-color:#74c0fc;background:rgba(77,171,247,.2);transform:translateY(-1px)}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.38)}
 .ab{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:12px 0 0 12px}
 

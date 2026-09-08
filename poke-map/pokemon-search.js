@@ -73,6 +73,17 @@ async function initPokemonSearch() {
             });
         }
 
+        window.allPokemonData = allPokemonData;
+        window.displayPokemonLocations = displayPokemonLocations;
+        window.displayPokemonsByLocation = displayPokemonsByLocation;
+        const activePreset = document.querySelector('.route-preset-btn.active')?.dataset.routePreset;
+        if (activePreset && typeof renderUsefulRoutes === 'function') {
+            renderUsefulRoutes(activePreset);
+        }
+        if (typeof window.applyWorldMapQueryState === 'function') {
+            setTimeout(() => window.applyWorldMapQueryState(), 50);
+        }
+
         console.log("Pokemon search initialization completed successfully.");
     } catch (error) {
         console.error("Error initializing Pokemon search:", error);
@@ -1007,9 +1018,11 @@ function displayPokemonLocations(pokemonName) {
 
     console.log(`Searching for locations for Pokemon: ${pokemonName}`);
 
-    currentPokemonName = pokemonName;
-
     let locations = allPokemonData.filter(entry => entry.Pokemon === pokemonName);
+    const normalizedTarget = String(pokemonName || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+    if (!locations.length && normalizedTarget) {
+        locations = allPokemonData.filter(entry => String(entry.Pokemon || '').toLowerCase().replace(/[^a-z0-9]+/g, '') === normalizedTarget);
+    }
 
     const repelFilter = document.getElementById('repel-filter-checkbox');
     const showOnlyRepel = repelFilter && repelFilter.checked;
@@ -1024,6 +1037,7 @@ function displayPokemonLocations(pokemonName) {
         return;
     }
 
+    currentPokemonName = locations[0]?.Pokemon || pokemonName;
     console.log(`Found ${locations.length} locations for ${pokemonName}`);
 
     const existingPanel = document.querySelector('.pokemon-locations-panel');
@@ -1036,6 +1050,7 @@ function displayPokemonLocations(pokemonName) {
     document.getElementById('map-container').appendChild(locationsPanel);
 
     const monsterID = locations[0].MonsterID;
+    const displayPokemonName = locations[0].Pokemon || pokemonName;
     const pokemonImageSrc = `resources/pokemons/${monsterID}.webp`;
 
     const locationsWithAvailability = locations.map(loc => {
@@ -1061,8 +1076,8 @@ function displayPokemonLocations(pokemonName) {
     locationsPanel.innerHTML = `
         <div class="pokemon-locations-header">
             <h3>
-                <img src="${pokemonImageSrc}" alt="${pokemonName}" onerror="this.src='resources/pokemons/default-poke.webp'">
-                ${pokemonName}
+                <img src="${pokemonImageSrc}" alt="${displayPokemonName}" onerror="this.src='resources/pokemons/default-poke.webp'">
+                ${displayPokemonName}
             </h3>
             <span class="close-locations-panel">&times;</span>
         </div>

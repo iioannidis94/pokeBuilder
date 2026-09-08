@@ -1138,6 +1138,9 @@ window.addEventListener('load', function() {
         {name: "Route 124", tooltip: "Route 124 (6000+ discoveries)", images: ["Route 124 (6000+ discoveries).webp", "Route-124-(6000+-discoveries)_items.webp"]},
         {name: "Rusturf Tunnel", tooltip: "Rusturf Tunnel", images: ["Rusturf Tunnel.webp", "Rusturf Tunnel_items.webp"]}
     ];
+    if (typeof renderUsefulRoutes === 'function' && document.querySelector('.route-preset-btn.active')?.dataset.routePreset === 'excavation') {
+        renderUsefulRoutes('excavation');
+    }
     
     try {
         const savedData = window.pokeMapStorage.getItem('clickedExcavitions');

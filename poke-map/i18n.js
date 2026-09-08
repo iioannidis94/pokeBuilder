@@ -94,8 +94,12 @@ async function initializeI18n() {
         }
         translations = await response.json();
 
+        const urlLanguage = new URLSearchParams(window.location.search).get('lang');
         const savedLanguage = window.pokeMapStorage.getItem('appLanguage');
-        if (savedLanguage && translations[savedLanguage]) {
+        if (urlLanguage && translations[urlLanguage]) {
+            currentLanguage = urlLanguage;
+            window.pokeMapStorage.setItem('appLanguage', currentLanguage);
+        } else if (savedLanguage && translations[savedLanguage]) {
             currentLanguage = savedLanguage;
         } else {
             detectBrowserLanguage();
