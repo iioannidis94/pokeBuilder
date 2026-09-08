@@ -4,6 +4,10 @@ let uniquePokemonNames = new Set();
 let uniqueItems = new Set();
 let uniqueLocationNames = new Set();
 let currentPokemonName = null; // Track current Pokemon being displayed
+let pokemonSearchInitStarted = false;
+
+window.worldMapPokemonSearchReady = false;
+window.worldMapPokemonSearchReadyPromise = null;
 
 let sortDirections = {
     'az': true, // true = A-Z, false = Z-A
@@ -69,6 +73,7 @@ async function loadSpawnDataset(url, sourceName, sourceType) {
 
 async function initPokemonSearch() {
     console.log("Initializing Pokemon search functionality...");
+    window.worldMapPokemonSearchReady = false;
 
     try {
         await loadPokemonData();
@@ -130,6 +135,8 @@ async function initPokemonSearch() {
         window.allPokemonData = allPokemonData;
         window.displayPokemonLocations = displayPokemonLocations;
         window.displayPokemonsByLocation = displayPokemonsByLocation;
+        window.displayPokemonsByItem = displayPokemonsByItem;
+        window.worldMapPokemonSearchReady = true;
         const activePreset = document.querySelector('.route-preset-btn.active')?.dataset.routePreset;
         if (activePreset && typeof renderUsefulRoutes === 'function') {
             renderUsefulRoutes(activePreset);
@@ -140,6 +147,7 @@ async function initPokemonSearch() {
 
         console.log("Pokemon search initialization completed successfully.");
     } catch (error) {
+        window.worldMapPokemonSearchReady = false;
         console.error("Error initializing Pokemon search:", error);
     }
 }
@@ -1571,25 +1579,35 @@ function displayPokemonTooltip(pokemonData, x, y) {
     document.addEventListener('touchstart', handleOutsideClick);
 }
 
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        console.log("Starting Pokemon search initialization...");
+function startPokemonSearchInitialization() {
+    if (pokemonSearchInitStarted) {
+        return window.worldMapPokemonSearchReadyPromise;
+    }
 
-        if ((window.locations && window.locations.length > 0) || 
-            (typeof locations !== 'undefined' && locations.length > 0)) {
-            console.log("Location data available, initializing Pokemon search");
+    pokemonSearchInitStarted = true;
+    console.log("Starting Pokemon search initialization...");
 
-            if (!window.locations && typeof locations !== 'undefined') {
-                console.log("Assigning locations to window.locations");
-                window.locations = locations;
-            }
-        } else {
-            console.warn("Location data is not yet available, initializing search with a delay");
+    if ((window.locations && window.locations.length > 0) ||
+        (typeof locations !== 'undefined' && locations.length > 0)) {
+        console.log("Location data available, initializing Pokemon search");
+
+        if (!window.locations && typeof locations !== 'undefined') {
+            console.log("Assigning locations to window.locations");
+            window.locations = locations;
         }
+    } else {
+        console.warn("Location data is not yet available, continuing with Pokemon search initialization");
+    }
 
-        initPokemonSearch();
-    }, 3000); // Delay 3 seconds
-});
+    window.worldMapPokemonSearchReadyPromise = initPokemonSearch();
+    return window.worldMapPokemonSearchReadyPromise;
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startPokemonSearchInitialization, { once: true });
+} else {
+    startPokemonSearchInitialization();
+}
 
 function hookIntoMapRefresh() {
     const originalRefreshMarkers = window.refreshMarkers;
